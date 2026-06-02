@@ -1,0 +1,326 @@
+{
+  "5": {
+    "inputs": {
+      "width": [
+        "92",
+        0
+      ],
+      "height": [
+        "93",
+        0
+      ],
+      "batch_size": 1
+    },
+    "class_type": "EmptyLatentImage",
+    "_meta": {
+      "title": "Empty Latent Image"
+    }
+  },
+  "7": {
+    "inputs": {
+      "text": "text, watermark, realistic photo, 3d render, gradient background, cluttered, busy, low quality, blurry, sketch, hand drawn, cartoon, animation",
+      "clip": [
+        "20",
+        1
+      ]
+    },
+    "class_type": "CLIPTextEncode",
+    "_meta": {
+      "title": "CLIP Text Encode (Prompt)"
+    }
+  },
+  "8": {
+    "inputs": {
+      "samples": [
+        "13",
+        0
+      ],
+      "vae": [
+        "20",
+        2
+      ]
+    },
+    "class_type": "VAEDecode",
+    "_meta": {
+      "title": "VAE Decode"
+    }
+  },
+  "13": {
+    "inputs": {
+      "add_noise": true,
+      "noise_seed": 838730477385386,
+      "cfg": 1,
+      "model": [
+        "20",
+        0
+      ],
+      "positive": [
+        "58",
+        0
+      ],
+      "negative": [
+        "7",
+        0
+      ],
+      "sampler": [
+        "14",
+        0
+      ],
+      "sigmas": [
+        "30",
+        0
+      ],
+      "latent_image": [
+        "5",
+        0
+      ]
+    },
+    "class_type": "SamplerCustom",
+    "_meta": {
+      "title": "SamplerCustom"
+    }
+  },
+  "14": {
+    "inputs": {
+      "sampler_name": "lcm"
+    },
+    "class_type": "KSamplerSelect",
+    "_meta": {
+      "title": "KSamplerSelect"
+    }
+  },
+  "20": {
+    "inputs": {
+      "ckpt_name": "flesh4fantasy_v10.safetensors"
+    },
+    "class_type": "CheckpointLoaderSimple",
+    "_meta": {
+      "title": "Load Checkpoint"
+    }
+  },
+  "30": {
+    "inputs": {
+      "steps": 10,
+      "sigma_max": 14.61,
+      "sigma_min": 0.03,
+      "rho": 4.5
+    },
+    "class_type": "KarrasScheduler",
+    "_meta": {
+      "title": "KarrasScheduler"
+    }
+  },
+  "58": {
+    "inputs": {
+      "width": [
+        "92",
+        0
+      ],
+      "height": [
+        "93",
+        0
+      ],
+      "crop_w": 0,
+      "crop_h": 0,
+      "target_width": [
+        "92",
+        0
+      ],
+      "target_height": [
+        "93",
+        0
+      ],
+      "text_g": "an attractive woman with a medium natural chest, platinum silver pixie-cut hair, icy gray eyes with smudged black liner and bold lashes, defined full lips, direct eye contact, wearing a gold off-shoulder silk robe, background a luxury bed with white sheets, candle light. natural skin glow, natural skin texture with visible pores and light freckles, unretouched realistic skin, micro-skin pimples, faint skin wrinkles. professional photography\n",
+      "text_l": "an attractive woman with a medium natural chest, platinum silver pixie-cut hair, icy gray eyes with smudged black liner and bold lashes, defined full lips, direct eye contact, wearing a gold off-shoulder silk robe, background a luxury bed with white sheets, candle light. natural skin glow, natural skin texture with visible pores and light freckles, unretouched realistic skin, micro-skin pimples, faint skin wrinkles. professional photography\n",
+      "clip": [
+        "20",
+        1
+      ]
+    },
+    "class_type": "CLIPTextEncodeSDXL",
+    "_meta": {
+      "title": "CLIPTextEncodeSDXL"
+    }
+  },
+  "91": {
+    "inputs": {
+      "filename_prefix": "image_1472x1104",
+      "images": [
+        "107",
+        0
+      ]
+    },
+    "class_type": "SaveImage",
+    "_meta": {
+      "title": "Save Image"
+    }
+  },
+  "92": {
+    "inputs": {
+      "value": 1280
+    },
+    "class_type": "PrimitiveInt",
+    "_meta": {
+      "title": "Width"
+    }
+  },
+  "93": {
+    "inputs": {
+      "value": 960
+    },
+    "class_type": "PrimitiveInt",
+    "_meta": {
+      "title": "Height"
+    }
+  },
+  "95": {
+    "inputs": {
+      "width": 1472,
+      "height": 1104,
+      "upscale_method": "lanczos",
+      "keep_proportion": "resize",
+      "pad_color": "0, 0, 0",
+      "crop_position": "center",
+      "divisible_by": 1,
+      "device": "cpu",
+      "image": [
+        "8",
+        0
+      ]
+    },
+    "class_type": "ImageResizeKJv2",
+    "_meta": {
+      "title": "Resize Image v2"
+    }
+  },
+  "104": {
+    "inputs": {
+      "vae_name": "ZIT\\ae.safetensors"
+    },
+    "class_type": "VAELoader",
+    "_meta": {
+      "title": "Load VAE"
+    }
+  },
+  "105": {
+    "inputs": {
+      "pixels": [
+        "95",
+        0
+      ],
+      "vae": [
+        "104",
+        0
+      ]
+    },
+    "class_type": "VAEEncode",
+    "_meta": {
+      "title": "VAE Encode"
+    }
+  },
+  "106": {
+    "inputs": {
+      "seed": 597647073169107,
+      "steps": 8,
+      "cfg": 1,
+      "sampler_name": "euler",
+      "scheduler": "simple",
+      "denoise": 0.12,
+      "model": [
+        "110",
+        0
+      ],
+      "positive": [
+        "109",
+        0
+      ],
+      "negative": [
+        "108",
+        0
+      ],
+      "latent_image": [
+        "105",
+        0
+      ]
+    },
+    "class_type": "KSampler",
+    "_meta": {
+      "title": "KSampler"
+    }
+  },
+  "107": {
+    "inputs": {
+      "samples": [
+        "106",
+        0
+      ],
+      "vae": [
+        "104",
+        0
+      ]
+    },
+    "class_type": "VAEDecode",
+    "_meta": {
+      "title": "VAE Decode"
+    }
+  },
+  "108": {
+    "inputs": {
+      "conditioning": [
+        "109",
+        0
+      ]
+    },
+    "class_type": "ConditioningZeroOut",
+    "_meta": {
+      "title": "ConditioningZeroOut"
+    }
+  },
+  "109": {
+    "inputs": {
+      "text": "RAW photo, woman, detailed eye lashes, detailed natural skin and blemishes, unretouched realistic skin, skin texture style, detailed skin pore,detailed skin, realsitic skin. 35mm film grain, film grain texture, analog film photography, Kodak Portra 400 pushed film, ISO 3200\n\n",
+      "clip": [
+        "111",
+        0
+      ]
+    },
+    "class_type": "CLIPTextEncode",
+    "_meta": {
+      "title": "CLIP Text Encode (Prompt)"
+    }
+  },
+  "110": {
+    "inputs": {
+      "shift": 3,
+      "model": [
+        "112",
+        0
+      ]
+    },
+    "class_type": "ModelSamplingAuraFlow",
+    "_meta": {
+      "title": "ModelSamplingAuraFlow"
+    }
+  },
+  "111": {
+    "inputs": {
+      "clip_name": "ZIT\\qwen_3_4b_fp8_mixed.safetensors",
+      "type": "lumina2",
+      "device": "default"
+    },
+    "class_type": "CLIPLoader",
+    "_meta": {
+      "title": "Load CLIP"
+    }
+  },
+  "112": {
+    "inputs": {
+      "unet_name": "ZIT\\z_image_turbo_bf16.safetensors",
+      "weight_dtype": "default"
+    },
+    "class_type": "UNETLoader",
+    "_meta": {
+      "title": "Load Diffusion Model"
+    }
+  }
+}
