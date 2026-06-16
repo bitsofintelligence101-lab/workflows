@@ -1,0 +1,2 @@
+keep the subject in [Image 1] face, identity exactly the same.  change the background to [Image 2] re-light to match the lighting of Image 2.
+
