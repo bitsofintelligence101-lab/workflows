@@ -1,0 +1,29 @@
+Flesh4Fantasy_cinematic.json:
+A photograph, a head and chest shot of a woman just out of the shower. She has wet, tousled blond hair clinging to her forehead with visible water droplets. Her striking blue eyes look relaxed and natural. wearing a white terry-cloth strapless dress around her chest covering large natural breasts cleavage showing above the towel Soft morning bathroom light filters through steam, illuminating her smooth skin texture and pores. Shot on a high-resolution 35mm camera, cinematic lighting, photorealistic, 8k, raw photography, natural skin tones, soft shadows.
+
+
+character_sheet_cinematic.json
+Only the 'full body front' node in green gets a prompt:
+Full body wide-shot, subject is wearing towel across chest, large natural breasts, Keep subject face and identity exactly the same exact same all white background
+
+The rest of the images use prebuilt prompts to create different angles and a character sheet
+
+
+qwen_image_edit_all.json
+
+using 3x character sheet as input image, any other background scene as 2nd image input
+
+NEVER use plural words in the prompt when you use a character sheet input.  "they are..." "Their something..." -BAD- that will cause duplicates of the person in the image. only use singular words "The subject is..." -GOOD-
+
+-prompts-
+SHIP BACKGROUND (background1):
+"use the reference sheet of subject in Image 1, kneeling on the deck of the ship shown in Image 2. Keep the subject face and identity exactly the same"
+
+LIVING ROOM BACKGROUND PROMPT (background2):
+"close shot, use the reference sheet of subject in Image 1, sitting on the edge of the blue couch in the room shown in Image 2. Keep the subject face and identity exactly the same"
+
+BEDROOM BACKGROUND PROMPT (background3):
+"close shot, use the reference sheet of subject in Image 1, laying on the bed shown in Image 2. Keep the subject face and identity exactly the same"
+
+BAR BACKGROUND (background4):
+"use the reference sheet of subject in Image 1, sitting in the foreground seat, body turned facing the bar shown in Image 2. Keep the subject face and identity exactly the same, match lighting of Image 2"
