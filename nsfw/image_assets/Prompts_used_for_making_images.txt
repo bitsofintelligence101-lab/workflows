@@ -27,3 +27,6 @@ BEDROOM BACKGROUND PROMPT (background3):
 
 BAR BACKGROUND (background4):
 "use the reference sheet of subject in Image 1, sitting in the foreground seat, body turned facing the bar shown in Image 2. Keep the subject face and identity exactly the same, match lighting of Image 2"
+
+NO BACKGROUND (only character sheet input)
+"use the reference sheet of subject in Image 1. show subject medium shot waist up, drinking a cup of coffe on a balcony looking at the ocean. Keep the subject face and identity exactly the same"
