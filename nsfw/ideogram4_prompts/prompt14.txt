@@ -1,0 +1,40 @@
+{
+  "high_level_description": "A photorealistic portrait of an Asian woman in an silk open-robe at a luxury Japanese spa, robe open revealing her nude breasts and nipples, the robe fabric on the edge of her breasts with natural skin tones visible. She wears an alluring smirk expression, positioned in a serene onsen environment with steam rising. Shot on Kodak Ektar 100 with soft ambient lighting and shallow depth of field.",
+  "style_description": {
+    "aesthetics": "Spa documentary, warm neutral tones, fine grain.",
+    "lighting": "Soft diffused natural light from large zen garden windows. Warm ambient glow from stone lanterns in background. Even fill across subject's face with gentle shadows. No harsh directional sources.",
+    "photo": "85mm prime lens, f/2.0 aperture, 1/160s. Kodak Ektar 100 film stock, fine grain, rich warm-neutral color rendering. Shallow depth of field with critical focus on woman's face; spa background rendered in smooth cream bokeh. Leica M camera system.",
+    "medium": "photograph",
+    "color_palette": ["#C8B090", "#8B7A5A", "#D4C0A0", "#4A6B5A", "#C0C0C0", "#6B8060", "#A08060", "#E8D5C0"]
+  },
+  "compositional_deconstruction": {
+    "background": "Luxury Japanese spa interior with traditional zen aesthetics. Stone walls with moss accents, wooden floor tiles, large windows revealing a misty zen garden outside. Steam rises from onsen pool behind the subject, diffusing background detail and compressing tonal range in mid-ground. Warm ambient light from recessed fixtures in ceiling. Shot on Kodak Ektar 100, warm-neutral white balance, fine grain throughout.",
+    "elements": [
+      {
+        "type": "obj",
+        "bbox": [300, 200, 700, 850],
+        "desc": "Asian woman seated at spa treatment table, centered in frame, waist-up composition. She has long dark hair, almond-shaped eyes with subtle makeup, wearing a silk robe, the robe is open her revealing her breasts and nipples and naval are visible. Her expression is confident with lips curved into a slight smile. one of her hands is cupping her exposed breast from below. Soft ambient lighting creates gentle highlights on cheekbones and collarbone. Rendered in critical focus with natural skin texture visible."
+      },
+      {
+        "type": "obj",
+        "bbox": [200, 500, 800, 1000],
+        "desc": "Spa treatment table and bench positioned behind the woman, extending toward lower third of frame. Smooth cream-colored stone surface with subtle grain texture. Wooden frame in dark walnut finish with rounded edges. Steam rising from onsen pool visible just above table level, creating soft atmospheric haze between subject and background."
+      },
+      {
+        "type": "obj",
+        "bbox": [0, 0, 1000, 250],
+        "desc": "Large zen garden windows spanning upper third of frame, revealing misty outdoor garden through glass. Soft gray-green bamboo and stone lanterns visible outside, slightly out of focus. Natural daylight filtering through creates soft even illumination across interior. Steam from onsen pool rises upward through lower portion of window view."
+      },
+      {
+        "type": "obj",
+        "bbox": [100, 250, 900, 500],
+        "desc": "Silk robe draped over woman's shoulders and torso, fabric in cream-white color with subtle sheen. Robe open at top revealing natural skin tones of upper chest. Material rendered with soft folds and gentle highlights from ambient lighting. Texture shows fine weave consistency consistent with luxury silk. Rendered in critical focus matching subject's face."
+      },
+      {
+        "type": "obj",
+        "bbox": [50, 100, 950, 400],
+        "desc": "Traditional Japanese spa interior walls and ceiling visible in background. Stone texture with moss accents in upper corners, wooden beams and recessed lighting fixtures integrated into ceiling. Soft cream and beige tones dominate background palette. Elements fall into shallow depth-of-field softness, creating smooth bokeh around subject."
+      }
+    ]
+  }
+}

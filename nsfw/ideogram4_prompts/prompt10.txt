@@ -1,0 +1,35 @@
+{
+"high_level_description": "A sun-drenched beach portrait of a young Black woman with very large breasts seated arms behind her on a patterned towel under late afternoon light, wearing red bikini bottoms with her legs extended forward and arms clasped behind her back, shot on Kodak Ektar 100 with warm natural tones.",
+"style_description": {
+"aesthetics": "Warm natural documentary, fine grain, soft sunlight.",
+"lighting": "Soft directional sunlight from the upper left, casting gentle shadows across the sand and skin. No harsh contrasts, balanced fill from the sky reflection.",
+"photo": "50mm prime lens, f/2.8 aperture, 1/125s. Kodak Ektar 100 film stock, fine grain, warm-neutral white balance. Shallow depth of field blurring the ocean background into soft blues and whites.",
+"medium": "photograph",
+"color_palette": ["#D4A030", "#E8C060", "#4A7C3A", "#2A6B8A", "#8B6040", "#F5EDD8", "#C8A060", "#3A5A70"]
+},
+"compositional_deconstruction": {
+"background": "Sandy beach with soft focus ocean horizon. Warm sunlight illuminates the scene. Fine grain Kodak Ektar 100 rendering.",
+"elements": [
+{
+"type": "obj",
+"bbox": [200, 250, 800, 800],
+"desc": "Young Black woman seated on a beach towel. Topless with very large visible breasts and nipples. Wearing red bikini bottoms. Legs stretched forward and raised slightly, knees bent or extended depending on interpretation. She is leaning back with her arms behind her hands on towel. Skin rendered with natural texture and sun-kissed warmth. Hair tied back or loose, catching the light. she is laughing, Focus sharp on face and breasts, softening into the towel and legs."
+},
+{
+"type": "obj",
+"bbox": [250, 700, 750, 1000],
+"desc": "Patterned beach towel spread on the sand beneath the subject. Striped or geometric design in muted earth tones and blues. Sand grains visible between the fabric folds. Soft shadow cast by the woman's body onto the towel surface."
+},
+{
+"type": "obj",
+"bbox": [0, 0, 1000, 250],
+"desc": "Bright blue sky occupying the upper third of the frame. Sunlight source positioned in upper left quadrant. Soft clouds diffusing the light slightly, reducing harsh shadows. Kodak Ektar 100 color rendering gives the sky a rich, saturated blue tone."
+},
+{
+"type": "obj",
+"bbox": [0, 400, 1000, 600],
+"desc": "Soft-focus ocean horizon line in the background. Gentle waves rolling onto the shore. Rendered as smooth, out-of-focus blues and white highlights. Shallow depth of field separates the subject from the water."
+}
+]
+}
+}

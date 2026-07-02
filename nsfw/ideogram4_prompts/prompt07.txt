@@ -1,0 +1,45 @@
+{
+"high_level_description": "A full-body environmental portrait of a young 20-year old woman standing under an outdoor shower in a lush tropical garden, viewed from three quarter turn to highlight her waist-to-hip ratio and side of her breasts, soap bubbles drifting across her skin and curves, soft natural lighting filtering through palm fronds, shot on Kodak Ektar 100 with warm humid atmosphere.",
+"style_description": {
+"aesthetics": "Tropical documentary photography, warm saturated tones, fine grain.",
+"lighting": "Natural ambient daylight filtering through dense tropical foliage above. Soft diffused overhead light with dappled shadows from palm leaves. No harsh direct sun. Water droplets catching light creating specular highlights on skin.",
+"photo": "50mm prime lens, f/2.8 aperture, 1/125s. Kodak Ektar 100 film stock, fine grain, rich warm-neutral color rendering. Moderate depth of field with subject in sharp focus, background foliage softly blurred. Natural white balance with tropical green and earth tone emphasis.",
+"medium": "photograph",
+"color_palette": ["#4A7A3A", "#8B6B4F", "#D4C8B0", "#5A8C4A", "#C8A060", "#2A6B8A", "#6B8C4A", "#A8B080"]
+},
+"compositional_deconstruction": {
+"background": "Lush tropical garden setting with dense green palm fronds and broad-leafed plants forming a natural canopy overhead. Outdoor shower structure visible as simple metal framework with water cascading down. Wooden deck or stone floor beneath. Dappled sunlight filtering through leaves creating patterns of light and shadow. Haze from humidity compressing tonal range in mid-ground. Shot on Kodak Ektar 100, warm-neutral white balance, fine grain throughout.",
+"elements": [
+{
+"type": "obj",
+"bbox": [150, 200, 650, 900],
+"desc": "Woman standing under outdoor shower, her viewed from the side, profile view of her nude body, side of breast and ass visible, occupying central foreground. Nude form with thin waist, and full rounded posterior. her arms are raised hands rubbing soap in to her hair. Soap bubbles and foam sliding down the side of her breast, the backside and hips and ass. Water cascading down in vertical streams, catching directional light from above. Skin rendered with fine detail, water droplets and bubbles adding texture."
+},
+{
+"type": "obj",
+"bbox": [0, 0, 1000, 200],
+"desc": "Dense tropical foliage canopy overhead forming natural roof. Palm fronds and broad leaves creating dappled light pattern on subject below. Green tones range from deep forest green to lighter sunlit highlights. Soft atmospheric haze visible through gaps in leaves."
+},
+{
+"type": "obj",
+"bbox": [0, 200, 1000, 600],
+"desc": "Outdoor shower structure and water flow. Metal pipes and frame visible on left side, simple construction. Water streaming down in multiple streams, catching light from above. Soap bubbles floating mid-air and on skin surface, rendered as small circular highlights with soft edges. Moderate depth-of-field softness on water elements."
+},
+{
+"type": "obj",
+"bbox": [200, 600, 800, 1000],
+"desc": "Weathered stone or concrete shower floor beneath subject. Light gray surface with water runoff patterns and scattered soap bubbles. Wet texture rendered with Ektar 100's characteristic saturation. Leading lines from floor toward background foliage."
+},
+{
+"type": "obj",
+"bbox": [300, 250, 800, 550],
+"desc": "Mid-ground tropical vegetation behind subject. Broad-leafed plants and smaller shrubs creating layered green background. Soft bokeh quality in depth of field, individual leaves distinguishable but not sharp. Warm ambient light catching leaf edges."
+},
+{
+"type": "obj",
+"bbox": [0, 550, 300, 1000],
+"desc": "Left side edge of shower structure and wall. Weathered concrete or stone material with water stains and mineral deposits. Simple rectangular form framing left side of composition. Moderate focus fall-off into background."
+}
+]
+}
+}
