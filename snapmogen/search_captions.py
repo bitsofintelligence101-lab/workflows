@@ -108,17 +108,18 @@ def main():
             for cand in (cid + ".bvh", base + ".bvh"):
                 path = os.path.join(args.bvh_dir, cand)
                 if os.path.exists(path):
-                    cmd = f"python snapmogen_to_openpose.py \"{path}\" -o poses --ltx-frames --mp4"
+                    cmd = f"python snapmogen2openpose.py \"{path}\" -o poses --ltx-frames --mp4"
                     if cand == base + ".bvh" and start is not None:
                         cmd += f" --start {start} --end {end}"
                     print(f"    {cmd}")
                     break
             else:
-                print(f"    [BVH not found: {base}.bvh in {args.bvh_dir}]")
+                print(f"    [BVH file: {base}.bvh in {args.bvh_dir}] use with snapmogen2openpose.py")
         elif start is not None:
             print(f"    file: {base}.bvh   frames {start}-{end}  "
                   f"(use --start {start} --end {end})")
-        print(f"    {cap[:220]}{'...' if len(cap) > 220 else ''}\n")
+        #caption snippet
+        print(f"    {cap[:320]}{'...' if len(cap) > 320 else ''}\n")
 
 
 if __name__ == "__main__":
