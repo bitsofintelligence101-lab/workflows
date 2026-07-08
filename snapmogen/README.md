@@ -69,6 +69,66 @@ Key flags:
 - Motions face +Z at start after SnapMoGen's canonicalization; use `--yaw`
   to orbit the camera if a clip starts facing an odd direction.
 
+## CAMERA CONTROL
+- snapmogen2openpose_camControl.py is an expanded version of the script. Because AI is so fast, rather than proper modular code I just had it make an updated version with cam control. Realistically this would be the ONLY script to use, I may depricate the other at some point but left snapmogen2openpose.py for now.
+
+NEW FEATURES IN CAMERA CONTROL SCRIPT
+
+Shot framing
+
+
+--close-shot   head & shoulders
+--medium-shot  head / shoulders / waist / hips
+--wide-shot    full body (default)
+
+
+Close and medium shots automatically track the subject (smoothed, ~0.5 s
+window — the camera follows the run without chasing every footstep bounce),
+and shot size stays constant for the whole clip. Body parts outside the
+framing region (e.g. legs in a close-up) simply extend off-canvas, exactly
+like a real DWPose detection of a cropped subject.
+
+Camera motions (combinable)
+
+
+--dolly-in / --dolly-out      push toward / pull away from subject
+--dolly-tracking                camera travels with the subject (auto on
+close/medium; adds tracking to wide)
+--pan-left / --pan-right      rotate horizontally in place
+--tilt-up / --tilt-down       rotate vertically in place
+--roll-cw / --roll-ccw        roll the image around the view axis
+--truck-left / --truck-right  slide the camera sideways
+--pedestal-up / --pedestal-down  raise / lower the camera
+--motion-scale S                intensity of all motions (default 1.0;
+0.5 = subtle, 2.0 = aggressive)
+
+
+Motions ease in/out (smoothstep) across the clip and stack freely:
+--close-shot --pan-left --dolly-in --motion-scale 0.7 is a slow panning
+push-in on the head and shoulders.
+
+Other key flags:
+
+
+--width/--height  output size (keep divisible by 32 for LTX; default 768x1152)
+--fps             resample from source 30 fps (LTX likes 24/25)
+--ltx-frames      trim frame count to 8n+1 (LTX-Video requirement)
+--yaw/--pitch/--fov  base camera angle (motions apply on top of it)
+--margin          frame fill fraction (0 = per-shot default)
+--json            also write OpenPose-format keypoint JSON per frame
+--mp4             also write a pose preview/control video
+--start/--end     trim in source frames (use the range from search_captions.py)
+
+### Camera Control Examples
+- waist-up shot of a full-body run, camera panning left
+python snapmogen_to_openpose.py run.bvh -o poses --medium-shot --pan-left --mp4
+
+- dramatic push-in on the face
+python snapmogen_to_openpose.py clip.bvh -o poses --close-shot --dolly-in
+
+- full body, camera travels with the runner and slides right
+python snapmogen_to_openpose.py run.bvh -o poses --wide-shot --dolly-tracking --truck-right
+
 # SnapMoGen Citation
 @misc{snapmogen2025,
       title={SnapMoGen: Human Motion Generation from Expressive Texts}, 
