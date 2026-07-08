@@ -68,3 +68,14 @@ Key flags:
   on image-left when facing camera).
 - Motions face +Z at start after SnapMoGen's canonicalization; use `--yaw`
   to orbit the camera if a clip starts facing an odd direction.
+
+# SnapMoGen Citation
+@misc{snapmogen2025,
+      title={SnapMoGen: Human Motion Generation from Expressive Texts}, 
+      author={Chuan Guo and Inwoo Hwang and Jian Wang and Bing Zhou},
+      year={2025},
+      eprint={2507.09122},
+      archivePrefix={arXiv},
+      primaryClass={cs.CV},
+      url={https://arxiv.org/abs/2507.09122}, 
+}
