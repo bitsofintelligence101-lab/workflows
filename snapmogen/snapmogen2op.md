@@ -3,6 +3,7 @@
 Converts [SnapMoGen](https://github.com/snap-research/SnapMoGen) mocap BVH clips into DWPose-style pose control sequences
 (PNG frames, optional MP4 and OpenPose JSON) that drive LTX-Video / LTX 2
 pose conditioning or any OpenPose ControlNet in ComfyUI.
+SnapMoGen2OpenPose.py needs numpy and opencv-python;
 
 ## Install
 ```
