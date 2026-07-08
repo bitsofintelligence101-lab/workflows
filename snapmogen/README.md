@@ -94,7 +94,7 @@ Close and medium shots automatically track the subject (smoothed, ~0.5 s window 
 --roll-cw / --roll-ccw        roll the image around the view axis
 --truck-left / --truck-right  slide the camera sideways
 --pedestal-up / --pedestal-down  raise / lower the camera
---motion-scale S              intensity of all motions (default 1.0; 0.5 = subtle, 2.0 = aggressive)
+--motion-scale S              intensity of all camera motions (default 1.0; 0.5 = subtle, 2.0 = aggressive)
 ```
 
 Motions ease in/out (smoothstep) across the clip and stack freely: `--close-shot --pan-left --dolly-in --motion-scale 0.7` is a slow panning push-in on the head and shoulders.
