@@ -1,0 +1,337 @@
+# V2V Continuation Prompt Expansion Guide
+
+Expand a short brief plus reference assets into one finished model prompt. Output the prompt only — no preamble, no commentary, no code fences.
+
+---
+
+## 1. Inputs
+
+| Slot | Asset | Label | Owns |
+| --- | --- | --- | --- |
+| 1 | Previous clip, ~20–60 frames | `<Video 1>` | Motion, camera state, framing, lighting at the seam |
+| 2 | Subject sheet, three views | `<Picture 1>` | Identity: face, hair, wardrobe, accessories |
+| 3 | Empty environment plate | `<Picture 2>` | Scene: architecture, palette, light, furniture |
+| 4 | Optional assets (0–3), each with user context | `<Picture 3>`+ | Per §6 |
+| — | Brief | — | Action, dialogue, camera intent |
+
+Assign each asset one job and state the division in `subject_definitions`:
+
+- `<Video 1>` — where the subject is, how it moves, how it is lit, how it is framed, **at the seam only**.
+- `<Picture 1>` — what the subject looks like, **for the whole clip**.
+- `<Picture 2>` — the room, **not the camera**.
+
+---
+
+## 2. Pipeline
+
+1. Read the last frames of `<Video 1>`: what is in motion, which direction, what camera drift, what light.
+2. Split the brief into ordered beats; assign each a duration; sum.
+3. Label every asset; route optional assets by §6.
+4. Write `subject_definitions` — one line per asset, role plus features to hold.
+5. Write the body — seam, beats in order, landing.
+6. Derive the soundscape from the body's actions.
+7. Set `non_diegetic_music`; `N/A` unless the brief calls for score.
+8. Run §11.
+
+**Beat durations:** short spoken line 1.5–2s · body turn 1–1.5s · walking traverse 3–4s · head turn plus gesture 1.5–2s · held look 0.5–1s · object interaction 1.5–2.5s · subject entering frame 1–2s.
+
+Sum, round up to two decimals, state as duration. Above ~10s, cut the least load-bearing beat rather than compressing all of them.
+
+---
+
+## 3. The seam
+
+Choose pose or velocity framing at frame 0.
+
+**Velocity framing — unbroken continuation.** Use whenever the target should read as the same take.
+
+```text
+The shot resumes with the motion already underway: <Subject 1>'s weight has begun shifting
+onto the left foot and the shoulders have started rotating away from camera, and the rotation
+continues through the seam without pausing or resetting.
+```
+
+**Pose framing — deliberate reset.** Use to land a pause, mark a rhythmic break, or bring the subject to rest.
+
+```text
+<Subject 1> stands facing the camera, weight settled and still, then turns toward the sofa.
+```
+
+Then:
+
+- Name the limb, direction, and phase: "already begun," "mid-," "continues through."
+- Continue or decelerate the camera's inherited drift: *the existing drift decelerates and settles to eye level*.
+- When the source ends at rest, call the stillness *held*.
+- Write `resumes from the final frame of <Video 1> with no cut` in the body and in the `<Video 1>` definition.
+- Open the soundscape with the room tone carrying over unbroken.
+- Write forward time only. Express anything from before frame 0 as a present-tense visible state.
+
+---
+
+## 4. Identity
+
+In `subject_definitions`, list hair or headwear by length, texture, and color including roots and tips; accessories piece by piece; each garment with its fabric; makeup, markings, or distinguishing features. Restate the same categories as unchanged in the body's closing sentence.
+
+**One label per subject.** Every picture of the same subject stays inside a single `<Subject N>` definition. Open with the identity sheet and the identity list, then append one short clause per additional picture naming what that picture contributes. Never create a second `<Subject N>` for a pose, an alternate view, or a wardrobe variant of a subject already defined.
+
+```text
+<Subject 1> is the man defined by <Picture 1>, shown there in front, three-quarter profile, and full-body views: [identity list]. <Picture 3> in the specific seated position and camera angle intended for the target video. <Picture 4> is the rear view of the same subject.
+```
+
+- Split position from identity: `<Subject 1>'s identity follows <Picture 1>; its position and lighting follow <Video 1>.`
+- Name the target room's light in the style line, not the sheet's backdrop.
+
+---
+
+## 5. Environment plate
+
+Weak reference: material, palette, furniture, light quality — not composition.
+
+- Free the camera explicitly: *the room follows `<Picture 2>` in layout and light; camera position and framing follow the action and are not constrained to the plate's viewpoint.*
+- Keep the subject present in the room; the plate is a clean plate.
+- Name only fixtures the action touches or passes.
+- Carry the plate's light quality into the style line and the closing consistency sentence.
+
+---
+
+## 6. Optional assets
+
+The user supplies a note with each optional image saying what it is. Read the note first; it determines routing. Route by type:
+
+### 6.1 Object or prop that appears in the scene
+
+Own definition. Cite at the beat where it enters the action, not in the opening sentence.
+
+```text
+<Subject 3> is the object from <Picture 3>: a matte black cylindrical speaker with a woven grey face and a brushed metal base, resting on the low table.
+```
+
+Place it in the room in its definition. If the subject handles it, write the contact: reach, grip, lift, set down.
+
+### 6.2 Specific pose the subject reaches
+
+No new label. Append a pose clause to the existing `<Subject 1>` definition, after the identity list:
+
+```text
+<Subject 1> is the woman defined by <Picture 1>, shown there in front, three-quarter profile, and full-body views: [identity list]. <Picture 3> in the specific seated position and camera angle intended for the target video.
+```
+
+Name what the pose picture fixes — body position, limb placement, and camera angle if it implies one. Then cite it again at the arrival beat in the body:
+
+```text
+…settles onto the sofa edge into the position established by <Picture 3>, torso angled to camera left and one forearm across the knee.
+```
+
+Place the beat where the brief implies it. If the brief ends there, make it the landing and hold it. When the pose picture also sets the framing, match the camera to it on approach rather than cutting to it.
+
+### 6.3 Additional subject who enters
+
+Own definition with full identity detail. Then in the body:
+
+- Give an entry beat: frame edge, direction, distance. *`<Subject 3>` enters from the left edge of frame and stops two paces short.*
+- State whether the camera reframes to include them or holds.
+- Assign speaker IDs in order of first vocalization across the whole clip.
+- State the spatial relationship between subjects — facing, alongside, behind, and how far apart.
+- Keep `<Subject 1>` reacting; name where the existing subject looks when the new one arrives.
+
+### 6.4 Additional view or variant of the existing subject
+
+Append a clause to `<Subject 1>`'s definition naming what the view adds — rear, profile, detail, or an alternate wardrobe:
+
+```text
+<Subject 1> is the woman defined by <Picture 1> ... [identity list]. <Picture 3> is the rear view of the same subject.
+```
+
+Cite the added view in the body at the moment it becomes visible — *bringing the rear appearance established in `<Picture 3>` into frame*. For a wardrobe variant, state when the change occurs; if there is no change, treat it as identity reinforcement and cite it once or not at all.
+
+### 6.5 Style, lighting, or texture reference
+
+Weak reference. Cite once in the style line or the lighting clause. Do not let it override `<Picture 2>` on layout or `<Picture 1>` on identity.
+
+### 6.6 When the note is missing or unclear
+
+Infer from image content, route to the closest case above, define in one line, and cite once at the most plausible beat. Keep the citation minimal.
+
+Define only what you cite. If an optional asset has no place in the brief's beats, omit it.
+
+---
+
+## 7. Output contract
+
+```text
+How the reference video and pictures align with the target video — <Video 1> supplies the frames immediately preceding the target video; the target video resumes from its final frame at the 0.00-second mark with no cut. Target duration S.SS seconds.
+
+summary:
+[video continuation + reference generation] ...
+
+subject_definitions:
+<Video 1> is ...
+<Subject 1> is ...
+<Subject 2> is ...
+
+integrated_multimodal_description: [Shot 1] ...
+
+overall_soundscape: ...
+
+non_diegetic_music: ...
+```
+
+- Alignment line first; one blank line between blocks.
+- `S.SS` — two decimals.
+- Angle-bracket reference labels; square-bracket shot markers.
+- Single shot unless the brief asks for a cut. If it does: `MM:SS.mmm`, strictly increasing, inside the duration.
+- Always include `non_diegetic_music`.
+- Cite source pictures inside subject definitions rather than as standalone lines.
+
+---
+
+## 8. Camera
+
+Write motion as natural English inside the sentence.
+
+`Zoom In/Out` focal length, body still · `Push In / Pull Out` body moves · `Pan Left/Right` pivot in place · `Truck Left/Right` translate · `Tilt Up/Down` pivot vertically · `Pedestal Up/Down` whole camera rises/falls · `Arc Shot` · `Tracking Shot` · `Static Shot` · `Shake Slightly/Strongly` · `POV` · `Roll Clockwise/Counterclockwise`
+
+Modifiers: `with small amplitude`, `with large amplitude`, `at slow speed`, `at fast speed`. Omit medium amplitude and normal speed.
+
+- One dominant intention per shot; let subject movement supply the rest. To layer, put a slow `Push In` on a `Tracking Shot`.
+- Express emphasis as framing and tracking distance: state the framing size, state whether the camera is behind, beside, or ahead, hold the distance constant.
+- A follow move is a `Tracking Shot` at a stated distance.
+
+---
+
+## 9. Dialogue and sound
+
+```text
+<Subject 1> (S1) says in a soft, low British accent, <d>[English] Follow me.</d>
+```
+
+- Speaker IDs in order of first vocalization, bound to the subject on first use. Groups speaking together take `(S1,S2)`.
+- Only the language tag and the words go inside `<d>`. Keep the user's wording verbatim; capitalize and punctuate.
+- After the `<d>` block, resolve the mouth: *closes the lips*.
+- ~2.5–3 words per second.
+- Voiceover: `says in an off-screen voiceover`, then state the on-screen lips stay closed.
+
+**`overall_soundscape`:** 1–4 sentences. Open with the room tone continuing unbroken. Mirror the body's actions using the named floor and fabric materials. Ambience, action sounds, non-verbal human sounds only.
+
+**`non_diegetic_music`:** `N/A` by default. If scored: instrumentation, tempo, rhythm, dynamics.
+
+---
+
+## 10. Landing
+
+- End on a held state — settled look, completed gesture, steady framing — when the chain pauses or the clip is final.
+- End mid-motion when the next clip picks up the same stride.
+- Add a deceleration beat before a held landing: *two steps short of the sofa the pace slows*.
+- Close with the consistency sentence: hair, accessories, wardrobe, lighting, room layout.
+- Restate the full identity block in every generation of a chain.
+
+---
+
+## 11. Checklist
+
+1. Alignment line first, `S.SS` two decimals, blank line between blocks.
+2. Seam framing chosen deliberately — velocity for continuity, pose for a reset.
+3. `no cut` in the body and the `<Video 1>` definition.
+4. Camera's inherited drift continued, decelerated, or planted on purpose.
+5. Forward time only.
+6. Every asset labeled, defined, and cited; every definition used in the body.
+7. Reference roles split — motion/light vs. identity vs. scene.
+8. Style line names the target environment's light.
+9. Camera freed from the plate's viewpoint, stated.
+10. Optional assets routed per §6 and placed at the correct beat.
+10a. All pictures of one subject chained inside a single `<Subject N>` definition — no second label for a pose, view, or variant.
+11. Every brief beat present, in order, with a physical verb chain.
+12. Scope matches the brief — detail inside beats, not new beats.
+13. One camera intention, closed vocabulary, defaults omitted.
+14. Emphasis expressed as framing and distance.
+15. Dialogue verbatim, punctuated, fits the clock; mouth resolved.
+16. Speaker IDs ordered by first vocalization across all subjects.
+17. Duration matches the summed beats.
+18. Single shot unless a cut was requested.
+19. Landing matches the chain intent.
+20. Closing consistency sentence lists hair, accessories, wardrobe, lighting, layout.
+21. Soundscape opens with continuing room tone and mirrors the body.
+22. `non_diegetic_music` present.
+23. Output is the prompt and nothing else.
+
+---
+
+## 12. Controls
+
+**Seam framing.** Pose → held beat, arrival at rest, rhythmic break. Velocity → same-take continuity.
+
+**`Static Shot` against inherited drift.** Plants the frame while the subject keeps moving; use to slow a scene or juxtapose stillness against action. Continue or decelerate the move instead for a fluid handoff.
+
+**Owning reference.** Whichever asset you name for an attribute wins it. Name `<Video 1>` for position to continue; name `<Picture 1>` for position to re-stage from the sheet's neutral pose.
+
+**Style line.** Sets the target environment. Name the room's light to place the subject in the scene; name a seamless white backdrop for a studio look.
+
+**Label count.** One `<Subject N>` per distinct entity. Chaining pictures inside one definition binds them to the same identity; a separate label creates a separate entity and can produce a duplicate in frame.
+
+**Definition budget.** Each defined and cited label pulls the generation toward that asset. Spend on what appears; put the remainder into motion detail.
+
+**Camera intentions.** One dominant move plus subject motion reads cleanly. Two compose when layered as `Push In` on `Tracking Shot`.
+
+**Framing and distance.** The emphasis lever. Tighten the framing size and hold the tracking distance.
+
+**Repetition.** One statement per attribute, plus the closing consistency sentence to suppress drift.
+
+**Scope.** Detail goes inside the brief's beats. New beats change the edit.
+
+**Landing.** Held → clean seed. Mid-motion → live momentum for the next clip.
+
+---
+
+## 13. Worked example
+
+**Inputs:** `<Video 1>` 22 frames, subject standing facing camera in a modern apartment, warm sunset light, slight camera drift. Subject sheet, three views. Empty living room plate — dark-blue sectional, city windows at golden hour.
+
+**Brief:** *"She says 'follow me' then turns around and walks towards the couch. camera follows her, she ends looking back over her shoulder at camera brushing hair out of face"*
+
+**Beats:** line 2.0 · turn 1.5 · walk 3.5 · over-shoulder and brush 1.5 · hold 0.5 → **8.00s**
+
+```text
+How the reference video and pictures align with the target video — <Video 1> supplies the frames immediately preceding the target video; the target video resumes from its final frame at the 0.00-second mark with no cut. Target duration 8.00 seconds.
+
+summary:
+[video continuation + reference generation] The target video continues <Video 1> without interruption, carrying an in-progress turn through into a walk across the apartment toward the blue sectional, ending on a held look back over the shoulder.
+
+subject_definitions:
+<Video 1> establishes the inherited motion, camera position, framing, and warm interior lighting at the seam; the target video continues that trajectory and light without a cut.
+<Subject 1> is the woman defined by <Picture 1>, shown there in front, three-quarter profile, and full-body views: shoulder-length wavy platinum-blonde hair with dark roots and pale aqua tips, gold hoop earrings, a black velvet choker with a gold O-ring, a gold curb-chain necklace, deep-red lipstick, an unbuttoned long-sleeved black cotton shirt, and a black satin midi skirt. Her identity follows <Picture 1>; her position and lighting follow <Video 1>.
+<Subject 2> is the apartment interior from <Picture 2>: a concrete-ceilinged living room lit by warm cove light and low sunset glare through full-height windows, with sheer curtains, wide-plank oak floors, a pale area rug, and a long dark-blue sectional facing the windows. The room follows <Picture 2> in layout, materials, and light; camera position and framing follow the action and are not constrained to the plate's viewpoint.
+
+integrated_multimodal_description: [Shot 1] Live-action, cinematic, warm golden-hour interior light. The shot resumes from the final frame of <Video 1> with the motion already underway: <Subject 1>'s weight has begun shifting onto her left foot and her shoulders have started rotating away from the camera, and the rotation continues through the seam without pausing or resetting. As she turns, <Subject 1> (S1) says in a soft, low British accent, <d>[English] Follow me.</d> She closes her lips and lets her shoulders complete the rotation until her back faces the camera. The camera's existing drift decelerates and settles to eye level, then holds a tracking shot behind her at a constant distance as she walks across the oak floor toward the sectional, her stride even and her weight rolling from hip to hip. The camera pushes in with small amplitude at slow speed, keeping her centered in a medium-full rear framing as the sofa grows larger ahead of her and the sunset glow spreads across the windows. Two steps short of the sofa her pace slows, she turns her head back over her right shoulder toward the camera, and she lifts her right hand to brush a strand of hair behind her ear, holding the look steadily as the shot ends. Her hair color, jewelry, shirt, and satin skirt remain unchanged, and the golden-hour lighting and room layout stay consistent throughout.
+
+overall_soundscape: The low room tone from the preceding shot continues unbroken beneath soft footsteps landing on wood flooring. Satin rustles with each stride as her sleeves brush against her sides, and faint muffled traffic carries in from beyond the windows.
+
+non_diegetic_music: N/A
+```
+
+---
+
+## 14. Worked example — with an optional pose picture
+
+**Inputs:** `<Video 1>` 40 frames, subject standing mid-room. Subject sheet `<Picture 1>`, three views. Empty room plate `<Picture 2>`. Optional `<Picture 3>`, user note: *"pose she ends in, seated on the sofa arm, shot from slightly below."*
+
+**Brief:** *"she walks to the sofa and sits on the arm of it, looks at camera"*
+
+**Beats:** walk 3.0 · turn and lower 2.0 · settle into pose 1.5 · held look 0.5 → **7.00s**
+
+```text
+How the reference video and pictures align with the target video — <Video 1> supplies the frames immediately preceding the target video; the target video resumes from its final frame at the 0.00-second mark with no cut. Target duration 7.00 seconds.
+
+summary:
+[video continuation + reference generation] The target video continues <Video 1> without interruption as <Subject 1> crosses the room to the sofa and settles onto its arm, ending on a held look to camera.
+
+subject_definitions:
+<Video 1> establishes the inherited motion, camera position, framing, and warm interior lighting at the seam; the target video continues that trajectory and light without a cut.
+<Subject 1> is the woman defined by <Picture 1>, shown there in front, three-quarter profile, and full-body views: shoulder-length wavy platinum-blonde hair with dark roots and pale aqua tips, gold hoop earrings, a black velvet choker with a gold O-ring, a gold curb-chain necklace, deep-red lipstick, an unbuttoned long-sleeved black cotton shirt, and a black satin midi skirt. <Picture 3> in the specific seated-on-the-sofa-arm position and slightly low camera angle intended for the target video. Her identity follows <Picture 1>; her position and lighting follow <Video 1>.
+<Subject 2> is the apartment interior from <Picture 2>: a concrete-ceilinged living room lit by warm cove light and low sunset glare through full-height windows, with sheer curtains, wide-plank oak floors, a pale area rug, and a long dark-blue sectional facing the windows. The room follows <Picture 2> in layout, materials, and light; camera position and framing follow the action and are not constrained to the plate's viewpoint.
+
+integrated_multimodal_description: [Shot 1] Live-action, cinematic, warm golden-hour interior light. The shot resumes from the final frame of <Video 1> with the motion already underway: <Subject 1>'s weight has begun rolling forward onto her right foot and the stride continues through the seam without pausing or resetting. She walks across the oak floor toward the sectional, her stride even and her satin skirt swinging with each step. The camera holds a tracking shot beside her at a constant distance, then pedestals down with small amplitude at slow speed to a slightly low angle as she reaches the sofa. She turns to face the camera, lowers her weight onto the padded arm of the sectional, and settles into the position and camera angle established by <Picture 3>. Her hands come to rest and she holds a steady look into the lens as the shot ends. Her hair color, jewelry, shirt, and satin skirt remain unchanged, and the golden-hour lighting and room layout stay consistent throughout.
+
+overall_soundscape: The low room tone from the preceding shot continues unbroken beneath soft footsteps landing on wood flooring. Satin rustles with each stride, followed by the muted compression of upholstery as she settles, and faint muffled traffic carries in from beyond the windows.
+
+non_diegetic_music: N/A
+```
