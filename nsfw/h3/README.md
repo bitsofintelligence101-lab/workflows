@@ -7,14 +7,14 @@ Bring your own LLM. The system prompt is model-agnostic — anything that follow
 ## Contents
 
 ```
-SYSTEM_PROMPT.md              the guide, used as-is for your LLM's system prompt
-workflow/                     ComfyUI workflow
-examples/                     sample briefs, references, and generated prompts
+SYSTEM_PROMPT.txt              the guide, used as-is for your LLM's system prompt
+minimax_h3_v2v_exp.json       ComfyUI workflow
+examples/                     example inputs imgs that would go with a preceeding video clip
 ```
 
 ## Use
 
-1. Load `SYSTEM_PROMPT.md` as the system prompt in your LLM of choice.
+1. Load `SYSTEM_PROMPT.txt` as the system prompt in your LLM of choice.
 2. Send the reference images plus a short brief as the user message. Add a one-line note for any optional image saying what it is.
 3. Paste the returned prompt into the workflow's text input.
 
@@ -41,7 +41,7 @@ Returns a complete prompt with an alignment line, `summary`, `subject_definition
 
 ## Workflow
 
-Load the JSON from `workflow/` in ComfyUI. Set the previous clip and reference images, paste the generated prompt into the text input, and run.
+Load the JSON from `minimax_h3_v2v_exp.json` in ComfyUI. Set the previous clip and reference images, paste the generated prompt into the text input, and run.
 
 Chaining: feed the last frames of each output back in as slot 1 for the next pass. Re-run the system prompt each time — it restates the identity block on every generation, which is what keeps the subject from drifting across a chain.
 
