@@ -1,0 +1,407 @@
+{
+  "5": {
+    "inputs": {
+      "width": [
+        "92",
+        0
+      ],
+      "height": [
+        "93",
+        0
+      ],
+      "batch_size": 1
+    },
+    "class_type": "EmptyLatentImage",
+    "_meta": {
+      "title": "Empty Latent Image"
+    }
+  },
+  "7": {
+    "inputs": {
+      "text": "text, watermark, realistic photo, 3d render, gradient background, cluttered, busy, low quality, blurry, sketch, hand drawn, cartoon, animation",
+      "clip": [
+        "20",
+        1
+      ]
+    },
+    "class_type": "CLIPTextEncode",
+    "_meta": {
+      "title": "CLIP Text Encode (Prompt)"
+    }
+  },
+  "8": {
+    "inputs": {
+      "samples": [
+        "13",
+        0
+      ],
+      "vae": [
+        "20",
+        2
+      ]
+    },
+    "class_type": "VAEDecode",
+    "_meta": {
+      "title": "VAE Decode"
+    }
+  },
+  "13": {
+    "inputs": {
+      "add_noise": true,
+      "noise_seed": 178281063445680,
+      "cfg": 1,
+      "model": [
+        "122",
+        0
+      ],
+      "positive": [
+        "58",
+        0
+      ],
+      "negative": [
+        "7",
+        0
+      ],
+      "sampler": [
+        "14",
+        0
+      ],
+      "sigmas": [
+        "30",
+        0
+      ],
+      "latent_image": [
+        "5",
+        0
+      ]
+    },
+    "class_type": "SamplerCustom",
+    "_meta": {
+      "title": "SamplerCustom"
+    }
+  },
+  "14": {
+    "inputs": {
+      "sampler_name": "lcm"
+    },
+    "class_type": "KSamplerSelect",
+    "_meta": {
+      "title": "KSamplerSelect"
+    }
+  },
+  "20": {
+    "inputs": {
+      "ckpt_name": "flesh4fantasy_v10.safetensors"
+    },
+    "class_type": "CheckpointLoaderSimple",
+    "_meta": {
+      "title": "Load Checkpoint"
+    }
+  },
+  "30": {
+    "inputs": {
+      "steps": 10,
+      "sigma_max": 14.61,
+      "sigma_min": 0.03,
+      "rho": 4.5
+    },
+    "class_type": "KarrasScheduler",
+    "_meta": {
+      "title": "KarrasScheduler"
+    }
+  },
+  "58": {
+    "inputs": {
+      "width": [
+        "92",
+        0
+      ],
+      "height": [
+        "93",
+        0
+      ],
+      "crop_w": 0,
+      "crop_h": 0,
+      "target_width": [
+        "92",
+        0
+      ],
+      "target_height": [
+        "93",
+        0
+      ],
+      "text_g": "A beautiful voluptuous  woman, sharp face framing jet black hair slicked back with a center part, deep brown eyes, smoky charcoal eyeshadow, straight nose with a thin silver septum ring, chunky silver chain choker, drop earrings with small gemstones, deep plum lipstick, bare shoulders. Focus on the texture of her skin, subtle pores, and a few loose strands framing her cheekbone, lips closed and composed. Cool studio lighting, soft blue-white rim light on the hair. Shot on 85mm lens, f/1.8, ultra-sharp focus on eyes and jawline, soft bokeh charcoal grey background, photorealistic, 8k resolution, skin texture visible, masterpiece.",
+      "text_l": "A beautiful voluptuous  woman, sharp face framing jet black hair slicked back with a center part, deep brown eyes, smoky charcoal eyeshadow, straight nose with a thin silver septum ring, chunky silver chain choker, drop earrings with small gemstones, deep plum lipstick, bare shoulders. Focus on the texture of her skin, subtle pores, and a few loose strands framing her cheekbone, lips closed and composed. Cool studio lighting, soft blue-white rim light on the hair. Shot on 85mm lens, f/1.8, ultra-sharp focus on eyes and jawline, soft bokeh charcoal grey background, photorealistic, 8k resolution, skin texture visible, masterpiece.",
+      "clip": [
+        "20",
+        1
+      ]
+    },
+    "class_type": "CLIPTextEncodeSDXL",
+    "_meta": {
+      "title": "CLIP Text Encode (SDXL)"
+    }
+  },
+  "91": {
+    "inputs": {
+      "filename_prefix": "f4f/image_1472x1104",
+      "images": [
+        "107",
+        0
+      ]
+    },
+    "class_type": "SaveImage",
+    "_meta": {
+      "title": "Save Image (original)"
+    }
+  },
+  "92": {
+    "inputs": {
+      "value": 1280
+    },
+    "class_type": "PrimitiveInt",
+    "_meta": {
+      "title": "Width"
+    }
+  },
+  "93": {
+    "inputs": {
+      "value": 960
+    },
+    "class_type": "PrimitiveInt",
+    "_meta": {
+      "title": "Height"
+    }
+  },
+  "95": {
+    "inputs": {
+      "width": [
+        "143",
+        0
+      ],
+      "height": [
+        "144",
+        0
+      ],
+      "upscale_method": "lanczos",
+      "keep_proportion": "resize",
+      "pad_color": "0, 0, 0",
+      "crop_position": "center",
+      "divisible_by": 1,
+      "device": "cpu",
+      "image": [
+        "142",
+        0
+      ]
+    },
+    "class_type": "ImageResizeKJv2",
+    "_meta": {
+      "title": "Resize Image v2"
+    }
+  },
+  "104": {
+    "inputs": {
+      "vae_name": "ZIT\\ae.safetensors"
+    },
+    "class_type": "VAELoader",
+    "_meta": {
+      "title": "Load VAE"
+    }
+  },
+  "105": {
+    "inputs": {
+      "pixels": [
+        "95",
+        0
+      ],
+      "vae": [
+        "104",
+        0
+      ]
+    },
+    "class_type": "VAEEncode",
+    "_meta": {
+      "title": "VAE Encode"
+    }
+  },
+  "106": {
+    "inputs": {
+      "seed": 597647073169290,
+      "steps": 6,
+      "cfg": 1,
+      "sampler_name": "euler",
+      "scheduler": "simple",
+      "denoise": 0.12,
+      "model": [
+        "110",
+        0
+      ],
+      "positive": [
+        "109",
+        0
+      ],
+      "negative": [
+        "108",
+        0
+      ],
+      "latent_image": [
+        "105",
+        0
+      ]
+    },
+    "class_type": "KSampler",
+    "_meta": {
+      "title": "KSampler"
+    }
+  },
+  "107": {
+    "inputs": {
+      "samples": [
+        "106",
+        0
+      ],
+      "vae": [
+        "104",
+        0
+      ]
+    },
+    "class_type": "VAEDecode",
+    "_meta": {
+      "title": "VAE Decode"
+    }
+  },
+  "108": {
+    "inputs": {
+      "conditioning": [
+        "109",
+        0
+      ]
+    },
+    "class_type": "ConditioningZeroOut",
+    "_meta": {
+      "title": "NegConditioningZeroOut"
+    }
+  },
+  "109": {
+    "inputs": {
+      "text": "Shot on Kodak Portra 400 with warm color grading. gold nose ring\n",
+      "clip": [
+        "111",
+        0
+      ]
+    },
+    "class_type": "CLIPTextEncode",
+    "_meta": {
+      "title": "CLIP Text Encode (Prompt)"
+    }
+  },
+  "110": {
+    "inputs": {
+      "shift": 5,
+      "model": [
+        "125",
+        0
+      ]
+    },
+    "class_type": "ModelSamplingAuraFlow",
+    "_meta": {
+      "title": "ModelSamplingAuraFlow"
+    }
+  },
+  "111": {
+    "inputs": {
+      "clip_name": "ZIT\\qwen_3_4b_fp8_mixed.safetensors",
+      "type": "lumina2",
+      "device": "default"
+    },
+    "class_type": "CLIPLoader",
+    "_meta": {
+      "title": "Load CLIP"
+    }
+  },
+  "112": {
+    "inputs": {
+      "unet_name": "ZIT\\z_image_turbo_bf16.safetensors",
+      "weight_dtype": "default"
+    },
+    "class_type": "UNETLoader",
+    "_meta": {
+      "title": "Load Diffusion Model"
+    }
+  },
+  "121": {
+    "inputs": {
+      "lora_name": "SDXL\\Disney_princess_xl_v2.safetensors",
+      "strength_model": 0,
+      "model": [
+        "20",
+        0
+      ]
+    },
+    "class_type": "LoraLoaderModelOnly",
+    "_meta": {
+      "title": "Load LoRA"
+    }
+  },
+  "122": {
+    "inputs": {
+      "lora_name": "SDXL\\Skinny_small_tits_XL.safetensors",
+      "strength_model": 0,
+      "model": [
+        "121",
+        0
+      ]
+    },
+    "class_type": "LoraLoaderModelOnly",
+    "_meta": {
+      "title": "Load LoRA"
+    }
+  },
+  "125": {
+    "inputs": {
+      "lora_name": "ZIT\\NSFW_master_ZIT_000017532.safetensors",
+      "strength_model": 0,
+      "model": [
+        "112",
+        0
+      ]
+    },
+    "class_type": "LoraLoaderModelOnly",
+    "_meta": {
+      "title": "Load LoRA"
+    }
+  },
+  "142": {
+    "inputs": {
+      "resize_type": "scale by multiplier",
+      "resize_type.scale": 2,
+      "quality": "ULTRA",
+      "images": [
+        "8",
+        0
+      ]
+    },
+    "class_type": "RTXVideoSuperResolution",
+    "_meta": {
+      "title": "RTX Video Super Resolution"
+    }
+  },
+  "143": {
+    "inputs": {
+      "value": 1472
+    },
+    "class_type": "PrimitiveInt",
+    "_meta": {
+      "title": "Width"
+    }
+  },
+  "144": {
+    "inputs": {
+      "value": 1104
+    },
+    "class_type": "PrimitiveInt",
+    "_meta": {
+      "title": "Height"
+    }
+  }
+}

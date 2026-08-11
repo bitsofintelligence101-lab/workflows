@@ -1,0 +1,2777 @@
+{
+  "41": {
+    "inputs": {
+      "image": "img_FaceSharp_00024_.png"
+    },
+    "class_type": "LoadImage",
+    "_meta": {
+      "title": "Load Image 1"
+    }
+  },
+  "409": {
+    "inputs": {
+      "samples": [
+        "485",
+        0
+      ],
+      "vae": [
+        "487",
+        0
+      ]
+    },
+    "class_type": "VAEDecode",
+    "_meta": {
+      "title": "VAE Decode"
+    }
+  },
+  "410": {
+    "inputs": {
+      "width": 1472,
+      "height": 1104,
+      "upscale_method": "lanczos",
+      "keep_proportion": "resize",
+      "pad_color": "0, 0, 0",
+      "crop_position": "center",
+      "divisible_by": 1,
+      "device": "cpu",
+      "image": [
+        "41",
+        0
+      ]
+    },
+    "class_type": "ImageResizeKJv2",
+    "_meta": {
+      "title": "Resize Image v2"
+    }
+  },
+  "412": {
+    "inputs": {
+      "prompt": "Keep the person's face, identity, pose, exactly the same. make the image have an all white background",
+      "clip": [
+        "489",
+        1
+      ],
+      "vae": [
+        "487",
+        0
+      ],
+      "image1": [
+        "410",
+        0
+      ]
+    },
+    "class_type": "TextEncodeQwenImageEditPlus",
+    "_meta": {
+      "title": "TextEncodeQwenImageEditPlus (Positive)"
+    }
+  },
+  "481": {
+    "inputs": {
+      "prompt": "CGI, 3d render, cartoon, illustration, painting, drawing, lowres, bad anatomy, bad hands, distorted, oversaturated, watermark, signature, plastic look, plastic skin, low resolution, distortion, warped text, duplicate faces, out of focus, soft image, birthmark, acne\n",
+      "clip": [
+        "489",
+        1
+      ],
+      "vae": [
+        "487",
+        0
+      ],
+      "image1": [
+        "410",
+        0
+      ]
+    },
+    "class_type": "TextEncodeQwenImageEditPlus",
+    "_meta": {
+      "title": "TextEncodeQwenImageEditPlus"
+    }
+  },
+  "482": {
+    "inputs": {
+      "strength": 1,
+      "pre_cfg": false,
+      "model": [
+        "492",
+        0
+      ]
+    },
+    "class_type": "CFGNorm",
+    "_meta": {
+      "title": "CFGNorm"
+    }
+  },
+  "483": {
+    "inputs": {
+      "reference_latents_method": "index_timestep_zero",
+      "conditioning": [
+        "412",
+        0
+      ]
+    },
+    "class_type": "FluxKontextMultiReferenceLatentMethod",
+    "_meta": {
+      "title": "Edit Model Reference Method"
+    }
+  },
+  "484": {
+    "inputs": {
+      "reference_latents_method": "index_timestep_zero",
+      "conditioning": [
+        "481",
+        0
+      ]
+    },
+    "class_type": "FluxKontextMultiReferenceLatentMethod",
+    "_meta": {
+      "title": "Edit Model Reference Method"
+    }
+  },
+  "485": {
+    "inputs": {
+      "seed": [
+        "505",
+        0
+      ],
+      "steps": 8,
+      "cfg": 1.5,
+      "sampler_name": "dpmpp_2m_sde_gpu",
+      "scheduler": "simple",
+      "denoise": 1,
+      "model": [
+        "1055",
+        0
+      ],
+      "positive": [
+        "483",
+        0
+      ],
+      "negative": [
+        "484",
+        0
+      ],
+      "latent_image": [
+        "486",
+        0
+      ]
+    },
+    "class_type": "KSampler",
+    "_meta": {
+      "title": "KSampler"
+    }
+  },
+  "486": {
+    "inputs": {
+      "pixels": [
+        "410",
+        0
+      ],
+      "vae": [
+        "487",
+        0
+      ]
+    },
+    "class_type": "VAEEncode",
+    "_meta": {
+      "title": "VAE Encode"
+    }
+  },
+  "487": {
+    "inputs": {
+      "vae_name": "qwen_image_vae.safetensors"
+    },
+    "class_type": "VAELoader",
+    "_meta": {
+      "title": "Load VAE"
+    }
+  },
+  "488": {
+    "inputs": {
+      "lora_name": "QwenEdit\\Qwen-Image-Lightning-8steps-V2.0-bf16.safetensors",
+      "strength_model": 1,
+      "model": [
+        "489",
+        0
+      ]
+    },
+    "class_type": "LoraLoaderModelOnly",
+    "_meta": {
+      "title": "Load LoRA"
+    }
+  },
+  "489": {
+    "inputs": {
+      "lora_name": "QwenEdit\\qwen-image-edit-2511-multiple-angles-lora.safetensors",
+      "strength_model": 1,
+      "strength_clip": 1,
+      "model": [
+        "490",
+        0
+      ],
+      "clip": [
+        "491",
+        0
+      ]
+    },
+    "class_type": "LoraLoader",
+    "_meta": {
+      "title": "Load LoRA (Model and CLIP)"
+    }
+  },
+  "490": {
+    "inputs": {
+      "unet_name": "qwen_image_edit_2511_bf16.safetensors",
+      "weight_dtype": "default"
+    },
+    "class_type": "UNETLoader",
+    "_meta": {
+      "title": "Load Diffusion Model"
+    }
+  },
+  "491": {
+    "inputs": {
+      "clip_name": "qwen_2.5_vl_7b_fp8_scaled.safetensors",
+      "type": "qwen_image",
+      "device": "default"
+    },
+    "class_type": "CLIPLoader",
+    "_meta": {
+      "title": "Load CLIP"
+    }
+  },
+  "492": {
+    "inputs": {
+      "shift": 3.1,
+      "model": [
+        "488",
+        0
+      ]
+    },
+    "class_type": "ModelSamplingAuraFlow",
+    "_meta": {
+      "title": "ModelSamplingAuraFlow"
+    }
+  },
+  "493": {
+    "inputs": {
+      "seed": [
+        "505",
+        0
+      ],
+      "steps": 8,
+      "cfg": 1.5,
+      "sampler_name": "dpmpp_2m_sde_gpu",
+      "scheduler": "simple",
+      "denoise": 1,
+      "model": [
+        "1055",
+        0
+      ],
+      "positive": [
+        "495",
+        0
+      ],
+      "negative": [
+        "494",
+        0
+      ],
+      "latent_image": [
+        "832",
+        0
+      ]
+    },
+    "class_type": "KSampler",
+    "_meta": {
+      "title": "KSampler"
+    }
+  },
+  "494": {
+    "inputs": {
+      "reference_latents_method": "index_timestep_zero",
+      "conditioning": [
+        "497",
+        0
+      ]
+    },
+    "class_type": "FluxKontextMultiReferenceLatentMethod",
+    "_meta": {
+      "title": "Edit Model Reference Method"
+    }
+  },
+  "495": {
+    "inputs": {
+      "reference_latents_method": "index_timestep_zero",
+      "conditioning": [
+        "496",
+        0
+      ]
+    },
+    "class_type": "FluxKontextMultiReferenceLatentMethod",
+    "_meta": {
+      "title": "Edit Model Reference Method"
+    }
+  },
+  "496": {
+    "inputs": {
+      "prompt": [
+        "509",
+        0
+      ],
+      "clip": [
+        "489",
+        1
+      ],
+      "vae": [
+        "487",
+        0
+      ],
+      "image1": [
+        "651",
+        0
+      ]
+    },
+    "class_type": "TextEncodeQwenImageEditPlus",
+    "_meta": {
+      "title": "TextEncodeQwenImageEditPlus (Positive)"
+    }
+  },
+  "497": {
+    "inputs": {
+      "prompt": "CGI, 3d render, cartoon, illustration, painting, drawing, lowres, bad anatomy, bad hands, distorted, oversaturated, watermark, signature, plastic look, plastic skin, low resolution, distortion, warped text, duplicate faces, out of focus, soft image, birthmark, acne\n",
+      "clip": [
+        "489",
+        1
+      ],
+      "vae": [
+        "487",
+        0
+      ],
+      "image1": [
+        "651",
+        0
+      ]
+    },
+    "class_type": "TextEncodeQwenImageEditPlus",
+    "_meta": {
+      "title": "TextEncodeQwenImageEditPlus"
+    }
+  },
+  "505": {
+    "inputs": {
+      "value": 614
+    },
+    "class_type": "PrimitiveInt",
+    "_meta": {
+      "title": "Int"
+    }
+  },
+  "508": {
+    "inputs": {
+      "samples": [
+        "493",
+        0
+      ],
+      "vae": [
+        "487",
+        0
+      ]
+    },
+    "class_type": "VAEDecode",
+    "_meta": {
+      "title": "VAE Decode"
+    }
+  },
+  "509": {
+    "inputs": {
+      "value": "<sks> front view eye-level shot medium shot\nsubject is wearing a rose colored spaghetti strap shirt no bra nipple bumps, middriff naval visible white top of pant waist. large breasts\nexact same all white background"
+    },
+    "class_type": "PrimitiveStringMultiline",
+    "_meta": {
+      "title": "Face Front Close"
+    }
+  },
+  "512": {
+    "inputs": {
+      "prompt": "CGI, 3d render, cartoon, illustration, painting, drawing, lowres, bad anatomy, bad hands, distorted, oversaturated, watermark, signature, plastic look, plastic skin, low resolution, distortion, warped text, duplicate faces, out of focus, soft image, birthmark, acne\n",
+      "clip": [
+        "489",
+        1
+      ],
+      "vae": [
+        "487",
+        0
+      ],
+      "image1": [
+        "831:822",
+        0
+      ]
+    },
+    "class_type": "TextEncodeQwenImageEditPlus",
+    "_meta": {
+      "title": "TextEncodeQwenImageEditPlus"
+    }
+  },
+  "514": {
+    "inputs": {
+      "reference_latents_method": "index_timestep_zero",
+      "conditioning": [
+        "522",
+        0
+      ]
+    },
+    "class_type": "FluxKontextMultiReferenceLatentMethod",
+    "_meta": {
+      "title": "Edit Model Reference Method"
+    }
+  },
+  "515": {
+    "inputs": {
+      "seed": [
+        "505",
+        0
+      ],
+      "steps": 8,
+      "cfg": 1.5,
+      "sampler_name": "dpmpp_2m_sde_gpu",
+      "scheduler": "simple",
+      "denoise": 1,
+      "model": [
+        "1055",
+        0
+      ],
+      "positive": [
+        "514",
+        0
+      ],
+      "negative": [
+        "521",
+        0
+      ],
+      "latent_image": [
+        "833",
+        0
+      ]
+    },
+    "class_type": "KSampler",
+    "_meta": {
+      "title": "KSampler"
+    }
+  },
+  "518": {
+    "inputs": {
+      "samples": [
+        "515",
+        0
+      ],
+      "vae": [
+        "487",
+        0
+      ]
+    },
+    "class_type": "VAEDecode",
+    "_meta": {
+      "title": "VAE Decode"
+    }
+  },
+  "521": {
+    "inputs": {
+      "reference_latents_method": "index_timestep_zero",
+      "conditioning": [
+        "512",
+        0
+      ]
+    },
+    "class_type": "FluxKontextMultiReferenceLatentMethod",
+    "_meta": {
+      "title": "Edit Model Reference Method"
+    }
+  },
+  "522": {
+    "inputs": {
+      "prompt": [
+        "536",
+        0
+      ],
+      "clip": [
+        "489",
+        1
+      ],
+      "vae": [
+        "487",
+        0
+      ],
+      "image1": [
+        "831:822",
+        0
+      ]
+    },
+    "class_type": "TextEncodeQwenImageEditPlus",
+    "_meta": {
+      "title": "TextEncodeQwenImageEditPlus (Positive)"
+    }
+  },
+  "523": {
+    "inputs": {
+      "value": "<sks> left side view eye-level shot close-up\nexact same all white background"
+    },
+    "class_type": "PrimitiveStringMultiline",
+    "_meta": {
+      "title": "Face Profile Close"
+    }
+  },
+  "525": {
+    "inputs": {
+      "prompt": "CGI, 3d render, cartoon, illustration, painting, drawing, lowres, bad anatomy, bad hands, distorted, oversaturated, watermark, signature, plastic look, plastic skin, low resolution, distortion, warped text, duplicate faces, out of focus, soft image, birthmark, acne\n",
+      "clip": [
+        "489",
+        1
+      ],
+      "vae": [
+        "487",
+        0
+      ],
+      "image1": [
+        "831:822",
+        0
+      ]
+    },
+    "class_type": "TextEncodeQwenImageEditPlus",
+    "_meta": {
+      "title": "TextEncodeQwenImageEditPlus"
+    }
+  },
+  "527": {
+    "inputs": {
+      "reference_latents_method": "index_timestep_zero",
+      "conditioning": [
+        "534",
+        0
+      ]
+    },
+    "class_type": "FluxKontextMultiReferenceLatentMethod",
+    "_meta": {
+      "title": "Edit Model Reference Method"
+    }
+  },
+  "528": {
+    "inputs": {
+      "seed": [
+        "505",
+        0
+      ],
+      "steps": 8,
+      "cfg": 1.5,
+      "sampler_name": "dpmpp_2m_sde_gpu",
+      "scheduler": "simple",
+      "denoise": 1,
+      "model": [
+        "1055",
+        0
+      ],
+      "positive": [
+        "527",
+        0
+      ],
+      "negative": [
+        "533",
+        0
+      ],
+      "latent_image": [
+        "834",
+        0
+      ]
+    },
+    "class_type": "KSampler",
+    "_meta": {
+      "title": "KSampler"
+    }
+  },
+  "531": {
+    "inputs": {
+      "samples": [
+        "528",
+        0
+      ],
+      "vae": [
+        "487",
+        0
+      ]
+    },
+    "class_type": "VAEDecode",
+    "_meta": {
+      "title": "VAE Decode"
+    }
+  },
+  "533": {
+    "inputs": {
+      "reference_latents_method": "index_timestep_zero",
+      "conditioning": [
+        "525",
+        0
+      ]
+    },
+    "class_type": "FluxKontextMultiReferenceLatentMethod",
+    "_meta": {
+      "title": "Edit Model Reference Method"
+    }
+  },
+  "534": {
+    "inputs": {
+      "prompt": [
+        "549",
+        0
+      ],
+      "clip": [
+        "489",
+        1
+      ],
+      "vae": [
+        "487",
+        0
+      ],
+      "image1": [
+        "831:822",
+        0
+      ]
+    },
+    "class_type": "TextEncodeQwenImageEditPlus",
+    "_meta": {
+      "title": "TextEncodeQwenImageEditPlus (Positive)"
+    }
+  },
+  "536": {
+    "inputs": {
+      "value": "<sks> right side view eye-level shot medium shot\nexact same all white background"
+    },
+    "class_type": "PrimitiveStringMultiline",
+    "_meta": {
+      "title": "Half Body Quarter Turn Front"
+    }
+  },
+  "538": {
+    "inputs": {
+      "prompt": "CGI, 3d render, cartoon, illustration, painting, drawing, lowres, bad anatomy, bad hands, distorted, oversaturated, watermark, signature, plastic look, plastic skin, low resolution, distortion, warped text, duplicate faces, out of focus, soft image, birthmark, acne\n",
+      "clip": [
+        "489",
+        1
+      ],
+      "vae": [
+        "487",
+        0
+      ],
+      "image1": [
+        "651",
+        0
+      ]
+    },
+    "class_type": "TextEncodeQwenImageEditPlus",
+    "_meta": {
+      "title": "TextEncodeQwenImageEditPlus"
+    }
+  },
+  "540": {
+    "inputs": {
+      "reference_latents_method": "index_timestep_zero",
+      "conditioning": [
+        "547",
+        0
+      ]
+    },
+    "class_type": "FluxKontextMultiReferenceLatentMethod",
+    "_meta": {
+      "title": "Edit Model Reference Method"
+    }
+  },
+  "541": {
+    "inputs": {
+      "seed": [
+        "505",
+        0
+      ],
+      "steps": 8,
+      "cfg": 1.5,
+      "sampler_name": "dpmpp_2m_sde_gpu",
+      "scheduler": "simple",
+      "denoise": 1,
+      "model": [
+        "1055",
+        0
+      ],
+      "positive": [
+        "540",
+        0
+      ],
+      "negative": [
+        "546",
+        0
+      ],
+      "latent_image": [
+        "835",
+        0
+      ]
+    },
+    "class_type": "KSampler",
+    "_meta": {
+      "title": "KSampler"
+    }
+  },
+  "544": {
+    "inputs": {
+      "samples": [
+        "541",
+        0
+      ],
+      "vae": [
+        "487",
+        0
+      ]
+    },
+    "class_type": "VAEDecode",
+    "_meta": {
+      "title": "VAE Decode"
+    }
+  },
+  "546": {
+    "inputs": {
+      "reference_latents_method": "index_timestep_zero",
+      "conditioning": [
+        "538",
+        0
+      ]
+    },
+    "class_type": "FluxKontextMultiReferenceLatentMethod",
+    "_meta": {
+      "title": "Edit Model Reference Method"
+    }
+  },
+  "547": {
+    "inputs": {
+      "prompt": [
+        "523",
+        0
+      ],
+      "clip": [
+        "489",
+        1
+      ],
+      "vae": [
+        "487",
+        0
+      ],
+      "image1": [
+        "651",
+        0
+      ]
+    },
+    "class_type": "TextEncodeQwenImageEditPlus",
+    "_meta": {
+      "title": "TextEncodeQwenImageEditPlus (Positive)"
+    }
+  },
+  "549": {
+    "inputs": {
+      "value": "Full body wide-shot\nsubject is wearing a rose colored spaghetti strap shirt, naval visible and a short white tennis skirt and white knee high socks subject has a skinny body, small petite breasts\nexact same all white background"
+    },
+    "class_type": "PrimitiveStringMultiline",
+    "_meta": {
+      "title": "Full Body Front"
+    }
+  },
+  "571": {
+    "inputs": {
+      "clip_name": "ZIT\\qwen_3_4b_fp8_mixed.safetensors",
+      "type": "lumina2",
+      "device": "default"
+    },
+    "class_type": "CLIPLoader",
+    "_meta": {
+      "title": "Load CLIP"
+    }
+  },
+  "573": {
+    "inputs": {
+      "unet_name": "ZIT\\z_image_turbo_bf16.safetensors",
+      "weight_dtype": "default"
+    },
+    "class_type": "UNETLoader",
+    "_meta": {
+      "title": "Load Diffusion Model"
+    }
+  },
+  "575": {
+    "inputs": {
+      "lora_name": "ZIT\\NSFW_master_ZIT_000017532.safetensors",
+      "strength_model": 0,
+      "model": [
+        "573",
+        0
+      ]
+    },
+    "class_type": "LoraLoaderModelOnly",
+    "_meta": {
+      "title": "Load LoRA"
+    }
+  },
+  "576": {
+    "inputs": {
+      "shift": 7,
+      "model": [
+        "573",
+        0
+      ]
+    },
+    "class_type": "ModelSamplingAuraFlow",
+    "_meta": {
+      "title": "ModelSamplingAuraFlow"
+    }
+  },
+  "577": {
+    "inputs": {
+      "model_name": "bbox/face_yolov8m.pt"
+    },
+    "class_type": "UltralyticsDetectorProvider",
+    "_meta": {
+      "title": "UltralyticsDetectorProvider (Face YOLO)"
+    }
+  },
+  "579": {
+    "inputs": {
+      "shift": 7,
+      "model": [
+        "575",
+        0
+      ]
+    },
+    "class_type": "ModelSamplingAuraFlow",
+    "_meta": {
+      "title": "ModelSamplingAuraFlow"
+    }
+  },
+  "581": {
+    "inputs": {
+      "vae_name": "ZIT\\ae.safetensors"
+    },
+    "class_type": "VAELoader",
+    "_meta": {
+      "title": "Load VAE"
+    }
+  },
+  "651": {
+    "inputs": {
+      "x": 0,
+      "y": 0,
+      "resize_source": false,
+      "destination": [
+        "867:860",
+        0
+      ],
+      "source": [
+        "867:859",
+        0
+      ],
+      "mask": [
+        "867:859",
+        3
+      ]
+    },
+    "class_type": "ImageCompositeMasked",
+    "_meta": {
+      "title": "Image Composite Masked"
+    }
+  },
+  "654": {
+    "inputs": {
+      "filename_prefix": "qwen_edit/cs_p1_1472x1104",
+      "images": [
+        "831:822",
+        0
+      ]
+    },
+    "class_type": "SaveImage",
+    "_meta": {
+      "title": "Save Image"
+    }
+  },
+  "655": {
+    "inputs": {
+      "filename_prefix": "qwen_edit/cs_p4_1472x1104",
+      "images": [
+        "785:780",
+        0
+      ]
+    },
+    "class_type": "SaveImage",
+    "_meta": {
+      "title": "Save Image"
+    }
+  },
+  "656": {
+    "inputs": {
+      "filename_prefix": "qwen_edit/cs_p3_1472x1104",
+      "images": [
+        "800:798",
+        0
+      ]
+    },
+    "class_type": "SaveImage",
+    "_meta": {
+      "title": "Save Image"
+    }
+  },
+  "657": {
+    "inputs": {
+      "filename_prefix": "qwen_edit/cs_p2_1472x1104",
+      "images": [
+        "815:813",
+        0
+      ]
+    },
+    "class_type": "SaveImage",
+    "_meta": {
+      "title": "Save Image"
+    }
+  },
+  "749": {
+    "inputs": {
+      "value": "Shot on a 50mm lens,  Kodak Portra 400 with warm color grading"
+    },
+    "class_type": "PrimitiveStringMultiline",
+    "_meta": {
+      "title": "ZIT Refiner Prompt"
+    }
+  },
+  "751": {
+    "inputs": {
+      "filename_prefix": "qwen_edit/cs_whitebackground_zit_1472x1104",
+      "images": [
+        "651",
+        0
+      ]
+    },
+    "class_type": "SaveImage",
+    "_meta": {
+      "title": "Save Image"
+    }
+  },
+  "832": {
+    "inputs": {
+      "pixels": [
+        "651",
+        0
+      ],
+      "vae": [
+        "487",
+        0
+      ]
+    },
+    "class_type": "VAEEncode",
+    "_meta": {
+      "title": "VAE Encode"
+    }
+  },
+  "833": {
+    "inputs": {
+      "pixels": [
+        "831:822",
+        0
+      ],
+      "vae": [
+        "487",
+        0
+      ]
+    },
+    "class_type": "VAEEncode",
+    "_meta": {
+      "title": "VAE Encode"
+    }
+  },
+  "834": {
+    "inputs": {
+      "pixels": [
+        "831:822",
+        0
+      ],
+      "vae": [
+        "487",
+        0
+      ]
+    },
+    "class_type": "VAEEncode",
+    "_meta": {
+      "title": "VAE Encode"
+    }
+  },
+  "835": {
+    "inputs": {
+      "pixels": [
+        "651",
+        0
+      ],
+      "vae": [
+        "487",
+        0
+      ]
+    },
+    "class_type": "VAEEncode",
+    "_meta": {
+      "title": "VAE Encode"
+    }
+  },
+  "900": {
+    "inputs": {
+      "value": "<sks> back view eye-level shot medium shot\nexact same all white background"
+    },
+    "class_type": "PrimitiveStringMultiline",
+    "_meta": {
+      "title": "Half Body Back"
+    }
+  },
+  "916": {
+    "inputs": {
+      "prompt": "CGI, 3d render, cartoon, illustration, painting, drawing, lowres, bad anatomy, bad hands, distorted, oversaturated, watermark, signature, plastic look, plastic skin, low resolution, distortion, warped text, duplicate faces, out of focus, soft image, birthmark, acne\n",
+      "clip": [
+        "489",
+        1
+      ],
+      "vae": [
+        "487",
+        0
+      ],
+      "image1": [
+        "800:798",
+        0
+      ]
+    },
+    "class_type": "TextEncodeQwenImageEditPlus",
+    "_meta": {
+      "title": "TextEncodeQwenImageEditPlus"
+    }
+  },
+  "918": {
+    "inputs": {
+      "reference_latents_method": "index_timestep_zero",
+      "conditioning": [
+        "920",
+        0
+      ]
+    },
+    "class_type": "FluxKontextMultiReferenceLatentMethod",
+    "_meta": {
+      "title": "Edit Model Reference Method"
+    }
+  },
+  "919": {
+    "inputs": {
+      "seed": [
+        "505",
+        0
+      ],
+      "steps": 8,
+      "cfg": 1.5,
+      "sampler_name": "dpmpp_2m_sde_gpu",
+      "scheduler": "simple",
+      "denoise": 1,
+      "model": [
+        "1055",
+        0
+      ],
+      "positive": [
+        "918",
+        0
+      ],
+      "negative": [
+        "923",
+        0
+      ],
+      "latent_image": [
+        "924",
+        0
+      ]
+    },
+    "class_type": "KSampler",
+    "_meta": {
+      "title": "KSampler"
+    }
+  },
+  "920": {
+    "inputs": {
+      "prompt": [
+        "900",
+        0
+      ],
+      "clip": [
+        "489",
+        1
+      ],
+      "vae": [
+        "487",
+        0
+      ],
+      "image1": [
+        "800:798",
+        0
+      ]
+    },
+    "class_type": "TextEncodeQwenImageEditPlus",
+    "_meta": {
+      "title": "TextEncodeQwenImageEditPlus (Positive)"
+    }
+  },
+  "921": {
+    "inputs": {
+      "samples": [
+        "919",
+        0
+      ],
+      "vae": [
+        "487",
+        0
+      ]
+    },
+    "class_type": "VAEDecode",
+    "_meta": {
+      "title": "VAE Decode"
+    }
+  },
+  "923": {
+    "inputs": {
+      "reference_latents_method": "index_timestep_zero",
+      "conditioning": [
+        "916",
+        0
+      ]
+    },
+    "class_type": "FluxKontextMultiReferenceLatentMethod",
+    "_meta": {
+      "title": "Edit Model Reference Method"
+    }
+  },
+  "924": {
+    "inputs": {
+      "pixels": [
+        "800:798",
+        0
+      ],
+      "vae": [
+        "487",
+        0
+      ]
+    },
+    "class_type": "VAEEncode",
+    "_meta": {
+      "title": "VAE Encode"
+    }
+  },
+  "927": {
+    "inputs": {
+      "filename_prefix": "qwen_edit/cs_p5_1472x1104",
+      "images": [
+        "928:912",
+        0
+      ]
+    },
+    "class_type": "SaveImage",
+    "_meta": {
+      "title": "Save Image"
+    }
+  },
+  "997": {
+    "inputs": {
+      "direction": "right",
+      "match_image_size": true,
+      "spacing_width": 0,
+      "spacing_color": "white",
+      "image1": [
+        "1063",
+        0
+      ],
+      "image2": [
+        "1057",
+        0
+      ]
+    },
+    "class_type": "ImageStitch",
+    "_meta": {
+      "title": "Stitch Images"
+    }
+  },
+  "1006": {
+    "inputs": {
+      "direction": "right",
+      "match_image_size": true,
+      "spacing_width": 0,
+      "spacing_color": "white",
+      "image1": [
+        "1060",
+        0
+      ],
+      "image2": [
+        "1062",
+        0
+      ]
+    },
+    "class_type": "ImageStitch",
+    "_meta": {
+      "title": "Stitch Images"
+    }
+  },
+  "1007": {
+    "inputs": {
+      "crop_region": {
+        "x": 160,
+        "y": 0,
+        "width": 1144,
+        "height": 1104
+      },
+      "image": [
+        "651",
+        0
+      ]
+    },
+    "class_type": "ImageCropV2",
+    "_meta": {
+      "title": "Front Face CLose"
+    }
+  },
+  "1018": {
+    "inputs": {
+      "filename_prefix": "qwen_edit/charSheet_x5_1472x1104",
+      "images": [
+        "1059",
+        0
+      ]
+    },
+    "class_type": "SaveImage",
+    "_meta": {
+      "title": "Save Image"
+    }
+  },
+  "1039": {
+    "inputs": {
+      "crop_region": {
+        "x": 325,
+        "y": 0,
+        "width": 768,
+        "height": 1104
+      },
+      "image": [
+        "815:813",
+        0
+      ]
+    },
+    "class_type": "ImageCropV2",
+    "_meta": {
+      "title": "Face Profile Close"
+    }
+  },
+  "1040": {
+    "inputs": {
+      "direction": "right",
+      "match_image_size": true,
+      "spacing_width": 2,
+      "spacing_color": "white",
+      "image1": [
+        "1041",
+        0
+      ],
+      "image2": [
+        "1044",
+        0
+      ]
+    },
+    "class_type": "ImageStitch",
+    "_meta": {
+      "title": "Stitch Images"
+    }
+  },
+  "1041": {
+    "inputs": {
+      "direction": "right",
+      "match_image_size": true,
+      "spacing_width": 6,
+      "spacing_color": "white",
+      "image1": [
+        "1007",
+        0
+      ],
+      "image2": [
+        "1062",
+        0
+      ]
+    },
+    "class_type": "ImageStitch",
+    "_meta": {
+      "title": "Stitch Images"
+    }
+  },
+  "1042": {
+    "inputs": {
+      "images": [
+        "1040",
+        0
+      ]
+    },
+    "class_type": "PreviewImage",
+    "_meta": {
+      "title": "Preview Image"
+    }
+  },
+  "1044": {
+    "inputs": {
+      "crop_region": {
+        "x": 600,
+        "y": 0,
+        "width": 284,
+        "height": 1104
+      },
+      "image": [
+        "800:798",
+        0
+      ]
+    },
+    "class_type": "ImageCropV2",
+    "_meta": {
+      "title": "Face Profile Close"
+    }
+  },
+  "1047": {
+    "inputs": {
+      "filename_prefix": "qwen_edit/charSheet_x3_1472x1104",
+      "images": [
+        "1040",
+        0
+      ]
+    },
+    "class_type": "SaveImage",
+    "_meta": {
+      "title": "Save Image"
+    }
+  },
+  "1054": {
+    "inputs": {
+      "lora_name": "QwenEdit\\Pixar-Inspired-3D.safetensors",
+      "strength_model": 0,
+      "model": [
+        "482",
+        0
+      ]
+    },
+    "class_type": "LoraLoaderModelOnly",
+    "_meta": {
+      "title": "Load LoRA"
+    }
+  },
+  "1055": {
+    "inputs": {
+      "lora_name": "QwenEdit\\Qwen4Play2512_v2.safetensors",
+      "strength_model": 0.5,
+      "model": [
+        "1054",
+        0
+      ]
+    },
+    "class_type": "LoraLoaderModelOnly",
+    "_meta": {
+      "title": "Load LoRA"
+    }
+  },
+  "1056": {
+    "inputs": {
+      "image": "cs_whitebackground_zit_1472x1104_00001_.png"
+    },
+    "class_type": "LoadImage",
+    "_meta": {
+      "title": "Load Image"
+    }
+  },
+  "1057": {
+    "inputs": {
+      "crop_region": {
+        "x": 600,
+        "y": 0,
+        "width": 284,
+        "height": 1104
+      },
+      "image": [
+        "928:912",
+        0
+      ]
+    },
+    "class_type": "ImageCropV2",
+    "_meta": {
+      "title": "Face Profile Close"
+    }
+  },
+  "1059": {
+    "inputs": {
+      "images": [
+        "997",
+        0
+      ]
+    },
+    "class_type": "PreviewImage",
+    "_meta": {
+      "title": "Preview Image"
+    }
+  },
+  "1060": {
+    "inputs": {
+      "crop_region": {
+        "x": 325,
+        "y": 0,
+        "width": 768,
+        "height": 1104
+      },
+      "image": [
+        "831:822",
+        0
+      ]
+    },
+    "class_type": "ImageCropV2",
+    "_meta": {
+      "title": "Front Face CLose"
+    }
+  },
+  "1062": {
+    "inputs": {
+      "crop_region": {
+        "x": 500,
+        "y": 0,
+        "width": 568,
+        "height": 1104
+      },
+      "image": [
+        "785:780",
+        0
+      ]
+    },
+    "class_type": "ImageCropV2",
+    "_meta": {
+      "title": "Front Face CLose"
+    }
+  },
+  "1063": {
+    "inputs": {
+      "direction": "right",
+      "match_image_size": true,
+      "spacing_width": 0,
+      "spacing_color": "white",
+      "image1": [
+        "1006",
+        0
+      ],
+      "image2": [
+        "1044",
+        0
+      ]
+    },
+    "class_type": "ImageStitch",
+    "_meta": {
+      "title": "Stitch Images"
+    }
+  },
+  "1065": {
+    "inputs": {
+      "direction": "right",
+      "match_image_size": true,
+      "spacing_width": 0,
+      "spacing_color": "white",
+      "image1": [
+        "1071",
+        0
+      ],
+      "image2": [
+        "1072",
+        0
+      ]
+    },
+    "class_type": "ImageStitch",
+    "_meta": {
+      "title": "Stitch Images"
+    }
+  },
+  "1066": {
+    "inputs": {
+      "images": [
+        "1068",
+        0
+      ]
+    },
+    "class_type": "PreviewImage",
+    "_meta": {
+      "title": "Preview Image"
+    }
+  },
+  "1068": {
+    "inputs": {
+      "direction": "right",
+      "match_image_size": true,
+      "spacing_width": 2,
+      "spacing_color": "white",
+      "image1": [
+        "1065",
+        0
+      ],
+      "image2": [
+        "1044",
+        0
+      ]
+    },
+    "class_type": "ImageStitch",
+    "_meta": {
+      "title": "Stitch Images"
+    }
+  },
+  "1070": {
+    "inputs": {
+      "filename_prefix": "qwen_edit/charSheet_mid_x3_1472x1104",
+      "images": [
+        "1066",
+        0
+      ]
+    },
+    "class_type": "SaveImage",
+    "_meta": {
+      "title": "Save Image"
+    }
+  },
+  "1071": {
+    "inputs": {
+      "crop_region": {
+        "x": 42,
+        "y": 0,
+        "width": 686,
+        "height": 1104
+      },
+      "image": [
+        "1060",
+        0
+      ]
+    },
+    "class_type": "ImageCropV2",
+    "_meta": {
+      "title": "Front Face CLose"
+    }
+  },
+  "1072": {
+    "inputs": {
+      "crop_region": {
+        "x": 35,
+        "y": 0,
+        "width": 500,
+        "height": 1104
+      },
+      "image": [
+        "1062",
+        0
+      ]
+    },
+    "class_type": "ImageCropV2",
+    "_meta": {
+      "title": "Front Face CLose"
+    }
+  },
+  "867:850": {
+    "inputs": {
+      "mask": [
+        "867:859",
+        3
+      ]
+    },
+    "class_type": "InvertMask",
+    "_meta": {
+      "title": "Invert Mask"
+    }
+  },
+  "867:851": {
+    "inputs": {
+      "conditioning": [
+        "867:852",
+        0
+      ]
+    },
+    "class_type": "ConditioningZeroOut",
+    "_meta": {
+      "title": "Conditioning Zero Out"
+    }
+  },
+  "867:852": {
+    "inputs": {
+      "text": "Shot on Kodak Portra 400 with warm color grading",
+      "clip": [
+        "571",
+        0
+      ]
+    },
+    "class_type": "CLIPTextEncode",
+    "_meta": {
+      "title": "CLIP Text Encode (Prompt)"
+    }
+  },
+  "867:853": {
+    "inputs": {
+      "seed": 1016565493625437,
+      "steps": 8,
+      "cfg": 1,
+      "sampler_name": "euler",
+      "scheduler": "beta",
+      "denoise": 0.2,
+      "model": [
+        "579",
+        0
+      ],
+      "positive": [
+        "867:852",
+        0
+      ],
+      "negative": [
+        "867:851",
+        0
+      ],
+      "latent_image": [
+        "867:861",
+        0
+      ]
+    },
+    "class_type": "KSampler",
+    "_meta": {
+      "title": "KSampler"
+    }
+  },
+  "867:859": {
+    "inputs": {
+      "guide_size": 384,
+      "guide_size_for": true,
+      "max_size": 2000,
+      "seed": 59845637,
+      "steps": 6,
+      "cfg": 1,
+      "sampler_name": "euler",
+      "scheduler": "simple",
+      "denoise": 0.12,
+      "feather": 10,
+      "noise_mask": true,
+      "force_inpaint": true,
+      "bbox_threshold": 0.5,
+      "bbox_dilation": 0,
+      "bbox_crop_factor": 1.3,
+      "sam_detection_hint": "center-1",
+      "sam_dilation": 0,
+      "sam_threshold": 0.9,
+      "sam_bbox_expansion": 0,
+      "sam_mask_hint_threshold": 0.7,
+      "sam_mask_hint_use_negative": "False",
+      "drop_size": 10,
+      "wildcard": "",
+      "cycle": 1,
+      "inpaint_model": false,
+      "noise_mask_feather": 20,
+      "tiled_encode": false,
+      "tiled_decode": false,
+      "image": [
+        "409",
+        0
+      ],
+      "model": [
+        "576",
+        0
+      ],
+      "clip": [
+        "571",
+        0
+      ],
+      "vae": [
+        "581",
+        0
+      ],
+      "positive": [
+        "867:852",
+        0
+      ],
+      "negative": [
+        "867:851",
+        0
+      ],
+      "bbox_detector": [
+        "577",
+        0
+      ]
+    },
+    "class_type": "FaceDetailer",
+    "_meta": {
+      "title": "FaceDetailer"
+    }
+  },
+  "867:860": {
+    "inputs": {
+      "samples": [
+        "867:853",
+        0
+      ],
+      "vae": [
+        "581",
+        0
+      ]
+    },
+    "class_type": "VAEDecode",
+    "_meta": {
+      "title": "VAE Decode"
+    }
+  },
+  "867:861": {
+    "inputs": {
+      "samples": [
+        "867:862",
+        0
+      ],
+      "mask": [
+        "867:850",
+        0
+      ]
+    },
+    "class_type": "SetLatentNoiseMask",
+    "_meta": {
+      "title": "Set Latent Noise Mask"
+    }
+  },
+  "867:862": {
+    "inputs": {
+      "pixels": [
+        "409",
+        0
+      ],
+      "vae": [
+        "581",
+        0
+      ]
+    },
+    "class_type": "VAEEncode",
+    "_meta": {
+      "title": "VAE Encode"
+    }
+  },
+  "831:816": {
+    "inputs": {
+      "conditioning": [
+        "831:817",
+        0
+      ]
+    },
+    "class_type": "ConditioningZeroOut",
+    "_meta": {
+      "title": "Conditioning Zero Out"
+    }
+  },
+  "831:817": {
+    "inputs": {
+      "text": [
+        "749",
+        0
+      ],
+      "clip": [
+        "571",
+        0
+      ]
+    },
+    "class_type": "CLIPTextEncode",
+    "_meta": {
+      "title": "CLIP Text Encode (Prompt)"
+    }
+  },
+  "831:821": {
+    "inputs": {
+      "samples": [
+        "831:826",
+        0
+      ],
+      "vae": [
+        "581",
+        0
+      ]
+    },
+    "class_type": "VAEDecode",
+    "_meta": {
+      "title": "VAE Decode"
+    }
+  },
+  "831:822": {
+    "inputs": {
+      "x": 0,
+      "y": 0,
+      "resize_source": false,
+      "destination": [
+        "831:821",
+        0
+      ],
+      "source": [
+        "831:829",
+        0
+      ],
+      "mask": [
+        "831:829",
+        3
+      ]
+    },
+    "class_type": "ImageCompositeMasked",
+    "_meta": {
+      "title": "Image Composite Masked"
+    }
+  },
+  "831:824": {
+    "inputs": {
+      "mask": [
+        "831:829",
+        3
+      ]
+    },
+    "class_type": "InvertMask",
+    "_meta": {
+      "title": "Invert Mask"
+    }
+  },
+  "831:826": {
+    "inputs": {
+      "seed": 926608675520502,
+      "steps": 8,
+      "cfg": 1,
+      "sampler_name": "euler",
+      "scheduler": "beta",
+      "denoise": 0.2,
+      "model": [
+        "579",
+        0
+      ],
+      "positive": [
+        "831:817",
+        0
+      ],
+      "negative": [
+        "831:816",
+        0
+      ],
+      "latent_image": [
+        "831:827",
+        0
+      ]
+    },
+    "class_type": "KSampler",
+    "_meta": {
+      "title": "KSampler"
+    }
+  },
+  "831:827": {
+    "inputs": {
+      "samples": [
+        "831:828",
+        0
+      ],
+      "mask": [
+        "831:824",
+        0
+      ]
+    },
+    "class_type": "SetLatentNoiseMask",
+    "_meta": {
+      "title": "Set Latent Noise Mask"
+    }
+  },
+  "831:828": {
+    "inputs": {
+      "pixels": [
+        "508",
+        0
+      ],
+      "vae": [
+        "581",
+        0
+      ]
+    },
+    "class_type": "VAEEncode",
+    "_meta": {
+      "title": "VAE Encode"
+    }
+  },
+  "831:829": {
+    "inputs": {
+      "guide_size": 384,
+      "guide_size_for": true,
+      "max_size": 2000,
+      "seed": 59845637,
+      "steps": 6,
+      "cfg": 1,
+      "sampler_name": "euler",
+      "scheduler": "simple",
+      "denoise": 0.12,
+      "feather": 10,
+      "noise_mask": true,
+      "force_inpaint": true,
+      "bbox_threshold": 0.5,
+      "bbox_dilation": 0,
+      "bbox_crop_factor": 1.3,
+      "sam_detection_hint": "center-1",
+      "sam_dilation": 0,
+      "sam_threshold": 0.9,
+      "sam_bbox_expansion": 0,
+      "sam_mask_hint_threshold": 0.7,
+      "sam_mask_hint_use_negative": "False",
+      "drop_size": 10,
+      "wildcard": "",
+      "cycle": 1,
+      "inpaint_model": false,
+      "noise_mask_feather": 20,
+      "tiled_encode": false,
+      "tiled_decode": false,
+      "image": [
+        "508",
+        0
+      ],
+      "model": [
+        "576",
+        0
+      ],
+      "clip": [
+        "571",
+        0
+      ],
+      "vae": [
+        "581",
+        0
+      ],
+      "positive": [
+        "831:817",
+        0
+      ],
+      "negative": [
+        "831:816",
+        0
+      ],
+      "bbox_detector": [
+        "577",
+        0
+      ]
+    },
+    "class_type": "FaceDetailer",
+    "_meta": {
+      "title": "FaceDetailer"
+    }
+  },
+  "815:720": {
+    "inputs": {
+      "pixels": [
+        "544",
+        0
+      ],
+      "vae": [
+        "581",
+        0
+      ]
+    },
+    "class_type": "VAEEncode",
+    "_meta": {
+      "title": "VAE Encode"
+    }
+  },
+  "815:801": {
+    "inputs": {
+      "guide_size": 384,
+      "guide_size_for": true,
+      "max_size": 2000,
+      "seed": 59845637,
+      "steps": 6,
+      "cfg": 1,
+      "sampler_name": "euler",
+      "scheduler": "simple",
+      "denoise": 0.12,
+      "feather": 10,
+      "noise_mask": true,
+      "force_inpaint": true,
+      "bbox_threshold": 0.5,
+      "bbox_dilation": 0,
+      "bbox_crop_factor": 1.3,
+      "sam_detection_hint": "center-1",
+      "sam_dilation": 0,
+      "sam_threshold": 0.9,
+      "sam_bbox_expansion": 0,
+      "sam_mask_hint_threshold": 0.7,
+      "sam_mask_hint_use_negative": "False",
+      "drop_size": 10,
+      "wildcard": "",
+      "cycle": 1,
+      "inpaint_model": false,
+      "noise_mask_feather": 20,
+      "tiled_encode": false,
+      "tiled_decode": false,
+      "image": [
+        "544",
+        0
+      ],
+      "model": [
+        "576",
+        0
+      ],
+      "clip": [
+        "571",
+        0
+      ],
+      "vae": [
+        "581",
+        0
+      ],
+      "positive": [
+        "815:805",
+        0
+      ],
+      "negative": [
+        "815:804",
+        0
+      ],
+      "bbox_detector": [
+        "577",
+        0
+      ]
+    },
+    "class_type": "FaceDetailer",
+    "_meta": {
+      "title": "FaceDetailer"
+    }
+  },
+  "815:802": {
+    "inputs": {
+      "mask": [
+        "815:801",
+        3
+      ]
+    },
+    "class_type": "InvertMask",
+    "_meta": {
+      "title": "Invert Mask"
+    }
+  },
+  "815:803": {
+    "inputs": {
+      "samples": [
+        "815:720",
+        0
+      ],
+      "mask": [
+        "815:802",
+        0
+      ]
+    },
+    "class_type": "SetLatentNoiseMask",
+    "_meta": {
+      "title": "Set Latent Noise Mask"
+    }
+  },
+  "815:804": {
+    "inputs": {
+      "conditioning": [
+        "815:805",
+        0
+      ]
+    },
+    "class_type": "ConditioningZeroOut",
+    "_meta": {
+      "title": "Conditioning Zero Out"
+    }
+  },
+  "815:805": {
+    "inputs": {
+      "text": [
+        "749",
+        0
+      ],
+      "clip": [
+        "571",
+        0
+      ]
+    },
+    "class_type": "CLIPTextEncode",
+    "_meta": {
+      "title": "CLIP Text Encode (Prompt)"
+    }
+  },
+  "815:806": {
+    "inputs": {
+      "seed": 94212498832350,
+      "steps": 8,
+      "cfg": 1,
+      "sampler_name": "euler",
+      "scheduler": "beta",
+      "denoise": 0.2,
+      "model": [
+        "579",
+        0
+      ],
+      "positive": [
+        "815:805",
+        0
+      ],
+      "negative": [
+        "815:804",
+        0
+      ],
+      "latent_image": [
+        "815:803",
+        0
+      ]
+    },
+    "class_type": "KSampler",
+    "_meta": {
+      "title": "KSampler"
+    }
+  },
+  "815:812": {
+    "inputs": {
+      "samples": [
+        "815:806",
+        0
+      ],
+      "vae": [
+        "581",
+        0
+      ]
+    },
+    "class_type": "VAEDecode",
+    "_meta": {
+      "title": "VAE Decode"
+    }
+  },
+  "815:813": {
+    "inputs": {
+      "x": 0,
+      "y": 0,
+      "resize_source": false,
+      "destination": [
+        "815:812",
+        0
+      ],
+      "source": [
+        "815:801",
+        0
+      ],
+      "mask": [
+        "815:801",
+        3
+      ]
+    },
+    "class_type": "ImageCompositeMasked",
+    "_meta": {
+      "title": "Image Composite Masked"
+    }
+  },
+  "800:705": {
+    "inputs": {
+      "pixels": [
+        "531",
+        0
+      ],
+      "vae": [
+        "581",
+        0
+      ]
+    },
+    "class_type": "VAEEncode",
+    "_meta": {
+      "title": "VAE Encode"
+    }
+  },
+  "800:787": {
+    "inputs": {
+      "mask": [
+        "800:786",
+        3
+      ]
+    },
+    "class_type": "InvertMask",
+    "_meta": {
+      "title": "Invert Mask"
+    }
+  },
+  "800:788": {
+    "inputs": {
+      "samples": [
+        "800:705",
+        0
+      ],
+      "mask": [
+        "800:787",
+        0
+      ]
+    },
+    "class_type": "SetLatentNoiseMask",
+    "_meta": {
+      "title": "Set Latent Noise Mask"
+    }
+  },
+  "800:789": {
+    "inputs": {
+      "conditioning": [
+        "800:790",
+        0
+      ]
+    },
+    "class_type": "ConditioningZeroOut",
+    "_meta": {
+      "title": "Conditioning Zero Out"
+    }
+  },
+  "800:790": {
+    "inputs": {
+      "text": [
+        "749",
+        0
+      ],
+      "clip": [
+        "571",
+        0
+      ]
+    },
+    "class_type": "CLIPTextEncode",
+    "_meta": {
+      "title": "CLIP Text Encode (Prompt)"
+    }
+  },
+  "800:791": {
+    "inputs": {
+      "seed": 172447661569975,
+      "steps": 8,
+      "cfg": 1,
+      "sampler_name": "euler",
+      "scheduler": "beta",
+      "denoise": 0.2,
+      "model": [
+        "579",
+        0
+      ],
+      "positive": [
+        "800:790",
+        0
+      ],
+      "negative": [
+        "800:789",
+        0
+      ],
+      "latent_image": [
+        "800:788",
+        0
+      ]
+    },
+    "class_type": "KSampler",
+    "_meta": {
+      "title": "KSampler"
+    }
+  },
+  "800:797": {
+    "inputs": {
+      "samples": [
+        "800:791",
+        0
+      ],
+      "vae": [
+        "581",
+        0
+      ]
+    },
+    "class_type": "VAEDecode",
+    "_meta": {
+      "title": "VAE Decode"
+    }
+  },
+  "800:798": {
+    "inputs": {
+      "x": 0,
+      "y": 0,
+      "resize_source": false,
+      "destination": [
+        "800:797",
+        0
+      ],
+      "source": [
+        "800:786",
+        0
+      ],
+      "mask": [
+        "800:786",
+        3
+      ]
+    },
+    "class_type": "ImageCompositeMasked",
+    "_meta": {
+      "title": "Image Composite Masked"
+    }
+  },
+  "800:786": {
+    "inputs": {
+      "guide_size": 384,
+      "guide_size_for": true,
+      "max_size": 2000,
+      "seed": 59845637,
+      "steps": 6,
+      "cfg": 1,
+      "sampler_name": "euler",
+      "scheduler": "simple",
+      "denoise": 0.12,
+      "feather": 10,
+      "noise_mask": true,
+      "force_inpaint": true,
+      "bbox_threshold": 0.5,
+      "bbox_dilation": 0,
+      "bbox_crop_factor": 1.3,
+      "sam_detection_hint": "center-1",
+      "sam_dilation": 0,
+      "sam_threshold": 0.9,
+      "sam_bbox_expansion": 0,
+      "sam_mask_hint_threshold": 0.7,
+      "sam_mask_hint_use_negative": "False",
+      "drop_size": 10,
+      "wildcard": "",
+      "cycle": 1,
+      "inpaint_model": false,
+      "noise_mask_feather": 20,
+      "tiled_encode": false,
+      "tiled_decode": false,
+      "image": [
+        "531",
+        0
+      ],
+      "model": [
+        "576",
+        0
+      ],
+      "clip": [
+        "571",
+        0
+      ],
+      "vae": [
+        "581",
+        0
+      ],
+      "positive": [
+        "800:790",
+        0
+      ],
+      "negative": [
+        "800:789",
+        0
+      ],
+      "bbox_detector": [
+        "577",
+        0
+      ]
+    },
+    "class_type": "FaceDetailer",
+    "_meta": {
+      "title": "FaceDetailer"
+    }
+  },
+  "785:769": {
+    "inputs": {
+      "mask": [
+        "785:768",
+        3
+      ]
+    },
+    "class_type": "InvertMask",
+    "_meta": {
+      "title": "Invert Mask"
+    }
+  },
+  "785:770": {
+    "inputs": {
+      "samples": [
+        "785:781",
+        0
+      ],
+      "mask": [
+        "785:769",
+        0
+      ]
+    },
+    "class_type": "SetLatentNoiseMask",
+    "_meta": {
+      "title": "Set Latent Noise Mask"
+    }
+  },
+  "785:771": {
+    "inputs": {
+      "conditioning": [
+        "785:772",
+        0
+      ]
+    },
+    "class_type": "ConditioningZeroOut",
+    "_meta": {
+      "title": "Conditioning Zero Out"
+    }
+  },
+  "785:772": {
+    "inputs": {
+      "text": [
+        "749",
+        0
+      ],
+      "clip": [
+        "571",
+        0
+      ]
+    },
+    "class_type": "CLIPTextEncode",
+    "_meta": {
+      "title": "CLIP Text Encode (Prompt)"
+    }
+  },
+  "785:773": {
+    "inputs": {
+      "seed": 844163240344170,
+      "steps": 8,
+      "cfg": 1,
+      "sampler_name": "euler",
+      "scheduler": "beta",
+      "denoise": 0.2,
+      "model": [
+        "579",
+        0
+      ],
+      "positive": [
+        "785:772",
+        0
+      ],
+      "negative": [
+        "785:771",
+        0
+      ],
+      "latent_image": [
+        "785:770",
+        0
+      ]
+    },
+    "class_type": "KSampler",
+    "_meta": {
+      "title": "KSampler"
+    }
+  },
+  "785:779": {
+    "inputs": {
+      "samples": [
+        "785:773",
+        0
+      ],
+      "vae": [
+        "581",
+        0
+      ]
+    },
+    "class_type": "VAEDecode",
+    "_meta": {
+      "title": "VAE Decode"
+    }
+  },
+  "785:780": {
+    "inputs": {
+      "x": 0,
+      "y": 0,
+      "resize_source": false,
+      "destination": [
+        "785:779",
+        0
+      ],
+      "source": [
+        "785:768",
+        0
+      ],
+      "mask": [
+        "785:768",
+        3
+      ]
+    },
+    "class_type": "ImageCompositeMasked",
+    "_meta": {
+      "title": "Image Composite Masked"
+    }
+  },
+  "785:781": {
+    "inputs": {
+      "pixels": [
+        "518",
+        0
+      ],
+      "vae": [
+        "581",
+        0
+      ]
+    },
+    "class_type": "VAEEncode",
+    "_meta": {
+      "title": "VAE Encode"
+    }
+  },
+  "785:768": {
+    "inputs": {
+      "guide_size": 384,
+      "guide_size_for": true,
+      "max_size": 2000,
+      "seed": 59845637,
+      "steps": 6,
+      "cfg": 1,
+      "sampler_name": "euler",
+      "scheduler": "simple",
+      "denoise": 0.12,
+      "feather": 10,
+      "noise_mask": true,
+      "force_inpaint": true,
+      "bbox_threshold": 0.5,
+      "bbox_dilation": 0,
+      "bbox_crop_factor": 1.3,
+      "sam_detection_hint": "center-1",
+      "sam_dilation": 0,
+      "sam_threshold": 0.9,
+      "sam_bbox_expansion": 0,
+      "sam_mask_hint_threshold": 0.7,
+      "sam_mask_hint_use_negative": "False",
+      "drop_size": 10,
+      "wildcard": "",
+      "cycle": 1,
+      "inpaint_model": false,
+      "noise_mask_feather": 20,
+      "tiled_encode": false,
+      "tiled_decode": false,
+      "image": [
+        "518",
+        0
+      ],
+      "model": [
+        "576",
+        0
+      ],
+      "clip": [
+        "571",
+        0
+      ],
+      "vae": [
+        "581",
+        0
+      ],
+      "positive": [
+        "785:772",
+        0
+      ],
+      "negative": [
+        "785:771",
+        0
+      ],
+      "bbox_detector": [
+        "577",
+        0
+      ]
+    },
+    "class_type": "FaceDetailer",
+    "_meta": {
+      "title": "FaceDetailer"
+    }
+  },
+  "928:901": {
+    "inputs": {
+      "mask": [
+        "928:914",
+        3
+      ]
+    },
+    "class_type": "InvertMask",
+    "_meta": {
+      "title": "Invert Mask"
+    }
+  },
+  "928:902": {
+    "inputs": {
+      "samples": [
+        "928:913",
+        0
+      ],
+      "mask": [
+        "928:901",
+        0
+      ]
+    },
+    "class_type": "SetLatentNoiseMask",
+    "_meta": {
+      "title": "Set Latent Noise Mask"
+    }
+  },
+  "928:903": {
+    "inputs": {
+      "conditioning": [
+        "928:904",
+        0
+      ]
+    },
+    "class_type": "ConditioningZeroOut",
+    "_meta": {
+      "title": "Conditioning Zero Out"
+    }
+  },
+  "928:904": {
+    "inputs": {
+      "text": [
+        "749",
+        0
+      ],
+      "clip": [
+        "571",
+        0
+      ]
+    },
+    "class_type": "CLIPTextEncode",
+    "_meta": {
+      "title": "CLIP Text Encode (Prompt)"
+    }
+  },
+  "928:905": {
+    "inputs": {
+      "seed": 1067310408116389,
+      "steps": 8,
+      "cfg": 1,
+      "sampler_name": "euler",
+      "scheduler": "beta",
+      "denoise": 0.2,
+      "model": [
+        "579",
+        0
+      ],
+      "positive": [
+        "928:904",
+        0
+      ],
+      "negative": [
+        "928:903",
+        0
+      ],
+      "latent_image": [
+        "928:902",
+        0
+      ]
+    },
+    "class_type": "KSampler",
+    "_meta": {
+      "title": "KSampler"
+    }
+  },
+  "928:911": {
+    "inputs": {
+      "samples": [
+        "928:905",
+        0
+      ],
+      "vae": [
+        "581",
+        0
+      ]
+    },
+    "class_type": "VAEDecode",
+    "_meta": {
+      "title": "VAE Decode"
+    }
+  },
+  "928:912": {
+    "inputs": {
+      "x": 0,
+      "y": 0,
+      "resize_source": false,
+      "destination": [
+        "928:911",
+        0
+      ],
+      "source": [
+        "928:914",
+        0
+      ],
+      "mask": [
+        "928:914",
+        3
+      ]
+    },
+    "class_type": "ImageCompositeMasked",
+    "_meta": {
+      "title": "Image Composite Masked"
+    }
+  },
+  "928:913": {
+    "inputs": {
+      "pixels": [
+        "921",
+        0
+      ],
+      "vae": [
+        "581",
+        0
+      ]
+    },
+    "class_type": "VAEEncode",
+    "_meta": {
+      "title": "VAE Encode"
+    }
+  },
+  "928:914": {
+    "inputs": {
+      "guide_size": 384,
+      "guide_size_for": true,
+      "max_size": 2000,
+      "seed": 59845637,
+      "steps": 6,
+      "cfg": 1,
+      "sampler_name": "euler",
+      "scheduler": "simple",
+      "denoise": 0.12,
+      "feather": 10,
+      "noise_mask": true,
+      "force_inpaint": true,
+      "bbox_threshold": 0.5,
+      "bbox_dilation": 0,
+      "bbox_crop_factor": 1.3,
+      "sam_detection_hint": "center-1",
+      "sam_dilation": 0,
+      "sam_threshold": 0.9,
+      "sam_bbox_expansion": 0,
+      "sam_mask_hint_threshold": 0.7,
+      "sam_mask_hint_use_negative": "False",
+      "drop_size": 10,
+      "wildcard": "",
+      "cycle": 1,
+      "inpaint_model": false,
+      "noise_mask_feather": 20,
+      "tiled_encode": false,
+      "tiled_decode": false,
+      "image": [
+        "921",
+        0
+      ],
+      "model": [
+        "576",
+        0
+      ],
+      "clip": [
+        "571",
+        0
+      ],
+      "vae": [
+        "581",
+        0
+      ],
+      "positive": [
+        "928:904",
+        0
+      ],
+      "negative": [
+        "928:903",
+        0
+      ],
+      "bbox_detector": [
+        "577",
+        0
+      ]
+    },
+    "class_type": "FaceDetailer",
+    "_meta": {
+      "title": "FaceDetailer"
+    }
+  }
+}

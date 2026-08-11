@@ -1,0 +1,428 @@
+{
+  "138": {
+    "inputs": {
+      "samples": [
+        "142",
+        0
+      ],
+      "vae": [
+        "145",
+        0
+      ]
+    },
+    "class_type": "VAEDecodeAudio",
+    "_meta": {
+      "title": "VAE Decode Audio"
+    }
+  },
+  "139": {
+    "inputs": {
+      "samples": [
+        "142",
+        0
+      ],
+      "vae": [
+        "144",
+        0
+      ]
+    },
+    "class_type": "VAEDecode",
+    "_meta": {
+      "title": "VAE Decode"
+    }
+  },
+  "140": {
+    "inputs": {
+      "sampler_name": "res_multistep"
+    },
+    "class_type": "KSamplerSelect",
+    "_meta": {
+      "title": "KSamplerSelect"
+    }
+  },
+  "141": {
+    "inputs": {
+      "scheduler": "simple",
+      "steps": 8,
+      "denoise": 1,
+      "model": [
+        "198",
+        0
+      ]
+    },
+    "class_type": "BasicScheduler",
+    "_meta": {
+      "title": "BasicScheduler"
+    }
+  },
+  "142": {
+    "inputs": {
+      "noise": [
+        "161",
+        0
+      ],
+      "guider": [
+        "143",
+        0
+      ],
+      "sampler": [
+        "204",
+        0
+      ],
+      "sigmas": [
+        "141",
+        0
+      ],
+      "latent_image": [
+        "169",
+        1
+      ]
+    },
+    "class_type": "SamplerCustomAdvanced",
+    "_meta": {
+      "title": "SamplerCustomAdvanced"
+    }
+  },
+  "143": {
+    "inputs": {
+      "model": [
+        "198",
+        0
+      ],
+      "conditioning": [
+        "169",
+        0
+      ]
+    },
+    "class_type": "BasicGuider",
+    "_meta": {
+      "title": "Basic Guider"
+    }
+  },
+  "144": {
+    "inputs": {
+      "vae_name": "h3\\minimax_h3_video_vae_fp16.safetensors"
+    },
+    "class_type": "VAELoader",
+    "_meta": {
+      "title": "Load VAE (Video)"
+    }
+  },
+  "145": {
+    "inputs": {
+      "vae_name": "h3\\minimax_h3_audio_vae_fp32.safetensors"
+    },
+    "class_type": "VAELoader",
+    "_meta": {
+      "title": "Load VAE (Audio)"
+    }
+  },
+  "149": {
+    "inputs": {
+      "clip_name": "h3\\qwen3vl_32b_h3_ultra_uncensored_heretic_int8_convrot.safetensors",
+      "type": "minimax",
+      "device": "default"
+    },
+    "class_type": "CLIPLoader",
+    "_meta": {
+      "title": "Load CLIP"
+    }
+  },
+  "150": {
+    "inputs": {
+      "fps": 24,
+      "bit_depth": 8,
+      "images": [
+        "151",
+        0
+      ],
+      "audio": [
+        "192",
+        0
+      ]
+    },
+    "class_type": "CreateVideo",
+    "_meta": {
+      "title": "Create Video"
+    }
+  },
+  "151": {
+    "inputs": {
+      "resize_type": "scale by multiplier",
+      "resize_type.scale": 2,
+      "quality": "ULTRA",
+      "images": [
+        "139",
+        0
+      ]
+    },
+    "class_type": "RTXVideoSuperResolution",
+    "_meta": {
+      "title": "RTX Video Super Resolution"
+    }
+  },
+  "156": {
+    "inputs": {
+      "expression": "max(5, round(a * 24)) + (5 - (max(5, round(a * 24)) % 17)) % 17",
+      "values.a": [
+        "158",
+        0
+      ]
+    },
+    "class_type": "ComfyMathExpression",
+    "_meta": {
+      "title": "Math Expression"
+    }
+  },
+  "157": {
+    "inputs": {
+      "aspect_ratio": "16:9 (Widescreen)",
+      "megapixels": 0.6,
+      "multiple": 32
+    },
+    "class_type": "ResolutionSelector",
+    "_meta": {
+      "title": "Resolution Selector (Size)"
+    }
+  },
+  "158": {
+    "inputs": {
+      "value": 10
+    },
+    "class_type": "PrimitiveFloat",
+    "_meta": {
+      "title": "Float (Duration)"
+    }
+  },
+  "160": {
+    "inputs": {
+      "unet_name": "h3\\minimax_h3_fl2va_bf16.safetensors",
+      "weight_dtype": "default"
+    },
+    "class_type": "UNETLoader",
+    "_meta": {
+      "title": "Load Diffusion Model"
+    }
+  },
+  "161": {
+    "inputs": {
+      "noise_seed": 43
+    },
+    "class_type": "RandomNoise",
+    "_meta": {
+      "title": "RandomNoise"
+    }
+  },
+  "169": {
+    "inputs": {
+      "prompt": [
+        "182",
+        0
+      ],
+      "width": [
+        "157",
+        0
+      ],
+      "height": [
+        "157",
+        1
+      ],
+      "length": [
+        "156",
+        1
+      ],
+      "ref_image_size": "match",
+      "clip": [
+        "149",
+        0
+      ],
+      "vae": [
+        "144",
+        0
+      ],
+      "audio_vae": [
+        "145",
+        0
+      ],
+      "ref_images.ref_image_0": [
+        "178",
+        0
+      ],
+      "ref_images.ref_image_1": [
+        "170",
+        0
+      ],
+      "ref_images.ref_image_2": [
+        "187",
+        0
+      ],
+      "ref_images.ref_image_3": [
+        "203",
+        0
+      ],
+      "ref_videos.ref_video_0": [
+        "195",
+        0
+      ]
+    },
+    "class_type": "MiniMaxH3ReferenceToVideo",
+    "_meta": {
+      "title": "MiniMax H3 Reference to Video"
+    }
+  },
+  "170": {
+    "inputs": {
+      "image": "close_up.png"
+    },
+    "class_type": "LoadImage",
+    "_meta": {
+      "title": "Load Image - 2"
+    }
+  },
+  "176": {
+    "inputs": {
+      "filename_prefix": "H3/flex_video",
+      "format": "auto",
+      "codec": "auto",
+      "video-preview": "",
+      "video": [
+        "150",
+        0
+      ]
+    },
+    "class_type": "SaveVideo",
+    "_meta": {
+      "title": "Save Video"
+    }
+  },
+  "178": {
+    "inputs": {
+      "image": "charSheet_x3.png"
+    },
+    "class_type": "LoadImage",
+    "_meta": {
+      "title": "Load Image - 1"
+    }
+  },
+  "182": {
+    "inputs": {
+      "value": "  fl2va_prompt\": \"How the reference video and pictures align with the target video \\u2014 <Video 1> supplies the frames immediately preceding the target video; the target video resumes from its final frame at the 0.00-second mark with no cut. Target duration 10.00 seconds.\\n\\nsummary:\\n[video continuation + reference generation] The target video continues <Video 1> without interruption, showing <Subject 1> removing her floral camisole to reveal a lace bra, speaking seductively in a British accent with a tongue trace, and being lifted by arms entering from the camera's perspective.\\n\\nsubject_definitions:\\n<Video 1> establishes the inherited motion, camera position, framing, and warm interior lighting at the seam; the target video continues that trajectory and light without a cut.\\n<Subject 1> is the woman defined by <Picture 1>, shown there in front, three-quarter profile, and full-body views: red hair styled in a bun with loose strands, pale skin with light freckles across the nose and cheeks, brown eyes, and rose-tinted lipstick; <Picture 2> is a close-up of her face and supplies her skin texture, eye color, and the exact fall of her hair at her cheeks. Her identity follows <Picture 1> and <Picture 2>; her position and lighting follow <Video 1>.\\n<Subject 2> is the apartment interior from <Picture 3>: a living room with a large blue sectional sofa, grey and white pillows, a wide-plank wood floor with a light rug, a bed with white linens visible through a glass partition, and a dark wood media console. The room follows <Picture 3> in layout, materials, and light; camera position and framing follow the action and are not constrained to the plate's viewpoint.\\n\\nintegrated_multimodal_description: [Shot 1] Live-action, cinematic, soft morning interior light. The shot resumes from the final frame of <Video 1> with no cut: <Subject 1> is laughing with a wide, open-mouthed smile and squinted eyes, her head tilted slightly toward the man's hand, which holds a small white and red object near her chin. As she transitions from her laugh into a deliberate movement, <Subject 1> reaches up with both hands, grasping the hem of her floral camisole and lifting it over her head, her shoulders rolling upward as the fabric slides up her torso, while the camera maintains a tracking shot from a front-facing position at a medium distance, pushing in with small amplitude at slow speed. Her arms rise fully, and she pulls the garment completely off, letting it fall and tossing it behind her onto the floor with a soft thud. As the shirt clears her head, she is revealed in a white semi-transparent sheer lace bra that sits against her skin. <Subject 1> (S1) says in a soft British accent, <d>[English] I want you to.</d> She closes her lips, then her tongue emerges slightly, tracing her top lip seductively from the right side to the left in a slow, deliberate motion. She then speaks again, her expression intensifying as she leans slightly forward, <Subject 1> (S1) says in a soft British accent, <d>[English] fuck me right here on the couch.</d> She closes her lips and smiles, her face glowing in the morning light. Suddenly, two arms enter the frame from the bottom right, reaching out from the camera's perspective to grab her firmly under her arms just below her breasts. <Subject 1> reacts with a joyful, genuine laugh, her body lifting slightly into the air as she is pulled toward the viewer with a smooth, upward motion. The camera captures her face in a medium close-up, maintaining the soft, warm morning light and the slight organic sway. Her red hair bun, freckles, white lace bra, and the blue sofa in the background remain consistent.\\n\\noverall_soundscape: The low room tone from the preceding shot continues unbroken beneath the soft rustle of fabric as the shirt is lifted. The sound of the garment hitting the floor is followed by the woman's soft, breathy speech and the subtle friction of skin against skin during the tongue trace.\\n\\nnon_diegetic_music: N/A\n"
+    },
+    "class_type": "PrimitiveStringMultiline",
+    "_meta": {
+      "title": "Input Text (Prompt)"
+    }
+  },
+  "187": {
+    "inputs": {
+      "image": "apt_living2bedroom_2.png"
+    },
+    "class_type": "LoadImage",
+    "_meta": {
+      "title": "Load Image - 3"
+    }
+  },
+  "192": {
+    "inputs": {
+      "filename_prefix": "H3/audio",
+      "format": "flac",
+      "audio": [
+        "138",
+        0
+      ]
+    },
+    "class_type": "SaveAudioAdvanced",
+    "_meta": {
+      "title": "Save Audio (Advanced)"
+    }
+  },
+  "195": {
+    "inputs": {
+      "video": "scene_02_livingroom_clip01.mp4",
+      "force_rate": 24,
+      "custom_width": 0,
+      "custom_height": 0,
+      "frame_load_cap": 0,
+      "start_time": 9.6,
+      "format": "AnimateDiff"
+    },
+    "class_type": "VHS_LoadVideoFFmpeg",
+    "_meta": {
+      "title": "Load Video FFmpeg (Previous 10s clip)"
+    }
+  },
+  "198": {
+    "inputs": {
+      "lora_name": "H3\\minimax_h3_fl2v_turbo_8step_v1.0_comfyui_bf16.safetensors",
+      "strength_model": 1,
+      "model": [
+        "160",
+        0
+      ]
+    },
+    "class_type": "LoraLoaderModelOnly",
+    "_meta": {
+      "title": "Load LoRA"
+    }
+  },
+  "202": {
+    "inputs": {},
+    "class_type": "MiniMaxH3TurboSampler",
+    "_meta": {
+      "title": "MiniMax-H3 Turbo Sampler (4-step)"
+    }
+  },
+  "203": {
+    "inputs": {
+      "image": "apt_living2bedroom_2.png"
+    },
+    "class_type": "LoadImage",
+    "_meta": {
+      "title": "Load Image - 4"
+    }
+  },
+  "204": {
+    "inputs": {
+      "switch": true,
+      "on_false": [
+        "140",
+        0
+      ],
+      "on_true": [
+        "202",
+        0
+      ]
+    },
+    "class_type": "ComfySwitchNode",
+    "_meta": {
+      "title": "Use Turbo Sampler?"
+    }
+  },
+  "209": {
+    "inputs": {
+      "filename_prefix": "h3/final_frame",
+      "images": [
+        "210",
+        0
+      ]
+    },
+    "class_type": "SaveImage",
+    "_meta": {
+      "title": "Save Image"
+    }
+  },
+  "210": {
+    "inputs": {
+      "batch_index": -1,
+      "length": 1,
+      "image": [
+        "151",
+        0
+      ]
+    },
+    "class_type": "ImageFromBatch",
+    "_meta": {
+      "title": "Get Image from Batch"
+    }
+  }
+}

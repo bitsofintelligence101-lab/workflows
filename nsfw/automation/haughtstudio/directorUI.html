@@ -1,0 +1,1004 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Movie Director — Run Builder</title>
+<style>
+  :root {
+    --bg: #0d1117;
+    --bg-2: #161b22;
+    --bg-3: #1c2330;
+    --border: #2d333d;
+    --border-hover: #444c56;
+    --text: #e6edf3;
+    --text-dim: #8b949e;
+    --accent: #4f8ef7;
+    --accent-2: #7aa5f8;
+    --green: #3fb950;
+    --yellow: #d29922;
+    --red: #f85149;
+    --radius: 10px;
+    --mono: "Cascadia Code", "JetBrains Mono", Consolas, monospace;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scrollbar-color: var(--border-hover) var(--bg); }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+    font-size: 14px;
+    min-height: 100vh;
+  }
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border-hover); border-radius: 5px; }
+
+  /* ---------- layout ---------- */
+  header {
+    display: flex; align-items: center; gap: 14px;
+    padding: 14px 24px;
+    background: var(--bg-2);
+    border-bottom: 1px solid var(--border);
+    position: sticky; top: 0; z-index: 50;
+  }
+  header h1 { font-size: 17px; font-weight: 600; letter-spacing: .3px; }
+  header h1 .clapper { margin-right: 8px; }
+  header .spacer { flex: 1; }
+  main {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 460px;
+    gap: 20px;
+    padding: 20px 24px 60px;
+    max-width: 1600px;
+    margin: 0 auto;
+  }
+  @media (max-width: 1100px) { main { grid-template-columns: 1fr; } }
+  .col { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+
+  /* ---------- panels & cards ---------- */
+  .panel {
+    background: var(--bg-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+  .panel-head {
+    display: flex; align-items: center; gap: 10px;
+    padding: 12px 16px;
+    background: var(--bg-3);
+    border-bottom: 1px solid var(--border);
+    font-weight: 600; font-size: 13px;
+    text-transform: uppercase; letter-spacing: .6px;
+    color: var(--text-dim);
+  }
+  .panel-head .spacer { flex: 1; }
+  .panel-body { padding: 16px; display: flex; flex-direction: column; gap: 14px; }
+
+  .scene-card {
+    background: var(--bg-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    transition: border-color .15s;
+  }
+  .scene-card:hover { border-color: var(--border-hover); }
+  .scene-card.dragging { opacity: .45; }
+  .scene-head {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 14px;
+    cursor: pointer;
+    user-select: none;
+  }
+  .scene-head .drag { color: var(--text-dim); cursor: grab; font-size: 15px; }
+  .scene-head .badge {
+    background: var(--accent); color: #fff;
+    font-size: 11px; font-weight: 700;
+    min-width: 22px; height: 22px; border-radius: 11px;
+    display: inline-flex; align-items: center; justify-content: center;
+    padding: 0 6px;
+  }
+  .scene-head .scene-title { font-weight: 600; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .scene-head .chev { color: var(--text-dim); transition: transform .15s; }
+  .scene-card.collapsed .chev { transform: rotate(-90deg); }
+  .scene-card.collapsed .scene-body { display: none; }
+  .scene-body { padding: 4px 16px 16px; display: flex; flex-direction: column; gap: 12px; }
+
+  /* ---------- form controls ---------- */
+  label.field { display: flex; flex-direction: column; gap: 5px; font-size: 12px; color: var(--text-dim); font-weight: 600; }
+  input[type="text"], input[type="number"], textarea, select {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    color: var(--text);
+    padding: 8px 10px;
+    font-size: 13px;
+    font-family: inherit;
+    width: 100%;
+    outline: none;
+    transition: border-color .15s;
+  }
+  textarea { resize: vertical; min-height: 84px; line-height: 1.5; }
+  input:focus, textarea:focus, select:focus { border-color: var(--accent); }
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  @media (max-width: 640px) { .grid-2, .grid-3 { grid-template-columns: 1fr; } }
+  .check-row { display: flex; align-items: center; gap: 8px; font-size: 13px; }
+  .check-row input { accent-color: var(--accent); width: 15px; height: 15px; }
+
+  /* ---------- buttons ---------- */
+  .btn {
+    display: inline-flex; align-items: center; gap: 7px;
+    background: var(--bg-3);
+    border: 1px solid var(--border);
+    color: var(--text);
+    border-radius: 7px;
+    padding: 8px 14px;
+    font-size: 13px; font-weight: 600;
+    cursor: pointer;
+    transition: background .15s, border-color .15s;
+    white-space: nowrap;
+  }
+  .btn:hover { background: #232b3a; border-color: var(--border-hover); }
+  .btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .btn.primary:hover:not(:disabled) { background: var(--accent-2); }
+  .btn.go { background: var(--green); border-color: var(--green); color: #04140a; }
+  .btn.go:hover:not(:disabled) { background: #46c95a; }
+  .btn.stop { background: var(--red); border-color: var(--red); color: #fff; }
+  .btn.danger { color: var(--red); }
+  .btn.danger:hover { border-color: var(--red); background: rgba(248,81,73,.08); }
+  .btn.small { padding: 4px 10px; font-size: 12px; }
+  .btn.icon { padding: 6px 9px; }
+  .btn:disabled { opacity: .45; cursor: not-allowed; }
+
+  #addSceneBtn {
+    border: 1.5px dashed var(--border-hover);
+    background: transparent;
+    color: var(--text-dim);
+    justify-content: center;
+    padding: 14px;
+    font-size: 14px;
+    border-radius: var(--radius);
+    width: 100%;
+  }
+  #addSceneBtn:hover { color: var(--accent); border-color: var(--accent); background: rgba(79,142,247,.06); }
+
+  /* ---------- image slots ---------- */
+  .img-slots { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+  .img-slot {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--bg);
+    padding: 8px;
+    display: flex; flex-direction: column; gap: 6px;
+    position: relative;
+  }
+  .img-slot.empty { border-style: dashed; opacity: .75; }
+  .img-slot .slot-label { font-size: 11px; font-weight: 700; color: var(--text-dim); }
+  .img-slot input[type="text"] { padding: 5px 8px; font-size: 12px; font-family: var(--mono); }
+  .img-slot .slot-remove {
+    position: absolute; top: -7px; right: -7px;
+    width: 20px; height: 20px; border-radius: 50%;
+    background: var(--red); color: #fff; border: none;
+    font-size: 12px; line-height: 1; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .img-slot .preview {
+    width: 100%; aspect-ratio: 16/10; object-fit: cover;
+    border-radius: 5px; background: var(--bg-3); display: none;
+  }
+
+  /* ---------- status / console ---------- */
+  .status-chip {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 11px; font-weight: 700;
+    padding: 3px 10px; border-radius: 12px;
+    text-transform: uppercase; letter-spacing: .4px;
+  }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--text-dim); }
+  .dot.pulse { animation: pulse 1.1s infinite; }
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: .25; } }
+  .st-pending  { background: rgba(139,148,158,.15); color: var(--text-dim); }
+  .st-pending .dot { background: var(--text-dim); }
+  .st-running  { background: rgba(210,153,34,.15); color: var(--yellow); }
+  .st-running .dot { background: var(--yellow); }
+  .st-done     { background: rgba(63,185,80,.15); color: var(--green); }
+  .st-done .dot { background: var(--green); }
+  .st-failed   { background: rgba(248,81,73,.15); color: var(--red); }
+  .st-failed .dot { background: var(--red); }
+
+  .run-banner {
+    display: flex; align-items: center; gap: 10px;
+    border: 1px solid var(--border); border-radius: 8px;
+    padding: 10px 12px; background: var(--bg);
+    font-weight: 600;
+  }
+  .run-row { display: flex; align-items: flex-start; gap: 10px; padding: 10px 12px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg); }
+  .run-row .name { font-family: var(--mono); font-size: 12px; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding-top: 3px; }
+  .run-links { display: flex; gap: 6px; flex-wrap: wrap; max-width: 55%; justify-content: flex-end; }
+  .run-links a {
+    font-size: 11px; color: var(--accent-2); text-decoration: none;
+    border: 1px solid var(--border); border-radius: 6px; padding: 2px 8px;
+    background: var(--bg-3);
+  }
+  .run-links a:hover { border-color: var(--accent); }
+
+  #logBox {
+    background: #0a0d12;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-family: var(--mono);
+    font-size: 12px;
+    line-height: 1.55;
+    padding: 10px 12px;
+    height: 220px;
+    overflow-y: auto;
+    white-space: pre-wrap;
+    word-break: break-word;
+    color: var(--text-dim);
+  }
+  #logBox .t { color: #545d68; margin-right: 8px; }
+  #logBox .ok { color: var(--green); }
+  #logBox .warn { color: var(--yellow); }
+  #logBox .err { color: var(--red); }
+
+  /* ---------- generated script ---------- */
+  #scriptOut {
+    background: #0a0d12;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-family: var(--mono);
+    font-size: 11.5px;
+    line-height: 1.5;
+    padding: 12px 14px;
+    height: 340px;
+    overflow: auto;
+    white-space: pre;
+    color: #a5d6ff;
+    tab-size: 4;
+  }
+
+  details.help { font-size: 12.5px; color: var(--text-dim); }
+  details.help summary { cursor: pointer; font-weight: 600; color: var(--text); }
+  details.help ol { margin: 8px 0 0 20px; display: flex; flex-direction: column; gap: 4px; }
+  code { font-family: var(--mono); background: var(--bg-3); padding: 1px 6px; border-radius: 4px; font-size: 12px; color: var(--accent-2); }
+
+  .hint { font-size: 11.5px; color: var(--text-dim); font-weight: 400; }
+  .toolbar { display: flex; gap: 8px; flex-wrap: wrap; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1><span class="clapper">🎬</span>Movie Director <span style="color:var(--text-dim);font-weight:400">— Run Builder</span></h1>
+  <span class="spacer"></span>
+  <button class="btn go" id="runBtn">▶ Run</button>
+  <button class="btn stop" id="stopBtn" disabled>■ Stop</button>
+  <button class="btn" id="importBtn" title="Load a previously exported config JSON">⤒ Import</button>
+  <button class="btn" id="exportBtn" title="Save this run configuration as JSON">⤓ Export</button>
+  <input type="file" id="importFile" accept=".json,application/json" hidden>
+</header>
+
+<main>
+  <!-- ================= LEFT : build ================= -->
+  <div class="col">
+
+    <!-- Global settings -->
+    <section class="panel">
+      <div class="panel-head">⚙ Global settings</div>
+      <div class="panel-body">
+        <div class="grid-2">
+          <label class="field">Output directory (absolute path on this machine)
+            <input type="text" id="g_outputDir" placeholder="C:\...\movie_output">
+          </label>
+          <label class="field">Character / asset base folder (optional, used as BASE in the script preview)
+            <input type="text" id="g_baseDir" placeholder="C:\Users\...\automation\project">
+          </label>
+        </div>
+        <div class="grid-3">
+          <label class="field">Clips per scene (default)
+            <input type="number" id="g_clipsPerScene" min="1" max="20" value="1">
+          </label>
+          <label class="field">Clip duration (seconds)
+            <input type="number" id="g_clipDuration" min="1" max="30" step="0.5" value="10">
+          </label>
+          <label class="field">Megapixels
+            <input type="number" id="g_megapixels" min="0.1" max="2" step="0.05" value="0.6">
+          </label>
+        </div>
+        <div class="grid-3">
+          <label class="field">Aspect ratio
+            <select id="g_aspectRatio">
+              <option selected>16:9 (Widescreen)</option>
+              <option>9:16 (Portrait)</option>
+              <option>1:1 (Square)</option>
+              <option>4:3 (Classic)</option>
+              <option>3:4 (Portrait)</option>
+              <option>21:9 (Ultrawide)</option>
+            </select>
+          </label>
+          <label class="field">Quant
+            <select id="g_quant">
+              <option value="int8" selected>int8</option>
+              <option value="bf16">bf16</option>
+            </select>
+          </label>
+          <label class="field">AI timeout (seconds)
+            <input type="number" id="g_aiTimeout" min="60" step="30" value="900">
+          </label>
+        </div>
+        <div style="display:flex;gap:24px;flex-wrap:wrap">
+          <label class="check-row"><input type="checkbox" id="g_turboLora" checked> Turbo LoRA</label>
+          <label class="check-row"><input type="checkbox" id="g_chainScenes"> chain_scenes <span class="hint">(when checked scenes without an explicit video arg continue from the previous scene's last clip)</span></label>
+        </div>
+      </div>
+    </section>
+
+    <!-- Scenes -->
+    <section class="panel">
+      <div class="panel-head">
+        🎞 Scenes <span id="sceneCount" style="text-transform:none">(0)</span>
+        <span class="spacer"></span>
+        <span class="hint" style="text-transform:none">scene ids auto-number (scene_01, scene_02…) — drag ⠿ to reorder</span>
+      </div>
+      <div class="panel-body">
+        <div id="sceneList" style="display:flex;flex-direction:column;gap:12px"></div>
+        <button id="addSceneBtn" class="btn">＋ Add scene</button>
+      </div>
+    </section>
+
+    <!-- Generated script preview -->
+    <section class="panel">
+      <div class="panel-head">
+        📜 Generated run script <span class="hint" style="text-transform:none">— preview of exactly what ▶ Run executes</span>
+        <span class="spacer"></span>
+        <div class="toolbar">
+          <button class="btn small" id="copyScriptBtn">⧉ Copy</button>
+        </div>
+      </div>
+      <div class="panel-body">
+        <pre id="scriptOut"></pre>
+        <details class="help">
+          <summary>How running works</summary>
+          <ol>
+            <li>Start the server once: <code>python director_server.py</code>, then open <code>http://127.0.0.1:5000</code>.</li>
+            <li>Build your scenes (Export for Future use/edits), press <b>▶ Run</b> — the server executes the equivalent of this script in-process via <code>MovieDirector</code>.</li>
+            <li>The <b>Run status</b> panel streams server logs and <code>movie_manifest.json</code> progress live; media links are served over HTTP by the server.</li>
+            <li><b>■ Stop</b> is cooperative: the run halts after the current clip finishes (in-flight ComfyUI generations are not killed).</li>
+          </ol>
+        </details>
+      </div>
+    </section>
+  </div>
+
+  <!-- ================= RIGHT : status ================= -->
+  <div class="col">
+    <section class="panel" style="position:sticky;top:76px">
+      <div class="panel-head">📡 Run status</div>
+      <div class="panel-body">
+        <div class="run-banner">
+          <span class="status-chip st-pending" id="runStateChip"><span class="dot"></span>idle</span>
+          <span id="runStateText" class="hint" style="flex:1">No run yet.</span>
+          <button class="btn small" id="openOutBtn" disabled title="Open movie_manifest.json for the current output folder">🗀 manifest</button>
+        </div>
+        <div id="runStatus" style="display:flex;flex-direction:column;gap:8px"></div>
+        <div class="panel-head" style="margin:6px -16px 0;border-top:1px solid var(--border)">🖹 Server log</div>
+        <div id="logBox"></div>
+      </div>
+    </section>
+  </div>
+</main>
+
+<script>
+"use strict";
+/* =====================================================================
+   State
+===================================================================== */
+let scenes = [];           // [{uid, slug, summary, clips, duration, videoFrom, videoFilePath, videoDesc, images:[{path,description}]}]
+let sceneSeq = 0;          // monotonic uid counter (never reused)
+let serverOutputDir = null;
+let serverManifest = null;
+let serverState = "idle";
+let lastLogCount = 0;
+
+const MAX_IMAGES = 4;
+const $ = (sel) => document.querySelector(sel);
+const el = (tag, cls, text) => {
+  const n = document.createElement(tag);
+  if (cls) n.className = cls;
+  if (text !== undefined) n.textContent = text;
+  return n;
+};
+
+/* =====================================================================
+   Scene ids: auto-numbered, recomputed on every add / delete / reorder.
+   scene_01, scene_02, ... with an optional slug suffix.
+===================================================================== */
+function sceneId(s) {
+  const idx = scenes.indexOf(s);
+  const base = "scene_" + String(idx + 1).padStart(2, "0");
+  return s.slug ? `${base}_${s.slug}` : base;
+}
+
+function renumber() {
+  const valid = new Set(scenes.map(s => s.uid));
+  scenes.forEach(s => {
+    // clear dangling continue-from references (target deleted / itself)
+    if (s.videoFrom && s.videoFrom !== "chain" && s.videoFrom !== "__file__" && !valid.has(s.videoFrom)) {
+      s.videoFrom = "";
+    }
+  });
+}
+
+/* =====================================================================
+   Scene cards
+===================================================================== */
+function addScene(data) {
+  sceneSeq += 1;
+  const scene = Object.assign({
+    uid: "s" + sceneSeq,
+    slug: "",
+    summary: "",
+    clips: "",            // "" -> use global default
+    duration: "",
+    videoFrom: "",        // "" | "chain" | "__file__" | other scene's uid
+    videoFilePath: "",
+    videoDesc: "",
+    images: [{ path: "", description: "" }],
+  }, data || {});
+  scenes.push(scene);
+  renumber();
+  renderScenes();
+  refreshScript();
+  return scene;
+}
+
+function removeScene(uid) {
+  scenes = scenes.filter(s => s.uid !== uid);
+  renumber();            // ids shift: scene_03 becomes scene_02, etc.
+  renderScenes();
+  refreshScript();
+}
+
+function moveScene(uid, dir) {
+  const i = scenes.findIndex(s => s.uid === uid);
+  const j = i + dir;
+  if (i < 0 || j < 0 || j >= scenes.length) return;
+  [scenes[i], scenes[j]] = [scenes[j], scenes[i]];
+  renumber();
+  renderScenes();
+  refreshScript();
+}
+
+function renderScenes() {
+  const list = $("#sceneList");
+  list.innerHTML = "";
+  $("#sceneCount").textContent = `(${scenes.length})`;
+
+  scenes.forEach((s, idx) => {
+    const card = el("div", "scene-card");
+    card.dataset.uid = s.uid;
+
+    /* ---- header ---- */
+    const head = el("div", "scene-head");
+    const drag = el("span", "drag", "⠿"); drag.title = "Drag to reorder";
+    drag.draggable = true;
+    drag.addEventListener("dragstart", e => { e.dataTransfer.setData("text/plain", s.uid); card.classList.add("dragging"); });
+    drag.addEventListener("dragend", () => card.classList.remove("dragging"));
+    card.addEventListener("dragover", e => e.preventDefault());
+    card.addEventListener("drop", e => {
+      e.preventDefault();
+      const fromUid = e.dataTransfer.getData("text/plain");
+      const from = scenes.findIndex(x => x.uid === fromUid);
+      const to = scenes.findIndex(x => x.uid === s.uid);
+      if (from >= 0 && to >= 0 && from !== to) {
+        const [moved] = scenes.splice(from, 1);
+        scenes.splice(to, 0, moved);
+        renumber();
+        renderScenes(); refreshScript();
+      }
+    });
+
+    const badge = el("span", "badge", String(idx + 1));
+    const title = el("span", "scene-title", sceneId(s));
+    const up = el("button", "btn small icon", "↑"); up.title = "Move up";
+    up.addEventListener("click", e => { e.stopPropagation(); moveScene(s.uid, -1); });
+    const dn = el("button", "btn small icon", "↓"); dn.title = "Move down";
+    dn.addEventListener("click", e => { e.stopPropagation(); moveScene(s.uid, +1); });
+    const del = el("button", "btn small icon danger", "✕"); del.title = "Delete scene";
+    del.addEventListener("click", e => { e.stopPropagation(); removeScene(s.uid); });
+    const chev = el("span", "chev", "▾");
+    head.append(drag, badge, title, up, dn, del, chev);
+    head.addEventListener("click", () => card.classList.toggle("collapsed"));
+    card.appendChild(head);
+
+    /* ---- body ---- */
+    const body = el("div", "scene-body");
+
+    // slug (name suffix)
+    const slugField = el("label", "field", `Scene name suffix — id will be ${sceneId(s)}`);
+    const slugInput = el("input"); slugInput.type = "text"; slugInput.value = s.slug;
+    slugInput.placeholder = "kitchen  (optional; a-z 0-9 _ -)";
+    slugInput.addEventListener("input", () => {
+      s.slug = slugInput.value.trim().toLowerCase().replace(/\s+/g, "_").replace(/[^a-z0-9_\-]/g, "");
+      title.textContent = sceneId(s);
+      slugField.childNodes[0].textContent = `Scene name suffix — id will be ${sceneId(s)}`;
+      refreshScript(); renderStatus();
+    });
+    slugField.appendChild(slugInput);
+    body.appendChild(slugField);
+
+    // summary
+    const sumField = el("label", "field", "Scene summary (what happens — sent to the FL2VA prompt writer)");
+    const ta = el("textarea"); ta.value = s.summary;
+    ta.placeholder = "She walks into the living room, sits on the couch, and …";
+    ta.addEventListener("input", () => { s.summary = ta.value; refreshScript(); });
+    sumField.appendChild(ta);
+    body.appendChild(sumField);
+
+    // clips / duration overrides
+    const g2 = el("div", "grid-2");
+    const clipsField = el("label", "field", "Clips (blank = global default)");
+    const clipsInput = el("input"); clipsInput.type = "number"; clipsInput.min = "1"; clipsInput.max = "20"; clipsInput.value = s.clips;
+    clipsInput.addEventListener("input", () => { s.clips = clipsInput.value; refreshScript(); renderStatus(); });
+    clipsField.appendChild(clipsInput);
+    const durField = el("label", "field", "Duration override (s, blank = global)");
+    const durInput = el("input"); durInput.type = "number"; durInput.min = "1"; durInput.max = "30"; durInput.step = "0.5"; durInput.value = s.duration;
+    durInput.addEventListener("input", () => { s.duration = durInput.value; refreshScript(); });
+    durField.appendChild(durInput);
+    g2.append(clipsField, durField);
+    body.appendChild(g2);
+
+    // continue-from dropdown
+    const vidField = el("label", "field", "Continue from video (scene's \"video\" entry — resolves to that scene's clip_1)");
+    const sel = el("select");
+    const optNone = el("option", null, "— none (open cold) —"); optNone.value = "";
+    sel.appendChild(optNone);
+    if ($("#g_chainScenes").checked) {
+      const optChain = el("option", null, "⛓ chain_scenes (previous scene's last clip)"); optChain.value = "chain";
+      sel.appendChild(optChain);
+    }
+    scenes.forEach((other, oIdx) => {
+      if (other.uid === s.uid) return;
+      const o = el("option", null, `${oIdx + 1}. ${sceneId(other)}  (clip_1)`);
+      o.value = other.uid;
+      sel.appendChild(o);
+    });
+    const optFile = el("option", null, "📄 direct video file path…"); optFile.value = "__file__";
+    sel.appendChild(optFile);
+    sel.value = s.videoFrom;
+    if (sel.value !== s.videoFrom) { s.videoFrom = ""; sel.value = ""; }   // stale uid after a delete
+    sel.addEventListener("change", () => {
+      if (sel.value === "__file__") {
+        const p = prompt("Absolute path to the video file:", s.videoFilePath || "");
+        if (p) { s.videoFrom = "__file__"; s.videoFilePath = p; }
+        else { sel.value = s.videoFrom = ""; }
+      } else {
+        s.videoFrom = sel.value;
+      }
+      descRow.style.display = s.videoFrom && s.videoFrom !== "chain" ? "" : "none";
+      refreshScript(); renderStatus();
+    });
+    vidField.appendChild(sel);
+    body.appendChild(vidField);
+
+    // optional video description override
+    const descRow = el("label", "field", "Video description override (blank = auto-described by the vision AI)");
+    descRow.style.display = s.videoFrom && s.videoFrom !== "chain" ? "" : "none";
+    const descInput = el("input"); descInput.type = "text"; descInput.value = s.videoDesc;
+    descInput.placeholder = "The prior clip ends with …";
+    descInput.addEventListener("input", () => { s.videoDesc = descInput.value; refreshScript(); });
+    descRow.appendChild(descInput);
+    body.appendChild(descRow);
+
+    // ---- image slots ----
+    const imgHead = el("div", null);
+    imgHead.style.cssText = "display:flex;align-items:center;gap:10px;font-size:12px;font-weight:600;color:var(--text-dim)";
+    imgHead.appendChild(el("span", null, "Reference images (img_1 … img_4, max 4)"));
+    const addImg = el("button", "btn small", "＋ image");
+    addImg.addEventListener("click", () => {
+      if (s.images.length >= MAX_IMAGES) return;
+      s.images.push({ path: "", description: "" });
+      renderScenes(); refreshScript();
+    });
+    imgHead.appendChild(addImg);
+    body.appendChild(imgHead);
+
+    const slots = el("div", "img-slots");
+    s.images.forEach((img, i) => {
+      const slot = el("div", "img-slot" + (img.path ? "" : " empty"));
+      slot.appendChild(el("span", "slot-label", "img_" + (i + 1)));
+      if (s.images.length > 1) {
+        const rm = el("button", "slot-remove", "✕"); rm.title = "Remove image";
+        rm.addEventListener("click", () => { s.images.splice(i, 1); renderScenes(); refreshScript(); });
+        slot.appendChild(rm);
+      }
+      const prev = el("img", "preview");
+      prev.alt = "";
+      const pathInput = el("input"); pathInput.type = "text"; pathInput.placeholder = "C:\\path\\to\\image.png";
+      pathInput.value = img.path;
+      pathInput.addEventListener("input", () => {
+        img.path = pathInput.value;
+        slot.classList.toggle("empty", !img.path);
+        if (/\.(png|jpe?g|webp|gif)$/i.test(img.path)) {
+          prev.src = "/media?path=" + encodeURIComponent(img.path);
+          prev.onload = () => { prev.style.display = "block"; };
+          prev.onerror = () => { prev.style.display = "none"; };
+        } else prev.style.display = "none";
+        refreshScript();
+      });
+      if (img.path) pathInput.dispatchEvent(new Event("input"));
+      const descI = el("input"); descI.type = "text"; descI.placeholder = "description (inputs manifest note)";
+      descI.value = img.description;
+      descI.addEventListener("input", () => { img.description = descI.value; refreshScript(); });
+      slot.append(prev, pathInput, descI);
+      slots.appendChild(slot);
+    });
+    body.appendChild(slots);
+
+    card.appendChild(body);
+    list.appendChild(card);
+  });
+
+  renderStatus();
+}
+
+/* =====================================================================
+   Script preview (shows exactly what ▶ Run executes)
+===================================================================== */
+function pyStr(v) { return JSON.stringify(String(v)); }   // JSON string is a valid Python string literal
+
+function buildConfig() {
+  return {
+    base_dir: $("#g_baseDir").value.trim(),
+    output_dir: $("#g_outputDir").value.trim(),
+    clips_per_scene: +$("#g_clipsPerScene").value || 1,
+    clip_duration: +$("#g_clipDuration").value || 10,
+    megapixels: +$("#g_megapixels").value || 0.6,
+    aspect_ratio: $("#g_aspectRatio").value,
+    quant: $("#g_quant").value,
+    ai_timeout: +$("#g_aiTimeout").value || 900,
+    turbo_lora: $("#g_turboLora").checked,
+    chain_scenes: $("#g_chainScenes").checked,
+    scenes: scenes.map(s => ({
+      id: sceneId(s),
+      summary: s.summary,
+      clips: s.clips === "" ? null : +s.clips,
+      duration: s.duration === "" ? null : +s.duration,
+      videoFrom: s.videoFrom === "" || s.videoFrom === "chain" || s.videoFrom === "__file__"
+        ? s.videoFrom
+        : (() => { const t = scenes.find(x => x.uid === s.videoFrom); return t ? sceneId(t) : ""; })(),
+      videoFilePath: s.videoFilePath || "",
+      videoDesc: s.videoDesc,
+      images: s.images.filter(im => im.path.trim()),
+    })),
+  };
+}
+
+function buildScript(cfg) {
+  const path = p => {
+    if (cfg.base_dir && p.startsWith(cfg.base_dir)) {
+      const rel = p.slice(cfg.base_dir.length).replace(/^[\\/]+/, "");
+      return `os.path.join(BASE, ${pyStr(rel)})`;
+    }
+    return `r${pyStr(p)}`;
+  };
+
+  let out = "";
+  out += `"""What ▶ Run executes on the server (equivalent script — preview only)."""\n`;
+  out += `import os\nfrom director import MovieDirector\nfrom call_comfyui import ComfyUIlocal\n\n`;
+  if (cfg.base_dir) out += `BASE = r${pyStr(cfg.base_dir)}\n\n`;
+
+  out += `SCENES = {\n`;
+  cfg.scenes.forEach(s => {
+    out += `    ${pyStr(s.id)}: {\n`;
+    out += `        "summary": ${pyStr(s.summary)},\n`;
+    s.images.forEach((im, i) => {
+      out += `        "img_${i + 1}": {"path": ${path(im.path)}, "description": ${pyStr(im.description)}},\n`;
+    });
+    if (s.videoFrom === "chain") {
+      out += `        # chained from previous scene's last clip (chain_scenes=True)\n`;
+    } else if (s.videoFrom === "__file__") {
+      out += `        "video": {"path": r${pyStr(s.videoFilePath)}, "description": ${s.videoDesc ? pyStr(s.videoDesc) : "None"}},\n`;
+    } else if (s.videoFrom) {
+      out += `        "video": {"path": ${pyStr(s.videoFrom)}, "description": ${s.videoDesc ? pyStr(s.videoDesc) : "None"}},\n`;
+    }
+    if (s.clips != null) out += `        "clips": ${s.clips},\n`;
+    if (s.duration != null) out += `        "duration": ${s.duration},\n`;
+    out += `    },\n`;
+  });
+  out += `}\n\n`;
+
+  out += `if __name__ == "__main__":\n`;
+  out += `    comfy_client = ComfyUIlocal()\n`;
+  out += `    comfy_client.aggressive_cleanup()   # free VRAM before running\n\n`;
+  out += `    director = MovieDirector(\n`;
+  out += `        scenes=SCENES,\n`;
+  out += `        output_dir=r${pyStr(cfg.output_dir || "movie_output")},\n`;
+  out += `        clips_per_scene=${cfg.clips_per_scene},\n`;
+  out += `        clip_duration=${cfg.clip_duration},\n`;
+  out += `        megapixels=${cfg.megapixels},\n`;
+  out += `        aspect_ratio=${pyStr(cfg.aspect_ratio)},\n`;
+  out += `        chain_scenes=${cfg.chain_scenes ? "True" : "False"},\n`;
+  out += `        turbo_lora=${cfg.turbo_lora ? "True" : "False"},\n`;
+  out += `        quant=${pyStr(cfg.quant)},          # int8 or bf16 only\n`;
+  out += `        ai_timeout=${cfg.ai_timeout},\n`;
+  out += `        comfy_client=comfy_client,\n`;
+  out += `    )\n`;
+  out += `    director.run()\n`;
+  return out;
+}
+
+function refreshScript() {
+  $("#scriptOut").textContent = buildScript(buildConfig());
+}
+
+/* =====================================================================
+   Run control + status polling (server-backed)
+===================================================================== */
+function mediaLink(p) { return "/media?path=" + encodeURIComponent(p); }
+
+function clipExpectedCount(s) {
+  return s.clips === "" || s.clips == null ? (+$("#g_clipsPerScene").value || 1) : +s.clips;
+}
+
+function logLocal(msg, cls) {
+  const box = $("#logBox");
+  const line = el("div");
+  line.append(el("span", "t", new Date().toLocaleTimeString()), el("span", cls || "", msg));
+  box.appendChild(line);
+  box.scrollTop = box.scrollHeight;
+}
+
+function renderLog(lines) {
+  const box = $("#logBox");
+  if (lastLogCount > lines.length) { box.innerHTML = ""; lastLogCount = 0; }  // server log reset
+  const fresh = lines.slice(lastLogCount);
+  lastLogCount = lines.length;
+  fresh.forEach(l => {
+    const line = el("div");
+    const m = l.match(/^(\d{2}:\d{2}:\d{2})\s\s(.*)$/);
+    let cls = "";
+    if (/error|failed|warning/i.test(l)) cls = /error|failed/i.test(l) ? "err" : "warn";
+    else if (/saved|complete|finished|done/i.test(l)) cls = "ok";
+    if (m) line.append(el("span", "t", m[1]), el("span", cls, m[2]));
+    else line.append(el("span", cls, l));
+    box.appendChild(line);
+  });
+  if (fresh.length) box.scrollTop = box.scrollHeight;
+}
+
+function renderStatus() {
+  const host = $("#runStatus");
+  host.innerHTML = "";
+  const cfgSceneIds = scenes.map(sceneId);
+
+  scenes.forEach((s, idx) => {
+    const id = sceneId(s);
+    const row = el("div", "run-row");
+    const chip = el("span", "status-chip st-pending");
+    chip.append(el("span", "dot"), document.createTextNode("pending"));
+    const name = el("span", "name", `${idx + 1}. ${id}`);
+    const links = el("div", "run-links");
+
+    const manifestClips = (serverManifest && serverManifest.scenes && serverManifest.scenes[id]) || [];
+    const expected = clipExpectedCount(s);
+
+    if (manifestClips.length) {
+      const done = manifestClips.length;
+      const finished = done >= expected || (serverState !== "running" && serverState !== "starting");
+      chip.className = "status-chip st-" + (finished ? "done" : "running");
+      chip.innerHTML = "";
+      chip.append(el("span", "dot" + (finished ? "" : " pulse")),
+                  document.createTextNode(finished ? `done (${done}/${expected})` : `clip ${done}/${expected} rendering…`));
+      manifestClips.forEach(c => {
+        if (c.clip) {
+          const a = el("a", null, "▶ " + (c.clip_key || "clip"));
+          a.href = mediaLink(c.clip); a.target = "_blank"; a.title = c.clip;
+          links.appendChild(a);
+        }
+        if (c.final_frame) {
+          const f = el("a", null, "🖼 frame");
+          f.href = mediaLink(c.final_frame); f.target = "_blank"; f.title = c.final_frame;
+          links.appendChild(f);
+        }
+        if (c.input_json) {
+          const j = el("a", null, "json");
+          j.href = mediaLink(c.input_json); j.target = "_blank"; j.title = c.input_json;
+          links.appendChild(j);
+        }
+      });
+    } else if (serverManifest && (serverState === "running" || serverState === "starting")) {
+      // scene with nothing recorded yet — "prompting" if it's the first
+      // scene in order that has no clips recorded in the manifest
+      const firstEmptyIdx = cfgSceneIds.findIndex(
+        sid => !(((serverManifest.scenes || {})[sid]) || []).length);
+      if (firstEmptyIdx === idx) {
+        chip.className = "status-chip st-running";
+        chip.innerHTML = "";
+        chip.append(el("span", "dot pulse"), document.createTextNode("prompting…"));
+      }
+    }
+
+    row.append(chip, name, links);
+    host.appendChild(row);
+  });
+
+  if (!scenes.length) host.appendChild(el("div", "hint", "No scenes yet — add one with the ＋ button."));
+}
+
+function renderRunBanner() {
+  const chip = $("#runStateChip");
+  const text = $("#runStateText");
+  const map = {
+    idle:    ["st-pending", "idle", "No run yet."],
+    starting:["st-running", "starting", "Spinning up…"],
+    running: ["st-running", "running", "Run in progress…"],
+    done:    ["st-done", "done", "Run complete."],
+    stopped: ["st-failed", "stopped", "Run stopped by user."],
+    error:   ["st-failed", "error", "Run failed — see server log."],
+  };
+  const [cls, label, msg] = map[serverState] || map.idle;
+  chip.className = "status-chip " + cls;
+  chip.innerHTML = "";
+  chip.append(el("span", "dot" + (serverState === "running" || serverState === "starting" ? " pulse" : "")),
+              document.createTextNode(label));
+  text.textContent = serverOutputDir ? `${msg}  →  ${serverOutputDir}` : msg;
+  text.title = serverOutputDir || "";
+  $("#openOutBtn").disabled = !serverOutputDir;
+  $("#runBtn").disabled = serverState === "running" || serverState === "starting";
+  $("#stopBtn").disabled = !(serverState === "running" || serverState === "starting");
+}
+
+async function pollStatus() {
+  try {
+    const r = await fetch("/api/status");
+    if (!r.ok) return;
+    const data = await r.json();
+    serverState = data.state || "idle";
+    serverOutputDir = data.output_dir || serverOutputDir;
+    serverManifest = data.manifest || serverManifest;
+    renderLog(data.log || []);
+    renderRunBanner();
+    renderStatus();
+  } catch (e) { /* server not reachable yet — stay quiet */ }
+}
+
+$("#runBtn").addEventListener("click", async () => {
+  const cfg = buildConfig();
+  if (!cfg.scenes.length) { alert("Add at least one scene first."); return; }
+  $("#runBtn").disabled = true;
+  try {
+    const r = await fetch("/api/run", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(cfg),
+    });
+    const data = await r.json();
+    if (!r.ok) {
+      logLocal("run rejected: " + (data.error || r.statusText), "err");
+      alert("Run rejected: " + (data.error || r.statusText));
+      $("#runBtn").disabled = false;
+      return;
+    }
+    serverManifest = null;
+    logLocal("run started", "ok");
+    pollStatus();
+  } catch (e) {
+    logLocal("could not reach the server — start it with: python director_server.py", "err");
+    alert("Could not reach the server.\nStart it with:  python director_server.py");
+    $("#runBtn").disabled = false;
+  }
+});
+
+$("#stopBtn").addEventListener("click", async () => {
+  try {
+    await fetch("/api/stop", { method: "POST" });
+    logLocal("stop requested — halts after the current clip", "warn");
+  } catch (e) { /* ignore */ }
+});
+
+$("#openOutBtn").addEventListener("click", () => {
+  if (!serverOutputDir) return;
+  window.open(mediaLink(serverOutputDir.replace(/[\\/]+$/, "") + "\\movie_manifest.json"), "_blank");
+});
+
+/* =====================================================================
+   Toolbar: import / export / copy
+===================================================================== */
+$("#exportBtn").addEventListener("click", () => {
+  const blob = new Blob([JSON.stringify(buildConfig(), null, 2)], { type: "application/json" });
+  const a = el("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "director_ui_config.json";
+  a.click();
+  URL.revokeObjectURL(a.href);
+  logLocal("config exported", "ok");
+});
+
+$("#importBtn").addEventListener("click", () => $("#importFile").click());
+$("#importFile").addEventListener("change", async (e) => {
+  const f = e.target.files[0];
+  if (!f) return;
+  try {
+    applyConfig(JSON.parse(await f.text()));
+    logLocal("config imported: " + f.name, "ok");
+  } catch (err) {
+    logLocal("import failed: " + err.message, "err");
+  }
+  e.target.value = "";
+});
+
+function applyConfig(cfg) {
+  $("#g_baseDir").value = cfg.base_dir || "";
+  $("#g_outputDir").value = cfg.output_dir || "";
+  $("#g_clipsPerScene").value = cfg.clips_per_scene ?? 1;
+  $("#g_clipDuration").value = cfg.clip_duration ?? 10;
+  $("#g_megapixels").value = cfg.megapixels ?? 0.6;
+  $("#g_aspectRatio").value = cfg.aspect_ratio || "16:9 (Widescreen)";
+  $("#g_quant").value = cfg.quant || "int8";
+  $("#g_aiTimeout").value = cfg.ai_timeout ?? 900;
+  $("#g_turboLora").checked = !!cfg.turbo_lora;
+  $("#g_chainScenes").checked = !!cfg.chain_scenes;
+  scenes = []; sceneSeq = 0;
+  // map saved scene ids -> new uids so continue-from refs survive an import
+  const idToUid = {};
+  (cfg.scenes || []).forEach(s => {
+    const slug = (s.id || "").replace(/^scene_\d+_?/, "");
+    const sc = addScene({
+      slug,
+      summary: s.summary || "",
+      clips: s.clips == null ? "" : s.clips,
+      duration: s.duration == null ? "" : s.duration,
+      videoFrom: "",          // fixed up below
+      videoFilePath: s.videoFilePath || "",
+      videoDesc: s.videoDesc || "",
+      images: (s.images && s.images.length ? s.images : [{ path: "", description: "" }]),
+    });
+    idToUid[s.id] = sc.uid;
+    sc._importVideoFrom = s.videoFrom;
+  });
+  scenes.forEach(sc => {
+    const v = sc._importVideoFrom;
+    delete sc._importVideoFrom;
+    if (!v) return;
+    if (v === "chain" || v === "__file__") sc.videoFrom = v;
+    else if (idToUid[v]) sc.videoFrom = idToUid[v];   // referenced scene id -> new uid
+  });
+  renumber();
+  renderScenes();
+  refreshScript();
+}
+
+$("#copyScriptBtn").addEventListener("click", async () => {
+  await navigator.clipboard.writeText($("#scriptOut").textContent);
+  logLocal("script preview copied to clipboard", "ok");
+});
+
+/* =====================================================================
+   Wiring
+===================================================================== */
+$("#addSceneBtn").addEventListener("click", () => { addScene(); logLocal("scene added"); });
+$("#g_chainScenes").addEventListener("change", () => { renderScenes(); refreshScript(); });
+["g_outputDir","g_baseDir","g_clipsPerScene","g_clipDuration","g_megapixels",
+ "g_aspectRatio","g_quant","g_aiTimeout","g_turboLora"].forEach(id => {
+  document.getElementById(id).addEventListener("input", () => { refreshScript(); renderStatus(); });
+});
+
+/* boot: preload the last run's config from the server, else start blank */
+(async function boot() {
+  let loaded = false;
+  try {
+    const r = await fetch("/api/config");
+    if (r.ok) {
+      const cfg = await r.json();
+      if (cfg && Object.keys(cfg).length) { applyConfig(cfg); loaded = true; }
+    }
+  } catch (e) { /* server not running */ }
+  if (!loaded) addScene();
+  logLocal(loaded ? "loaded last run's config from the server" : "ready — build scenes on the left, then press ▶ Run", "ok");
+  pollStatus();
+  setInterval(pollStatus, 3000);
+})();
+</script>
+</body>
+</html>
