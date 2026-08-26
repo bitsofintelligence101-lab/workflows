@@ -155,9 +155,9 @@ class AICall:
     # Vision models Downscale to longest edge 640 (aspect kept) so multi-image
     # briefs don't blow the context. ffmpeg handles the resize + JPEG
     # re-encode; PNGs with alpha are flattened onto black first.
-    IMAGE_LONGEST_EDGE = 640
+    IMAGE_LONGEST_EDGE = 800
     VIDEO_SAMPLE_FPS = 4.0
-    VIDEO_LONGEST_EDGE = 500
+    VIDEO_LONGEST_EDGE = 640
 
     @staticmethod
     def _scale_expr(longest_edge):

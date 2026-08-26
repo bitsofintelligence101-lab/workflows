@@ -33,7 +33,7 @@
   },
   "140": {
     "inputs": {
-      "sampler_name": "res_multistep"
+      "sampler_name": "euler"
     },
     "class_type": "KSamplerSelect",
     "_meta": {
@@ -42,11 +42,11 @@
   },
   "141": {
     "inputs": {
-      "scheduler": "simple",
+      "scheduler": "beta",
       "steps": 8,
       "denoise": 1,
       "model": [
-        "198",
+        "224",
         0
       ]
     },
@@ -66,7 +66,7 @@
         0
       ],
       "sampler": [
-        "204",
+        "140",
         0
       ],
       "sigmas": [
@@ -86,7 +86,7 @@
   "143": {
     "inputs": {
       "model": [
-        "198",
+        "224",
         0
       ],
       "conditioning": [
@@ -177,7 +177,7 @@
   "157": {
     "inputs": {
       "aspect_ratio": "16:9 (Widescreen)",
-      "megapixels": 0.6,
+      "megapixels": 0.4,
       "multiple": 32
     },
     "class_type": "ResolutionSelector",
@@ -196,7 +196,7 @@
   },
   "160": {
     "inputs": {
-      "unet_name": "h3\\minimax_h3_fl2va_bf16.safetensors",
+      "unet_name": "h3\\minimax_h3_fl2va_int8_convrot.safetensors",
       "weight_dtype": "default"
     },
     "class_type": "UNETLoader",
@@ -206,7 +206,7 @@
   },
   "161": {
     "inputs": {
-      "noise_seed": 43
+      "noise_seed": 101
     },
     "class_type": "RandomNoise",
     "_meta": {
@@ -231,7 +231,7 @@
         "156",
         1
       ],
-      "ref_image_size": "match",
+      "ref_image_size": "max",
       "clip": [
         "149",
         0
@@ -260,6 +260,14 @@
         "203",
         0
       ],
+      "ref_images.ref_image_4": [
+        "220",
+        0
+      ],
+      "ref_images.ref_image_5": [
+        "221",
+        0
+      ],
       "ref_videos.ref_video_0": [
         "195",
         0
@@ -272,7 +280,7 @@
   },
   "170": {
     "inputs": {
-      "image": "close_up.png"
+      "image": "cleanbackground_2 (1).png"
     },
     "class_type": "LoadImage",
     "_meta": {
@@ -297,7 +305,7 @@
   },
   "178": {
     "inputs": {
-      "image": "charSheet_x3.png"
+      "image": "cleanbackground_1.png"
     },
     "class_type": "LoadImage",
     "_meta": {
@@ -306,7 +314,7 @@
   },
   "182": {
     "inputs": {
-      "value": "  fl2va_prompt\": \"How the reference video and pictures align with the target video \\u2014 <Video 1> supplies the frames immediately preceding the target video; the target video resumes from its final frame at the 0.00-second mark with no cut. Target duration 10.00 seconds.\\n\\nsummary:\\n[video continuation + reference generation] The target video continues <Video 1> without interruption, showing <Subject 1> removing her floral camisole to reveal a lace bra, speaking seductively in a British accent with a tongue trace, and being lifted by arms entering from the camera's perspective.\\n\\nsubject_definitions:\\n<Video 1> establishes the inherited motion, camera position, framing, and warm interior lighting at the seam; the target video continues that trajectory and light without a cut.\\n<Subject 1> is the woman defined by <Picture 1>, shown there in front, three-quarter profile, and full-body views: red hair styled in a bun with loose strands, pale skin with light freckles across the nose and cheeks, brown eyes, and rose-tinted lipstick; <Picture 2> is a close-up of her face and supplies her skin texture, eye color, and the exact fall of her hair at her cheeks. Her identity follows <Picture 1> and <Picture 2>; her position and lighting follow <Video 1>.\\n<Subject 2> is the apartment interior from <Picture 3>: a living room with a large blue sectional sofa, grey and white pillows, a wide-plank wood floor with a light rug, a bed with white linens visible through a glass partition, and a dark wood media console. The room follows <Picture 3> in layout, materials, and light; camera position and framing follow the action and are not constrained to the plate's viewpoint.\\n\\nintegrated_multimodal_description: [Shot 1] Live-action, cinematic, soft morning interior light. The shot resumes from the final frame of <Video 1> with no cut: <Subject 1> is laughing with a wide, open-mouthed smile and squinted eyes, her head tilted slightly toward the man's hand, which holds a small white and red object near her chin. As she transitions from her laugh into a deliberate movement, <Subject 1> reaches up with both hands, grasping the hem of her floral camisole and lifting it over her head, her shoulders rolling upward as the fabric slides up her torso, while the camera maintains a tracking shot from a front-facing position at a medium distance, pushing in with small amplitude at slow speed. Her arms rise fully, and she pulls the garment completely off, letting it fall and tossing it behind her onto the floor with a soft thud. As the shirt clears her head, she is revealed in a white semi-transparent sheer lace bra that sits against her skin. <Subject 1> (S1) says in a soft British accent, <d>[English] I want you to.</d> She closes her lips, then her tongue emerges slightly, tracing her top lip seductively from the right side to the left in a slow, deliberate motion. She then speaks again, her expression intensifying as she leans slightly forward, <Subject 1> (S1) says in a soft British accent, <d>[English] fuck me right here on the couch.</d> She closes her lips and smiles, her face glowing in the morning light. Suddenly, two arms enter the frame from the bottom right, reaching out from the camera's perspective to grab her firmly under her arms just below her breasts. <Subject 1> reacts with a joyful, genuine laugh, her body lifting slightly into the air as she is pulled toward the viewer with a smooth, upward motion. The camera captures her face in a medium close-up, maintaining the soft, warm morning light and the slight organic sway. Her red hair bun, freckles, white lace bra, and the blue sofa in the background remain consistent.\\n\\noverall_soundscape: The low room tone from the preceding shot continues unbroken beneath the soft rustle of fabric as the shirt is lifted. The sound of the garment hitting the floor is followed by the woman's soft, breathy speech and the subtle friction of skin against skin during the tongue trace.\\n\\nnon_diegetic_music: N/A\n"
+      "value": "How the reference pictures align with the target video — there is no starting frame; the 0.00-second mark is composed by combining the references, placing <Subject 1> as defined by <Picture 1> inside the room established by <Subject 3>, rounding a heavy, rusted iron pillar. Target duration 15.00 seconds.\n\nsummary:\n[reference generation] The three-headed dog <Subject 1> rounds a corner in the industrial <Subject 3> and faces the camera. There are multiple cuts between <Subject 1> and <Subject 2>, who shows fear and speaks a line as the dog approaches her.\n\nsubject_definitions:\n<Subject 1> is the three-headed dog in <Picture 1>, with thick, matted brown fur, three heads, and visible sharp teeth and pale blue eyes; its body is large and muscular. Identity follows these reference assets; position and lighting are those of the target room.\n<Subject 2> is the blonde woman in <Picture 2> close up and <Picture 3> 3-panel reference, with blonde hair pulled back, a thin gold necklace, an orange silk button-down shirt, and a short black skirt; <Picture 2> supplies her side profile and <Picture 3> supplies her full outfit. Her identity follows these reference assets; her position and lighting are those of the target room.\n<Subject 3> is the industrial factory in <Picture 4>, featuring massive rusted pipes, heavy grey machinery, high ceilings with steam/smoke, and a gritty, metallic texture. The room follows this layout, materials, and light; camera position and framing follow the action and are not constrained to the reference viewpoint.\n\nintegrated_multimodal_description: The target video is in a live-action cinematic style with cold, moody industrial lighting and heavy steam.\n[Shot 1] The three-headed dog <Subject 1> rounds a heavy, rusted iron pillar in <Subject 3>, its heads turning simultaneously toward the camera. The matted brown fur ripples with its movement, and its jaws part to reveal sharp teeth and pale blue eyes. The camera performs a Push In with small amplitude at slow speed as the dog stares, its massive weight causing the floor to vibrate slightly.\n[Shot 2] At 02.50. The camera cuts to a tight close-up of <Subject 2> in the industrial area. Her brow furrows deeply, her eyes widen to show the whites, and her lip quivers in a micro-gesture of extreme fear. Her chest heaves rapidly with panicked breaths, and a bead of sweat glistens on her temple. The camera is a Static Shot.\n[Shot 3] At 05.00. The camera cuts back to <Subject 1>. It lets out a deep, guttural growl that vibrates through its massive chest. The left dog mouth licks its lips, the center dog head snaps its teeth, and the right dog head points its snout into the air and howls. Its neck muscles tense and ripple as it takes heavy, very slow lumbering steps forward, its paws striking the wet floor with a heavy thud. The camera performs a Tracking Shot with small amplitude at slow speed with slight camera jitter.\n[Shot 4] At 08.00. The camera cuts to <Subject 2> she is backing up moving away from camera. Her orange silk shirt rustles and pulls tight across her shoulders as she hunches backward. <Subject 2> (S1) says in a shaky, high-pitched voice, <d>[English] What.. the.. actual fuck!</d> She pauses for a moment, her facial expression changing to a sarcastic smile as she tilts her head slightly, then continues, <d>[English] Maybe your one of those vegetarian dogs?</d> her pupils dilated and her hands trembling at her sides.\n[Shot 5] At 12.00. The camera cuts to <Subject 2> her back to the camera, camera is looking over her shoulder toward <Subject 1> approximately 10 yards away. <Subject 2> starts walking backwards quickly away from the dog. The dog growls its weight shifting forward as it maintains its steady advance. She says, <d>[English] Nope!</d> her head bowed and her body tensed, her shoulders rising and falling. The camera continues a slow Pull Out over her shoulder, tracking <Subject 2> walking backward with the camera focused on <Subject 1> as it continues its steady, rhythmic forward motion. <Subject 2> turns quickly to run away. The orange silk shirt, gold necklace, blonde hair, matted brown fur, and the industrial pipes, steam, and grey machinery remain unchanged throughout.\n\noverall_soundscape:\nA heavy industrial hum and the constant hiss of steam fill the space. Low, guttural growls from the dog echo off the metal walls, accompanied by the wet thud of heavy paws and the shuffling of <Subject 2>'s shoes on the concrete.\n\nnon_diegetic_music:\nN/A"
     },
     "class_type": "PrimitiveStringMultiline",
     "_meta": {
@@ -315,7 +323,7 @@
   },
   "187": {
     "inputs": {
-      "image": "apt_living2bedroom_2.png"
+      "image": "una_char_sheet_outfit_2.png"
     },
     "class_type": "LoadImage",
     "_meta": {
@@ -338,12 +346,12 @@
   },
   "195": {
     "inputs": {
-      "video": "scene_02_livingroom_clip01.mp4",
+      "video": "svi_full_extended_00001 (4).mp4",
       "force_rate": 24,
       "custom_width": 0,
       "custom_height": 0,
       "frame_load_cap": 0,
-      "start_time": 9.6,
+      "start_time": 2,
       "format": "AnimateDiff"
     },
     "class_type": "VHS_LoadVideoFFmpeg",
@@ -356,7 +364,7 @@
       "lora_name": "H3\\minimax_h3_fl2v_turbo_8step_v1.0_comfyui_bf16.safetensors",
       "strength_model": 1,
       "model": [
-        "160",
+        "223",
         0
       ]
     },
@@ -365,37 +373,13 @@
       "title": "Load LoRA"
     }
   },
-  "202": {
-    "inputs": {},
-    "class_type": "MiniMaxH3TurboSampler",
-    "_meta": {
-      "title": "MiniMax-H3 Turbo Sampler (4-step)"
-    }
-  },
   "203": {
     "inputs": {
-      "image": "apt_living2bedroom_2.png"
+      "image": "underworld_base.png"
     },
     "class_type": "LoadImage",
     "_meta": {
       "title": "Load Image - 4"
-    }
-  },
-  "204": {
-    "inputs": {
-      "switch": true,
-      "on_false": [
-        "140",
-        0
-      ],
-      "on_true": [
-        "202",
-        0
-      ]
-    },
-    "class_type": "ComfySwitchNode",
-    "_meta": {
-      "title": "Use Turbo Sampler?"
     }
   },
   "209": {
@@ -423,6 +407,99 @@
     "class_type": "ImageFromBatch",
     "_meta": {
       "title": "Get Image from Batch"
+    }
+  },
+  "218": {
+    "inputs": {
+      "shift_video": 12,
+      "shift_audio": 8,
+      "model": [
+        "198",
+        0
+      ]
+    },
+    "class_type": "MiniMaxH3SigmaShift",
+    "_meta": {
+      "title": "ModelSamplingMiniMaxH3"
+    }
+  },
+  "220": {
+    "inputs": {
+      "image": "underworld_base.png"
+    },
+    "class_type": "LoadImage",
+    "_meta": {
+      "title": "Load Image - 5"
+    }
+  },
+  "221": {
+    "inputs": {
+      "image": "underworld_base.png"
+    },
+    "class_type": "LoadImage",
+    "_meta": {
+      "title": "Load Image - 6"
+    }
+  },
+  "223": {
+    "inputs": {
+      "lora_name": "H3\\MysticXXX_MMH3-V3.safetensors",
+      "strength_model": 0,
+      "model": [
+        "160",
+        0
+      ]
+    },
+    "class_type": "LoraLoaderModelOnly",
+    "_meta": {
+      "title": "NSFW LoRA"
+    }
+  },
+  "224": {
+    "inputs": {
+      "switch": true,
+      "on_false": [
+        "198",
+        0
+      ],
+      "on_true": [
+        "218",
+        0
+      ]
+    },
+    "class_type": "ComfySwitchNode",
+    "_meta": {
+      "title": "If/Else Switch"
+    }
+  },
+  "232": {
+    "inputs": {
+      "batch_index": [
+        "265",
+        1
+      ],
+      "length": 5,
+      "image": [
+        "139",
+        0
+      ]
+    },
+    "class_type": "ImageFromBatch",
+    "_meta": {
+      "title": "Get Image from Batch"
+    }
+  },
+  "265": {
+    "inputs": {
+      "expression": "a - 5",
+      "values.a": [
+        "156",
+        1
+      ]
+    },
+    "class_type": "ComfyMathExpression",
+    "_meta": {
+      "title": "Math Expression"
     }
   }
 }

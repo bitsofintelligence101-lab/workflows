@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Movie Director — Run Builder</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='88'%3E%F0%9F%8E%AC%3C/text%3E%3C/svg%3E">
 <style>
   :root {
     --bg: #0d1117;
@@ -118,7 +119,11 @@
     transition: border-color .15s;
   }
   textarea { resize: vertical; min-height: 84px; line-height: 1.5; }
-  input:focus, textarea:focus, select:focus { border-color: var(--accent); }
+  input:focus, textarea:focus, select:focus {
+    border-color: #79b8ff;
+    border-width: 2px;
+    box-shadow: 0 0 0 1px #79b8ff;
+  }
   .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
   .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
   @media (max-width: 640px) { .grid-2, .grid-3 { grid-template-columns: 1fr; } }
@@ -182,6 +187,13 @@
     font-size: 12px; line-height: 1; cursor: pointer;
     display: flex; align-items: center; justify-content: center;
   }
+  .img-slot .slot-copy {
+    position: absolute; top: -7px; left: -7px;
+    width: 20px; height: 20px; border-radius: 50%;
+    background: var(--accent); color: #fff; border: none;
+    font-size: 11px; line-height: 1; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+  }
   .img-slot .preview {
     width: 100%; aspect-ratio: 16/10; object-fit: cover;
     border-radius: 5px; background: var(--bg-3); display: none;
@@ -205,6 +217,8 @@
   .st-done .dot { background: var(--green); }
   .st-failed   { background: rgba(248,81,73,.15); color: var(--red); }
   .st-failed .dot { background: var(--red); }
+  .st-ai       { background: rgba(79,142,247,.15); color: var(--accent-2); }
+  .st-ai .dot  { background: var(--accent-2); }
 
   .run-banner {
     display: flex; align-items: center; gap: 10px;
@@ -301,7 +315,7 @@
           <label class="field">Clip duration (seconds)
             <input type="number" id="g_clipDuration" min="1" max="30" step="0.5" value="10">
           </label>
-          <label class="field">Megapixels
+          <label class="field">Megapixels (over 0.6 may freeze)
             <input type="number" id="g_megapixels" min="0.1" max="2" step="0.05" value="0.6">
           </label>
         </div>
@@ -320,6 +334,12 @@
             <select id="g_quant">
               <option value="int8" selected>int8</option>
               <option value="bf16">bf16</option>
+            </select>
+          </label>
+          <label class="field">Ref quality
+            <select id="g_refQuality">
+              <option value="match" selected>match (ref images match output resolution)</option>
+              <option value="max">max (full input image resolution)</option>
             </select>
           </label>
           <label class="field">AI timeout (seconds)
@@ -377,6 +397,7 @@
       <div class="panel-body">
         <div class="run-banner">
           <span class="status-chip st-pending" id="runStateChip"><span class="dot"></span>idle</span>
+          <span class="status-chip st-ai" id="runPhaseChip" style="display:none"><span class="dot pulse"></span>AI</span>
           <span id="runStateText" class="hint" style="flex:1">No run yet.</span>
           <button class="btn small" id="openOutBtn" disabled title="Open movie_manifest.json for the current output folder">🗀 manifest</button>
         </div>
@@ -398,9 +419,12 @@ let sceneSeq = 0;          // monotonic uid counter (never reused)
 let serverOutputDir = null;
 let serverManifest = null;
 let serverState = "idle";
+let serverPhase = null;        // "ai" | "diffusion" | null — what the server is doing right now
+let serverPhaseDetail = "";   // human-readable phase description from the server
 let lastLogCount = 0;
 
-const MAX_IMAGES = 4;
+const MAX_IMAGES = 6;
+let copiedImage = null;   // stash from a slot's ⧉ copy button; consumed (reset to null) by the next ＋ image on any scene
 const $ = (sel) => document.querySelector(sel);
 const el = (tag, cls, text) => {
   const n = document.createElement(tag);
@@ -444,6 +468,7 @@ function addScene(data) {
     videoFilePath: "",
     videoDesc: "",
     images: [{ path: "", description: "" }],
+    _collapsed: false,
   }, data || {});
   scenes.push(scene);
   renumber();
@@ -475,7 +500,7 @@ function renderScenes() {
   $("#sceneCount").textContent = `(${scenes.length})`;
 
   scenes.forEach((s, idx) => {
-    const card = el("div", "scene-card");
+    const card = el("div", "scene-card" + (s._collapsed ? " collapsed" : ""));
     card.dataset.uid = s.uid;
 
     /* ---- header ---- */
@@ -508,7 +533,7 @@ function renderScenes() {
     del.addEventListener("click", e => { e.stopPropagation(); removeScene(s.uid); });
     const chev = el("span", "chev", "▾");
     head.append(drag, badge, title, up, dn, del, chev);
-    head.addEventListener("click", () => card.classList.toggle("collapsed"));
+    head.addEventListener("click", () => { s._collapsed = !s._collapsed; card.classList.toggle("collapsed"); });
     card.appendChild(head);
 
     /* ---- body ---- */
@@ -570,7 +595,7 @@ function renderScenes() {
     sel.addEventListener("change", () => {
       if (sel.value === "__file__") {
         const p = prompt("Absolute path to the video file:", s.videoFilePath || "");
-        if (p) { s.videoFrom = "__file__"; s.videoFilePath = p; }
+        if (p) { s.videoFrom = "__file__"; s.videoFilePath = stripQuotes(p); }
         else { sel.value = s.videoFrom = ""; }
       } else {
         s.videoFrom = sel.value;
@@ -593,11 +618,14 @@ function renderScenes() {
     // ---- image slots ----
     const imgHead = el("div", null);
     imgHead.style.cssText = "display:flex;align-items:center;gap:10px;font-size:12px;font-weight:600;color:var(--text-dim)";
-    imgHead.appendChild(el("span", null, "Reference images (img_1 … img_4, max 4)"));
+    imgHead.appendChild(el("span", null, "Reference images (img_1 … img_4, max 6 but will be slow)"));
     const addImg = el("button", "btn small", "＋ image");
+    addImg.title = copiedImage ? "Add image (pre-filled from the copied slot)" : "Add image";
     addImg.addEventListener("click", () => {
       if (s.images.length >= MAX_IMAGES) return;
-      s.images.push({ path: "", description: "" });
+      s.images.push(copiedImage ? { path: copiedImage.path, description: copiedImage.description }
+                                : { path: "", description: "" });
+      copiedImage = null;   // one-shot: reset after use
       renderScenes(); refreshScript();
     });
     imgHead.appendChild(addImg);
@@ -607,6 +635,12 @@ function renderScenes() {
     s.images.forEach((img, i) => {
       const slot = el("div", "img-slot" + (img.path ? "" : " empty"));
       slot.appendChild(el("span", "slot-label", "img_" + (i + 1)));
+      const cp = el("button", "slot-copy", "⧉"); cp.title = "Copy path + description — the next ＋ image (any scene) is pre-filled with them";
+      cp.addEventListener("click", () => {
+        copiedImage = { path: img.path, description: img.description };
+        logLocal(`copied img_${i + 1} — next ＋ image will be pre-filled`, "ok");
+      });
+      slot.appendChild(cp);
       if (s.images.length > 1) {
         const rm = el("button", "slot-remove", "✕"); rm.title = "Remove image";
         rm.addEventListener("click", () => { s.images.splice(i, 1); renderScenes(); refreshScript(); });
@@ -617,7 +651,10 @@ function renderScenes() {
       const pathInput = el("input"); pathInput.type = "text"; pathInput.placeholder = "C:\\path\\to\\image.png";
       pathInput.value = img.path;
       pathInput.addEventListener("input", () => {
-        img.path = pathInput.value;
+        const raw = pathInput.value;
+        const cleaned = stripQuotes(raw);
+        if (cleaned !== raw) pathInput.value = cleaned;   // un-wrap "copy as path" quotes so preview & downstream see the bare path
+        img.path = cleaned;
         slot.classList.toggle("empty", !img.path);
         if (/\.(png|jpe?g|webp|gif)$/i.test(img.path)) {
           prev.src = "/media?path=" + encodeURIComponent(img.path);
@@ -646,6 +683,12 @@ function renderScenes() {
    Script preview (shows exactly what ▶ Run executes)
 ===================================================================== */
 function pyStr(v) { return JSON.stringify(String(v)); }   // JSON string is a valid Python string literal
+// Strip surrounding quotes from a pasted path (Windows "Copy as path" wraps in "...")
+function stripQuotes(v) {
+  const t = String(v).trim();
+  return (t.length >= 2 && ((t[0] === '"' && t[t.length - 1] === '"') || (t[0] === "'" && t[t.length - 1] === "'")))
+    ? t.slice(1, -1) : t;
+}
 
 function buildConfig() {
   return {
@@ -656,6 +699,7 @@ function buildConfig() {
     megapixels: +$("#g_megapixels").value || 0.6,
     aspect_ratio: $("#g_aspectRatio").value,
     quant: $("#g_quant").value,
+    ref_quality: $("#g_refQuality").value,
     ai_timeout: +$("#g_aiTimeout").value || 900,
     turbo_lora: $("#g_turboLora").checked,
     chain_scenes: $("#g_chainScenes").checked,
@@ -720,6 +764,7 @@ function buildScript(cfg) {
   out += `        aspect_ratio=${pyStr(cfg.aspect_ratio)},\n`;
   out += `        chain_scenes=${cfg.chain_scenes ? "True" : "False"},\n`;
   out += `        turbo_lora=${cfg.turbo_lora ? "True" : "False"},\n`;
+  out += `        ref_quality=${pyStr(cfg.ref_quality)},   # match or max\n`;
   out += `        quant=${pyStr(cfg.quant)},          # int8 or bf16 only\n`;
   out += `        ai_timeout=${cfg.ai_timeout},\n`;
   out += `        comfy_client=comfy_client,\n`;
@@ -770,7 +815,15 @@ function renderLog(lines) {
 function renderStatus() {
   const host = $("#runStatus");
   host.innerHTML = "";
-  const cfgSceneIds = scenes.map(sceneId);
+  const running = serverState === "running" || serverState === "starting";
+
+  // The active scene is the first one still short of its expected clip count
+  // (scene 1 until the manifest file appears).
+  let activeIdx = -1;
+  if (running) {
+    activeIdx = scenes.findIndex(s2 =>
+      !serverManifest || ((((serverManifest.scenes || {})[sceneId(s2)]) || []).length < clipExpectedCount(s2)));
+  }
 
   scenes.forEach((s, idx) => {
     const id = sceneId(s);
@@ -783,9 +836,20 @@ function renderStatus() {
     const manifestClips = (serverManifest && serverManifest.scenes && serverManifest.scenes[id]) || [];
     const expected = clipExpectedCount(s);
 
-    if (manifestClips.length) {
+    if (idx === activeIdx) {
+      // live row — the label follows the server's current phase
       const done = manifestClips.length;
-      const finished = done >= expected || (serverState !== "running" && serverState !== "starting");
+      chip.className = "status-chip st-running";
+      chip.innerHTML = "";
+      let label;
+      if (serverPhase === "ai") label = `✍ AI prompt… (${done}/${expected} clips saved)`;
+      else if (serverPhase === "diffusion") label = `🎥 diffusion — clip ${done + 1}/${expected}…`;
+      else label = done ? `clip ${done}/${expected} rendering…` : "prompting…";
+      chip.append(el("span", "dot pulse"), document.createTextNode(label));
+      if (serverPhaseDetail) chip.title = serverPhaseDetail;
+    } else if (manifestClips.length) {
+      const done = manifestClips.length;
+      const finished = done >= expected || !running;
       chip.className = "status-chip st-" + (finished ? "done" : "running");
       chip.innerHTML = "";
       chip.append(el("span", "dot" + (finished ? "" : " pulse")),
@@ -807,16 +871,6 @@ function renderStatus() {
           links.appendChild(j);
         }
       });
-    } else if (serverManifest && (serverState === "running" || serverState === "starting")) {
-      // scene with nothing recorded yet — "prompting" if it's the first
-      // scene in order that has no clips recorded in the manifest
-      const firstEmptyIdx = cfgSceneIds.findIndex(
-        sid => !(((serverManifest.scenes || {})[sid]) || []).length);
-      if (firstEmptyIdx === idx) {
-        chip.className = "status-chip st-running";
-        chip.innerHTML = "";
-        chip.append(el("span", "dot pulse"), document.createTextNode("prompting…"));
-      }
     }
 
     row.append(chip, name, links);
@@ -838,11 +892,26 @@ function renderRunBanner() {
     error:   ["st-failed", "error", "Run failed — see server log."],
   };
   const [cls, label, msg] = map[serverState] || map.idle;
+  const running = serverState === "running" || serverState === "starting";
   chip.className = "status-chip " + cls;
   chip.innerHTML = "";
-  chip.append(el("span", "dot" + (serverState === "running" || serverState === "starting" ? " pulse" : "")),
+  chip.append(el("span", "dot" + (running ? " pulse" : "")),
               document.createTextNode(label));
-  text.textContent = serverOutputDir ? `${msg}  →  ${serverOutputDir}` : msg;
+  // phase chip: what the server is doing right now (AI prompt-writing vs diffusion)
+  const phaseChip = $("#runPhaseChip");
+  if (running && serverPhase) {
+    const isAI = serverPhase === "ai";
+    phaseChip.className = "status-chip " + (isAI ? "st-ai" : "st-running");
+    phaseChip.innerHTML = "";
+    phaseChip.append(el("span", "dot pulse"),
+                     document.createTextNode(isAI ? "✍ AI prompt" : "🎥 diffusion"));
+    phaseChip.title = serverPhaseDetail || "";
+    phaseChip.style.display = "";
+  } else {
+    phaseChip.style.display = "none";
+  }
+  const detail = running && serverPhaseDetail ? ` — ${serverPhaseDetail}` : "";
+  text.textContent = serverOutputDir ? `${msg}${detail}  →  ${serverOutputDir}` : msg + detail;
   text.title = serverOutputDir || "";
   $("#openOutBtn").disabled = !serverOutputDir;
   $("#runBtn").disabled = serverState === "running" || serverState === "starting";
@@ -855,6 +924,8 @@ async function pollStatus() {
     if (!r.ok) return;
     const data = await r.json();
     serverState = data.state || "idle";
+    serverPhase = data.phase || null;
+    serverPhaseDetail = data.phase_detail || "";
     serverOutputDir = data.output_dir || serverOutputDir;
     serverManifest = data.manifest || serverManifest;
     renderLog(data.log || []);
@@ -881,6 +952,8 @@ $("#runBtn").addEventListener("click", async () => {
       return;
     }
     serverManifest = null;
+    lastLogCount = 0;                    // fresh server log for this run
+    $("#logBox").innerHTML = "";
     logLocal("run started", "ok");
     pollStatus();
   } catch (e) {
@@ -936,6 +1009,7 @@ function applyConfig(cfg) {
   $("#g_megapixels").value = cfg.megapixels ?? 0.6;
   $("#g_aspectRatio").value = cfg.aspect_ratio || "16:9 (Widescreen)";
   $("#g_quant").value = cfg.quant || "int8";
+  $("#g_refQuality").value = cfg.ref_quality || "match";
   $("#g_aiTimeout").value = cfg.ai_timeout ?? 900;
   $("#g_turboLora").checked = !!cfg.turbo_lora;
   $("#g_chainScenes").checked = !!cfg.chain_scenes;
@@ -980,7 +1054,7 @@ $("#copyScriptBtn").addEventListener("click", async () => {
 $("#addSceneBtn").addEventListener("click", () => { addScene(); logLocal("scene added"); });
 $("#g_chainScenes").addEventListener("change", () => { renderScenes(); refreshScript(); });
 ["g_outputDir","g_baseDir","g_clipsPerScene","g_clipDuration","g_megapixels",
- "g_aspectRatio","g_quant","g_aiTimeout","g_turboLora"].forEach(id => {
+ "g_aspectRatio","g_quant","g_refQuality","g_aiTimeout","g_turboLora"].forEach(id => {
   document.getElementById(id).addEventListener("input", () => { refreshScript(); renderStatus(); });
 });
 

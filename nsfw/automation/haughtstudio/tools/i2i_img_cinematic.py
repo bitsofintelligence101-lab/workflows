@@ -25,6 +25,7 @@ def i2i(prompt, image_path_list, negative_prompt, enhance_prompt, i2i_workflow_p
     prompt_node = "876"
     negative_prompt_node = "872"
     enhance_prompt_node = "926"
+    enhance_prompt_body_node = "975"
     pixar_lora_node = "945"
     qwen_nsfw_lora_node = "946"
     zit_nsfw_lora_node = "293"
@@ -86,8 +87,21 @@ def i2i(prompt, image_path_list, negative_prompt, enhance_prompt, i2i_workflow_p
         m15510n4ry
         d0gg13
         """
-        workflow[qwen_nsfw_lora_node]["inputs"]["strength_model"] = 0.6 #qwen4play - too much and impacts face a lot
-        workflow[zit_nsfw_lora_node]["inputs"]["strength_model"] = 0.3 #zit nsfw - need this low to retain skin detail, add just a bit to help with genitals
+        workflow[qwen_nsfw_lora_node]["inputs"]["strength_model"] = 0.7 #qwen4play - too much and impacts face a lot
+        workflow[zit_nsfw_lora_node]["inputs"]["strength_model"] = 1 #zit nsfw, add just a bit to help with genitals
+        #focus the refiner prompt on the body for NSFW images to help with genitals.
+        if "bl0wj0b" in prompt.lower():
+            workflow[enhance_prompt_body_node]["inputs"]["text"] = "blowjob, detailed penis, Shot on a 50mm lens, Kodak Portra 400 with warm color grading"
+        if "c0wg1rl" in prompt.lower():
+            workflow[enhance_prompt_body_node]["inputs"]["text"] = "cowgirl, detailed vagina, penis, scrotum, Shot on a 50mm lens, Kodak Portra 400 with warm color grading"
+        if "r3v3rs3_c0wg1rl" in prompt.lower():
+            workflow[enhance_prompt_body_node]["inputs"]["text"] = "reverse cowgirl, detailed vagina, penis, scrotum,, Shot on a 50mm lens, Kodak Portra 400 with warm color grading"
+        if "d0ubl3_j0b" in prompt.lower():
+            workflow[enhance_prompt_body_node]["inputs"]["text"] = "blowjob, detailed penis, Shot on a 50mm lens, Kodak Portra 400 with warm color grading"
+        if "m15510n4ry" in prompt.lower():
+            workflow[enhance_prompt_body_node]["inputs"]["text"] = "missionary vaginal penetration, penis, detailed vagina, Shot on a 50mm lens, Kodak Portra 400 with warm color grading"
+        if "d0gg13" in prompt.lower():
+            workflow[enhance_prompt_body_node]["inputs"]["text"] = "doggy style, penis, anus, vagina, Shot on a 50mm lens, Kodak Portra 400 with warm color grading"
         #strip 'nsfw' from the prompt so it doesn't affect the model negatively
         prompt = prompt.replace("nsfw", "")
     

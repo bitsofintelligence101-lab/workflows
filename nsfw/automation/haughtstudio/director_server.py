@@ -19,6 +19,7 @@ import sys
 import threading
 import time
 from collections import deque
+from contextlib import contextmanager
 from datetime import datetime
 
 from flask import Flask, abort, jsonify, request, send_file, send_from_directory
@@ -30,7 +31,7 @@ from director import MovieDirector
 from call_comfyui import ComfyUIlocal
 
 HOST, PORT = "127.0.0.1", 5000
-MAX_REF_IMAGES = 4  # hard limit imposed by the MiniMax H3 R2V node
+MAX_REF_IMAGES = 6  # hard limit imposed by the MiniMax H3 R2V node
 LAST_CONFIG_PATH = os.path.join(CURRENT_DIR, "director_ui_last_config.json")
 MEDIA_EXT = {".mp4", ".webm", ".mov", ".png", ".jpg", ".jpeg", ".webp",
              ".gif", ".json", ".txt", ".md"}
@@ -40,7 +41,14 @@ app = Flask(__name__)
 LOG_LINES = deque(maxlen=2000)
 RUN_LOCK = threading.Lock()
 STOP_FLAG = threading.Event()
-STATE = {"state": "idle", "error": None, "output_dir": None, "started": None}
+STATE = {"state": "idle", "error": None, "output_dir": None, "started": None,
+         "phase": None, "phase_detail": ""}
+
+# Single shared ComfyUI client for the life of the server. The quant passed as
+# service_type is the only thing that controls model unloading: generate()
+# compares it against COMFY.last_workflow and only runs aggressive_cleanup()
+# when it changed (int8 <-> bf16). Same quant -> models stay loaded in VRAM.
+COMFY = ComfyUIlocal(last_workflow=None)
 
 
 # ---------------------------------------------------------------------------
@@ -90,29 +98,99 @@ class Tee(io.TextIOBase):
                 pass
 
 
+# Thread-aware phase tracking. The diffusion worker runs on the run-worker
+# thread; LLM calls (drafts / descriptions / adjusts) run on the director's
+# internal pool threads. A single STATE pair would race, so each side writes
+# its own key and the UI shows both.
+PHASE_LOCK = threading.Lock()
+STATE["ai_phase"] = None        # what the LLM pool is doing
+STATE["ai_detail"] = ""
+
+
+@contextmanager
+def _phase(name, detail=""):
+    """Mark the diffusion worker's current phase for the UI status panel."""
+    prev = (STATE.get("phase"), STATE.get("phase_detail"))
+    STATE["phase"] = name
+    STATE["phase_detail"] = detail
+    try:
+        yield
+    finally:
+        STATE["phase"], STATE["phase_detail"] = prev
+
+
+@contextmanager
+def _ai_phase(detail):
+    """Mark an LLM pool task for the UI status panel (thread-safe)."""
+    with PHASE_LOCK:
+        STATE["ai_phase"] = "ai"
+        STATE["ai_detail"] = detail
+    try:
+        yield
+    finally:
+        with PHASE_LOCK:
+            STATE["ai_phase"] = None
+            STATE["ai_detail"] = ""
+
+
 # ---------------------------------------------------------------------------
 # Run execution
 # ---------------------------------------------------------------------------
 class ServerDirector(MovieDirector):
-    """MovieDirector with cooperative stop checks between scenes and clips."""
+    """MovieDirector with cooperative stop checks and UI phase reporting.
+
+    With parallel_llm_diff=True the heavy FL2VA drafts run on the internal
+    LLM pool while this worker thread drives diffusion; the phase wrappers
+    below report both sides to the UI (thread-safe via _ai_phase).
+    """
 
     def run(self):
         print(f"\nStarting movie run: {len(self.scenes)} scene(s) -> {self.output_dir}")
-        carry = None  # (video_path, description) from the previous scene's last clip
+        if self.parallel_llm_diff:
+            # Parallel path: stop checks happen per-clip inside generate_clip.
+            manifest = self._run_parallel()
+            print(f"\nMovie run complete. Manifest: {self.manifest_path}")
+            return manifest
+        carry = None  # serial path: stop checks between scenes
         for scene_id, scene_cfg in self.scenes.items():
             if STOP_FLAG.is_set():
                 print("Stop requested - halting before the next scene.")
                 break
             inherited = carry if self.chain_scenes else None
             _, carry = self.run_scene(scene_id, scene_cfg, inherited_video=inherited)
+        if not STOP_FLAG.is_set():
+            self.assemble_clip_videos()
         print(f"\nMovie run complete. Manifest: {self.manifest_path}")
         return self.manifest
 
+    # --- LLM pool tasks (run on director-llm threads) ----------------------
+    def write_scene_prompt(self, *args, **kwargs):
+        with _ai_phase("AI drafting FL2VA prompts from the reference images"):
+            return super().write_scene_prompt(*args, **kwargs)
+
+    def write_continuation_prompt(self, *args, **kwargs):
+        with _ai_phase("AI writing the FL2VA continuation prompt"):
+            return super().write_continuation_prompt(*args, **kwargs)
+
+    def reconcile_prompt_with_video(self, *args, **kwargs):
+        with _ai_phase("AI reconciling the draft against the prior clip's ending"):
+            return super().reconcile_prompt_with_video(*args, **kwargs)
+
+    def describe_video_end(self, *args, **kwargs):
+        with _ai_phase("Vision AI reviewing the clip's final frame"):
+            return super().describe_video_end(*args, **kwargs)
+
+    # --- diffusion worker (run-worker thread) ------------------------------
     def generate_clip(self, *args, **kwargs):
         if STOP_FLAG.is_set():
             print("Stop requested - skipping clip generation.")
             return None, None
-        return super().generate_clip(*args, **kwargs)
+        with _phase("diffusion", "Diffusion model generating the clip on ComfyUI"):
+            return super().generate_clip(*args, **kwargs)
+
+    def _stop_requested(self):
+        # lambda assigned in __init__ is shadowed by this method lookup
+        return STOP_FLAG.is_set()
 
 
 def build_scenes(cfg):
@@ -146,10 +224,12 @@ def run_worker(cfg):
     capture = LogStream()
     sys.stdout = Tee(old_stdout, capture)
     try:
-        STATE.update(state="running", error=None, started=time.time())
-        comfy = ComfyUIlocal()
-        print("Freeing VRAM (aggressive_cleanup)...")
-        comfy.aggressive_cleanup()
+        STATE.update(state="running", error=None, started=time.time(),
+                     phase=None, phase_detail="")
+        # VRAM management: the quant doubles as the director's service_type.
+        # The shared COMFY client remembers the last quant used
+        # (COMFY.last_workflow) and generate() only unloads models when it
+        # changes (int8 <-> bf16); an unchanged quant keeps models loaded.
         director = ServerDirector(
             scenes=build_scenes(cfg),
             output_dir=cfg.get("output_dir") or "movie_output",
@@ -159,9 +239,13 @@ def run_worker(cfg):
             aspect_ratio=cfg.get("aspect_ratio") or "16:9 (Widescreen)",
             chain_scenes=bool(cfg.get("chain_scenes")),
             turbo_lora=bool(cfg.get("turbo_lora", True)),
+            ref_quality=cfg.get("ref_quality") or "match",
             quant=cfg.get("quant") or "int8",
             ai_timeout=int(cfg.get("ai_timeout") or 900),
-            comfy_client=comfy,
+            comfy_client=COMFY,
+            service_type=cfg.get("quant") or "int8",
+            parallel_llm_diff=bool(cfg.get("parallel_llm_diff", True)),
+            reconcile_with_video=bool(cfg.get("reconcile_with_video", False))
         )
         STATE["output_dir"] = os.path.abspath(director.output_dir)
         director.run()
@@ -171,6 +255,8 @@ def run_worker(cfg):
         print(f"RUN ERROR: {e}")
         STATE.update(state="error", error=str(e))
     finally:
+        STATE["phase"] = None
+        STATE["phase_detail"] = ""
         capture.flush()
         sys.stdout = old_stdout
         RUN_LOCK.release()
@@ -222,7 +308,9 @@ def api_run():
     if error:
         return jsonify({"error": error}), 400
     STOP_FLAG.clear()
-    STATE.update(state="starting", error=None, output_dir=cfg.get("output_dir"))
+    LOG_LINES.clear()   # fresh server log for each run
+    STATE.update(state="starting", error=None, output_dir=cfg.get("output_dir"),
+                 phase=None, phase_detail="")
     with open(LAST_CONFIG_PATH, "w", encoding="utf-8") as f:
         json.dump(cfg, f, indent=2)
     RUN_LOCK.acquire(blocking=False)
@@ -255,6 +343,10 @@ def api_status():
         "output_dir": out_dir,
         "log": list(LOG_LINES)[-400:],
         "manifest": manifest,
+        "phase": STATE["phase"],
+        "phase_detail": STATE["phase_detail"],
+        "ai_phase": STATE.get("ai_phase"),
+        "ai_detail": STATE.get("ai_detail"),
     })
 
 

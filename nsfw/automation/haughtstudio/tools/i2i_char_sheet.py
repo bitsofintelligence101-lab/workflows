@@ -19,6 +19,7 @@ VIEW_PROMPT_NODES = {
     "face_profile_close": "523",  # Face Profile Close (left side view)
     "full_body_front": "549",     # Full Body Front
     "half_body_back": "900",      # Half Body Back
+    "clean_background": "412",     # Clean Background (base reference)
 }
 
 # TextEncodeQwenImageEditPlus nodes holding the hardcoded negative prompt
@@ -27,9 +28,7 @@ NEGATIVE_PROMPT_NODES = ["497", "512", "525", "538", "916"]
 REFINER_PROMPT_NODE = "749"  # "ZIT Refiner Prompt" shared by every FaceDetailer pass
 SEED_NODE = "505"            # PrimitiveInt feeding all 5 KSamplers
 
-# LoadImage nodes. 1056 is the actual character reference; 41 is unconnected
-# but still validated by ComfyUI, so it must also point at an uploaded image.
-IMAGE_INPUT_NODES = ["1056", "41"]
+# LoadImage nodes. 41 is the actual character reference
 MAIN_IMAGE_NODE = "41"
 
 # LoRA strength nodes
@@ -44,7 +43,7 @@ SAVE_IMAGE_NODES = {
     "656": "p3_full_body",      # refined render of prompt node 549
     "655": "p4_quarter_turn",   # refined render of prompt node 536
     "927": "p5_back",           # refined render of prompt node 900
-    "751": "whitebackground",   # base reference, re-saved
+    "751": "cleanbackground",   # base reference, re-saved
     "1047": "charSheet_x3",     # stitched 3-up face sheet
     "1070": "main_char_sheet",     # stitched 3-up mid range (primary output)
     "1018": "charSheet_x4",     # stitched 4-up sheet 
@@ -60,7 +59,7 @@ DEFAULT_NEGATIVE_PROMPT = (
 DEFAULT_REFINER_PROMPT = "Shot on a 50mm lens, Kodak Portra 400 with warm color grading"
 
 
-def i2i(prompt, image_path_list, negative_prompt, enhance_prompt, i2i_workflow_path, save_directory, body_type=None, breasts=None, face_accessories=None, upper_clothing=None, lower_clothing=None, file_name=None):
+def i2i(prompt, image_path_list, negative_prompt, enhance_prompt, i2i_workflow_path, save_directory, body_type=None, breasts=None, face_accessories=None, upper_clothing=None, lower_clothing=None, file_name="primary_char_sheet", background="all white background"):
     """Build a character-sheet ComfyUI request.
 
     `prompt` may be either:
@@ -92,21 +91,26 @@ def i2i(prompt, image_path_list, negative_prompt, enhance_prompt, i2i_workflow_p
     with open(i2i_workflow_path, "r") as f:
         workflow = json.load(f)
 
-    nsfw = False
-    if "nsfw" in prompt.lower():
-        SAVE_IMAGE_NODES[PRIMARY_SAVE_NODE] = "nsfw_char_sheet"
-        nsfw = True
+    # Set the primary char sheet file name
+    SAVE_IMAGE_NODES[PRIMARY_SAVE_NODE] = file_name
 
-
-    #Change face front close
+    #prompt face front close
     workflow[VIEW_PROMPT_NODES["face_front_close"]]["inputs"]["value"] = f"<sks> front view eye-level shot medium shot\
 subject is {upper_clothing}, {face_accessories}, {body_type} body, {breasts} breasts\
-exact same all white background"
+exact same {background}"
 
-    #change full body front
+    #prompt full body front
     workflow[VIEW_PROMPT_NODES["full_body_front"]]["inputs"]["value"] = f"<sks> full body front view eye-level shot medium shot\
 subject is {upper_clothing}, {face_accessories}, {lower_clothing}, {body_type} body, {breasts} breasts\
-exact same all white background"
+exact same {background}"
+
+    #update backgrounds
+    workflow[VIEW_PROMPT_NODES["clean_background"]]["inputs"]["prompt"] = f"Keep the person's face, identity, pose, exactly the same. Remove clothing strap from subject's shoulder\nmake the image have an {background}"
+    workflow[VIEW_PROMPT_NODES["quarter_turn_front"]]["inputs"]["value"] = f"<sks> right side view eye-level shot medium shot\nexact same {background}"
+    workflow[VIEW_PROMPT_NODES["face_profile_close"]]["inputs"]["value"] = f"<sks> left side view eye-level shot close-up\nexact same {background}"
+    workflow[VIEW_PROMPT_NODES["half_body_back"]]["inputs"]["value"] = f"<sks> back view eye-level shot medium shot\nexact same {background}"
+
+    
     
     # --- Negative prompts (same text in all 5 encode nodes) -----------------
     for node_id in NEGATIVE_PROMPT_NODES:
@@ -121,8 +125,7 @@ exact same all white background"
 
     # --- Input image --------------------------------------------------------
     input_placeholder = "{{INPUT_IMAGE1_PLACEHOLDER}}"
-    for node_id in IMAGE_INPUT_NODES:
-        workflow[node_id]["inputs"]["image"] = input_placeholder
+    workflow[MAIN_IMAGE_NODE]["inputs"]["image"] = input_placeholder
     input_files = {input_placeholder: image_path_list[0]}
 
     # ---- Pixar LoRA boost ---------------------------------------------------
@@ -130,7 +133,9 @@ exact same all white background"
             workflow[PIXAR_LORA_NODE]["inputs"]["strength_model"] = 0.3
 
     # --- NSFW LoRA boosts ---------------------------------------------------
-    if nsfw:
+    nsfw = False
+    if "nsfw" in prompt.lower():
+        nsfw = True
         """
         LORA has key words, prompt should have one of these too for best results:
         bl0wj0b
@@ -140,13 +145,21 @@ exact same all white background"
         m15510n4ry
         d0gg13
         """
-        workflow[QWEN_NSFW_LORA_NODE]["inputs"]["strength_model"] = 0.6  # qwen4play - too much and impacts face a lot
-        workflow[ZIT_NSFW_LORA_NODE]["inputs"]["strength_model"] = 0.1   # zit nsfw - need this low to retain skin detail, add just a bit to help with genitals
+        
+        
+        workflow[QWEN_NSFW_LORA_NODE]["inputs"]["strength_model"] = 0.7  # qwen4play - too much and impacts face a lot
+        workflow[ZIT_NSFW_LORA_NODE]["inputs"]["strength_model"] = 0.5   # zit nsfw - need this low to retain skin detail, add just a bit to help with genitals
         # strip 'nsfw' from the prompts so it doesn't affect the model negatively
         for node_id in VIEW_PROMPT_NODES.values():
             value = workflow[node_id]["inputs"].get("value")
             if isinstance(value, str):
                 workflow[node_id]["inputs"]["value"] = value.replace("nsfw", "")
+    else:
+        #shut off NSFW LoRA boosts if not nsfw
+        workflow[QWEN_NSFW_LORA_NODE]["inputs"]["strength_model"] = 0.0  # qwen4play - too much and impacts face a lot
+        workflow[ZIT_NSFW_LORA_NODE]["inputs"]["strength_model"] = 0.0  # zit nsfw - need this low to retain skin detail, add just a bit to help with genitals
+
+    
 
     # --- PreviewImage nodes only produce duplicate temp downloads; rewire each
     # SaveImage straight to its own stitch node and drop the previews --------

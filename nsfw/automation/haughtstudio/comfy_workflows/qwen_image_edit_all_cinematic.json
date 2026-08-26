@@ -56,7 +56,7 @@
   "293": {
     "inputs": {
       "lora_name": "ZIT\\NSFW_master_ZIT_000017532.safetensors",
-      "strength_model": 0.1,
+      "strength_model": 1,
       "model": [
         "290",
         0
@@ -114,7 +114,7 @@
   },
   "876": {
     "inputs": {
-      "prompt": "Keep the person's face and identity exactly the same and lighting identical. naked. subject has a skinny body. subject has small petite breasts. Repose her kneeling, bottom of frame a naked man's body his penis near her mouth. view subject from high angle view POV bl0wj0b looking down at her face from above. same background",
+      "prompt": "m15510n4ry, pov, use the reference sheet of subject in Image 1. Repose laying down, knees bent legs spread, her vagina naval chest are visible. front of the lower half of a kneeling man with a large penis at the bottom of the frame the penis is about to enter the vagina. she is viewed from a high angle. she is looking up at camera. Change view to high angle view POV looking down at her from above. exact same all light neutral gray background",
       "clip": [
         "916",
         1
@@ -305,10 +305,10 @@
   },
   "897": {
     "inputs": {
-      "seed": 1043984640487650,
-      "steps": 8,
+      "seed": 85,
+      "steps": 10,
       "cfg": 1,
-      "sampler_name": "euler",
+      "sampler_name": "res_multistep",
       "scheduler": "beta",
       "denoise": 0.2,
       "model": [
@@ -316,11 +316,11 @@
         0
       ],
       "positive": [
-        "888",
+        "975",
         0
       ],
       "negative": [
-        "887",
+        "974",
         0
       ],
       "latent_image": [
@@ -370,13 +370,13 @@
       "guide_size": 384,
       "guide_size_for": true,
       "max_size": 2000,
-      "seed": 59845637,
+      "seed": 85,
       "steps": 6,
       "cfg": 1,
       "sampler_name": "euler",
-      "scheduler": "simple",
+      "scheduler": "sgm_uniform",
       "denoise": 0.12,
-      "feather": 10,
+      "feather": 25,
       "noise_mask": true,
       "force_inpaint": true,
       "bbox_threshold": 0.5,
@@ -431,7 +431,7 @@
   },
   "905": {
     "inputs": {
-      "image": "make_image_output_20260612_004127.png"
+      "image": "nsfw_char_sheet (8).png"
     },
     "class_type": "LoadImage",
     "_meta": {
@@ -440,7 +440,7 @@
   },
   "907": {
     "inputs": {
-      "image": "bert.png"
+      "image": "7_nsfw_7 (4).png"
     },
     "class_type": "LoadImage",
     "_meta": {
@@ -528,7 +528,7 @@
   },
   "921": {
     "inputs": {
-      "value": 1071
+      "value": 1198
     },
     "class_type": "PrimitiveInt",
     "_meta": {
@@ -537,7 +537,7 @@
   },
   "922": {
     "inputs": {
-      "clip_name": "qwen_2.5_vl_7b_fp8_scaled.safetensors",
+      "clip_name": "qwen_2.5_vl_7b_bf16.safetensors",
       "type": "qwen_image",
       "device": "default"
     },
@@ -557,11 +557,11 @@
   },
   "926": {
     "inputs": {
-      "value": "Shot on Kodak Portra 400 with warm color grading"
+      "value": "Shot on a 50mm lens, Kodak Portra 400 with warm color grading"
     },
     "class_type": "PrimitiveStringMultiline",
     "_meta": {
-      "title": "Input Text"
+      "title": "Text (Multiline)"
     }
   },
   "933": {
@@ -660,42 +660,6 @@
       "title": "Resize Image v2"
     }
   },
-  "942": {
-    "inputs": {
-      "images": [
-        "933",
-        0
-      ]
-    },
-    "class_type": "PreviewImage",
-    "_meta": {
-      "title": "Preview Image"
-    }
-  },
-  "943": {
-    "inputs": {
-      "images": [
-        "940",
-        0
-      ]
-    },
-    "class_type": "PreviewImage",
-    "_meta": {
-      "title": "Preview Image"
-    }
-  },
-  "944": {
-    "inputs": {
-      "images": [
-        "941",
-        0
-      ]
-    },
-    "class_type": "PreviewImage",
-    "_meta": {
-      "title": "Preview Image"
-    }
-  },
   "945": {
     "inputs": {
       "lora_name": "QwenEdit\\Pixar-Inspired-3D.safetensors",
@@ -713,7 +677,7 @@
   "946": {
     "inputs": {
       "lora_name": "QwenEdit\\Qwen4Play2512_v2.safetensors",
-      "strength_model": 0.6,
+      "strength_model": 0.7,
       "model": [
         "945",
         0
@@ -722,6 +686,18 @@
     "class_type": "LoraLoaderModelOnly",
     "_meta": {
       "title": "Load LoRA 2"
+    }
+  },
+  "953": {
+    "inputs": {
+      "images": [
+        "879",
+        0
+      ]
+    },
+    "class_type": "PreviewImage",
+    "_meta": {
+      "title": "Preview Image"
     }
   },
   "964": {
@@ -776,6 +752,43 @@
     "class_type": "PreviewImage",
     "_meta": {
       "title": "Preview Image"
+    }
+  },
+  "970": {
+    "inputs": {
+      "value": "detailed vagina, Shot on a 50mm lens, Kodak Portra 400 with warm color grading"
+    },
+    "class_type": "PrimitiveStringMultiline",
+    "_meta": {
+      "title": "Enhance_Body"
+    }
+  },
+  "974": {
+    "inputs": {
+      "conditioning": [
+        "975",
+        0
+      ]
+    },
+    "class_type": "ConditioningZeroOut",
+    "_meta": {
+      "title": "Conditioning Zero Out"
+    }
+  },
+  "975": {
+    "inputs": {
+      "text": [
+        "970",
+        0
+      ],
+      "clip": [
+        "294",
+        0
+      ]
+    },
+    "class_type": "CLIPTextEncode",
+    "_meta": {
+      "title": "CLIP Text Encode (Prompt)"
     }
   }
 }

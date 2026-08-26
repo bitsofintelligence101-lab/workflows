@@ -18,7 +18,7 @@
   },
   "7": {
     "inputs": {
-      "text": "text, watermark, realistic photo, 3d render, gradient background, cluttered, busy, low quality, blurry, sketch, hand drawn, cartoon, animation",
+      "text": "text, watermark, realistic photo, 3D render, gradient background, cluttered, busy, low quality, blurry, sketch, hand drawn, cartoon, animation, anime, doll, over-processed, smooth skin",
       "clip": [
         "20",
         1
@@ -48,7 +48,7 @@
   "13": {
     "inputs": {
       "add_noise": true,
-      "noise_seed": 178281063445680,
+      "noise_seed": 41,
       "cfg": 1,
       "model": [
         "122",
@@ -130,8 +130,8 @@
         "93",
         0
       ],
-      "text_g": "A beautiful voluptuous  woman, sharp face framing jet black hair slicked back with a center part, deep brown eyes, smoky charcoal eyeshadow, straight nose with a thin silver septum ring, chunky silver chain choker, drop earrings with small gemstones, deep plum lipstick, bare shoulders. Focus on the texture of her skin, subtle pores, and a few loose strands framing her cheekbone, lips closed and composed. Cool studio lighting, soft blue-white rim light on the hair. Shot on 85mm lens, f/1.8, ultra-sharp focus on eyes and jawline, soft bokeh charcoal grey background, photorealistic, 8k resolution, skin texture visible, masterpiece.",
-      "text_l": "A beautiful voluptuous  woman, sharp face framing jet black hair slicked back with a center part, deep brown eyes, smoky charcoal eyeshadow, straight nose with a thin silver septum ring, chunky silver chain choker, drop earrings with small gemstones, deep plum lipstick, bare shoulders. Focus on the texture of her skin, subtle pores, and a few loose strands framing her cheekbone, lips closed and composed. Cool studio lighting, soft blue-white rim light on the hair. Shot on 85mm lens, f/1.8, ultra-sharp focus on eyes and jawline, soft bokeh charcoal grey background, photorealistic, 8k resolution, skin texture visible, masterpiece.",
+      "text_g": " waist-up portrait of a woman in her 20s, large expressive brown eyes, light freckles, distinct arched eyebrow, small nose ring, styled pink bixi-cut hair with a hint of gel and visible texture, neutral expression, neutral grey background, soft diffused light, Canon R5, 85mm f/1.8, sharp focus on eyes, natural catchlights, visible skin pores, realistic skin texture, photorealistic, high resolution, 8K",
+      "text_l": " waist-up portrait of a woman in her 20s, large expressive brown eyes, light freckles, distinct arched eyebrow, small nose ring, styled pink bixi-cut hair with a hint of gel and visible texture, neutral expression, neutral grey background, soft diffused light, Canon R5, 85mm f/1.8, sharp focus on eyes, natural catchlights, visible skin pores, realistic skin texture, photorealistic, high resolution, 8K",
       "clip": [
         "20",
         1
@@ -226,7 +226,7 @@
   },
   "106": {
     "inputs": {
-      "seed": 597647073169290,
+      "seed": 597647073169303,
       "steps": 6,
       "cfg": 1,
       "sampler_name": "euler",

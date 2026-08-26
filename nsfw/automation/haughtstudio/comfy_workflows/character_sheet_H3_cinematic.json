@@ -1,7 +1,7 @@
 {
   "41": {
     "inputs": {
-      "image": "img_FaceSharp_00024_.png"
+      "image": "image_enhanced_1472x1104_00077_.png"
     },
     "class_type": "LoadImage",
     "_meta": {
@@ -46,7 +46,7 @@
   },
   "412": {
     "inputs": {
-      "prompt": "Keep the person's face, identity, pose, exactly the same. make the image have an all white background",
+      "prompt": "Keep the person's face, identity, pose, exactly the same. Remove clothing strap from subject's shoulder\nmake the image have an all white background",
       "clip": [
         "489",
         1
@@ -229,7 +229,7 @@
   },
   "491": {
     "inputs": {
-      "clip_name": "qwen_2.5_vl_7b_fp8_scaled.safetensors",
+      "clip_name": "qwen_2.5_vl_7b_bf16.safetensors",
       "type": "qwen_image",
       "device": "default"
     },
@@ -357,7 +357,7 @@
   },
   "505": {
     "inputs": {
-      "value": 614
+      "value": 626
     },
     "class_type": "PrimitiveInt",
     "_meta": {
@@ -382,7 +382,7 @@
   },
   "509": {
     "inputs": {
-      "value": "<sks> front view eye-level shot medium shot\nsubject is wearing a rose colored spaghetti strap shirt no bra nipple bumps, middriff naval visible white top of pant waist. large breasts\nexact same all white background"
+      "value": "<sks> front view eye-level shot medium shot\nsubject is wearing a rose colored spaghetti strap shirt no bra nipple bumps, middriff naval visible white top of pant waist. subject has a skinny body, large breasts\nexact same all white background"
     },
     "class_type": "PrimitiveStringMultiline",
     "_meta": {
@@ -401,7 +401,7 @@
         0
       ],
       "image1": [
-        "831:822",
+        "1189:1180",
         0
       ]
     },
@@ -500,7 +500,7 @@
         0
       ],
       "image1": [
-        "831:822",
+        "1189:1180",
         0
       ]
     },
@@ -530,7 +530,7 @@
         0
       ],
       "image1": [
-        "831:822",
+        "1189:1180",
         0
       ]
     },
@@ -629,7 +629,7 @@
         0
       ],
       "image1": [
-        "831:822",
+        "1189:1180",
         0
       ]
     },
@@ -769,7 +769,7 @@
   },
   "549": {
     "inputs": {
-      "value": "Full body wide-shot\nsubject is wearing a rose colored spaghetti strap shirt, naval visible and a short white tennis skirt and white knee high socks subject has a skinny body, small petite breasts\nexact same all white background"
+      "value": "Full body wide-shot\nsubject is wearing a rose colored spaghetti strap shirt, naval visible and a short white tennis skirt and white knee high socks subject has a skinny body, large breasts\nexact same all white background"
     },
     "class_type": "PrimitiveStringMultiline",
     "_meta": {
@@ -800,7 +800,7 @@
   "575": {
     "inputs": {
       "lora_name": "ZIT\\NSFW_master_ZIT_000017532.safetensors",
-      "strength_model": 0,
+      "strength_model": 0.2,
       "model": [
         "573",
         0
@@ -861,15 +861,15 @@
       "y": 0,
       "resize_source": false,
       "destination": [
-        "867:860",
+        "1204:1200",
         0
       ],
       "source": [
-        "867:859",
+        "1204:1199",
         0
       ],
       "mask": [
-        "867:859",
+        "1204:1199",
         3
       ]
     },
@@ -882,7 +882,7 @@
     "inputs": {
       "filename_prefix": "qwen_edit/cs_p1_1472x1104",
       "images": [
-        "831:822",
+        "1189:1180",
         0
       ]
     },
@@ -895,7 +895,7 @@
     "inputs": {
       "filename_prefix": "qwen_edit/cs_p4_1472x1104",
       "images": [
-        "785:780",
+        "1156:1152",
         0
       ]
     },
@@ -908,7 +908,7 @@
     "inputs": {
       "filename_prefix": "qwen_edit/cs_p3_1472x1104",
       "images": [
-        "800:798",
+        "1140:1137",
         0
       ]
     },
@@ -921,7 +921,7 @@
     "inputs": {
       "filename_prefix": "qwen_edit/cs_p2_1472x1104",
       "images": [
-        "815:813",
+        "1092:1088",
         0
       ]
     },
@@ -971,7 +971,7 @@
   "833": {
     "inputs": {
       "pixels": [
-        "831:822",
+        "1189:1180",
         0
       ],
       "vae": [
@@ -987,7 +987,7 @@
   "834": {
     "inputs": {
       "pixels": [
-        "831:822",
+        "1189:1180",
         0
       ],
       "vae": [
@@ -1037,7 +1037,7 @@
         0
       ],
       "image1": [
-        "800:798",
+        "1140:1137",
         0
       ]
     },
@@ -1107,7 +1107,7 @@
         0
       ],
       "image1": [
-        "800:798",
+        "1140:1137",
         0
       ]
     },
@@ -1148,7 +1148,7 @@
   "924": {
     "inputs": {
       "pixels": [
-        "800:798",
+        "1140:1137",
         0
       ],
       "vae": [
@@ -1165,7 +1165,7 @@
     "inputs": {
       "filename_prefix": "qwen_edit/cs_p5_1472x1104",
       "images": [
-        "928:912",
+        "1220:1216",
         0
       ]
     },
@@ -1185,27 +1185,7 @@
         0
       ],
       "image2": [
-        "1057",
-        0
-      ]
-    },
-    "class_type": "ImageStitch",
-    "_meta": {
-      "title": "Stitch Images"
-    }
-  },
-  "1006": {
-    "inputs": {
-      "direction": "right",
-      "match_image_size": true,
-      "spacing_width": 0,
-      "spacing_color": "white",
-      "image1": [
-        "1060",
-        0
-      ],
-      "image2": [
-        "1062",
+        "1073",
         0
       ]
     },
@@ -1254,7 +1234,7 @@
         "height": 1104
       },
       "image": [
-        "815:813",
+        "1092:1088",
         0
       ]
     },
@@ -1324,18 +1304,18 @@
         "height": 1104
       },
       "image": [
-        "800:798",
+        "1140:1137",
         0
       ]
     },
     "class_type": "ImageCropV2",
     "_meta": {
-      "title": "Face Profile Close"
+      "title": "Front Full Body"
     }
   },
   "1047": {
     "inputs": {
-      "filename_prefix": "qwen_edit/charSheet_x3_1472x1104",
+      "filename_prefix": "qwen_edit/charSheet_x3_2004x1104",
       "images": [
         "1040",
         0
@@ -1374,15 +1354,6 @@
       "title": "Load LoRA"
     }
   },
-  "1056": {
-    "inputs": {
-      "image": "cs_whitebackground_zit_1472x1104_00001_.png"
-    },
-    "class_type": "LoadImage",
-    "_meta": {
-      "title": "Load Image"
-    }
-  },
   "1057": {
     "inputs": {
       "crop_region": {
@@ -1392,13 +1363,13 @@
         "height": 1104
       },
       "image": [
-        "928:912",
+        "1220:1216",
         0
       ]
     },
     "class_type": "ImageCropV2",
     "_meta": {
-      "title": "Face Profile Close"
+      "title": "Rear full body"
     }
   },
   "1059": {
@@ -1422,7 +1393,7 @@
         "height": 1104
       },
       "image": [
-        "831:822",
+        "1189:1180",
         0
       ]
     },
@@ -1440,7 +1411,7 @@
         "height": 1104
       },
       "image": [
-        "785:780",
+        "1156:1152",
         0
       ]
     },
@@ -1456,11 +1427,11 @@
       "spacing_width": 0,
       "spacing_color": "white",
       "image1": [
-        "1006",
+        "1007",
         0
       ],
       "image2": [
-        "1044",
+        "1074",
         0
       ]
     },
@@ -1570,33 +1541,45 @@
       "title": "Front Face CLose"
     }
   },
-  "867:850": {
+  "1073": {
     "inputs": {
-      "mask": [
-        "867:859",
-        3
-      ]
-    },
-    "class_type": "InvertMask",
-    "_meta": {
-      "title": "Invert Mask"
-    }
-  },
-  "867:851": {
-    "inputs": {
-      "conditioning": [
-        "867:852",
+      "crop_region": {
+        "x": 540,
+        "y": 0,
+        "width": 409,
+        "height": 1104
+      },
+      "image": [
+        "1220:1216",
         0
       ]
     },
-    "class_type": "ConditioningZeroOut",
+    "class_type": "ImageCropV2",
     "_meta": {
-      "title": "Conditioning Zero Out"
+      "title": "Rear Full Body - wide"
     }
   },
-  "867:852": {
+  "1074": {
     "inputs": {
-      "text": "Shot on Kodak Portra 400 with warm color grading",
+      "crop_region": {
+        "x": 540,
+        "y": 0,
+        "width": 409,
+        "height": 1104
+      },
+      "image": [
+        "1140:1137",
+        0
+      ]
+    },
+    "class_type": "ImageCropV2",
+    "_meta": {
+      "title": "Front Full Body - wide"
+    }
+  },
+  "1204:1192": {
+    "inputs": {
+      "text": "Extreme close-up portrait photograph, Shot on an 85mm lens, Kodak Portra 400 film, warm color grading\n\n",
       "clip": [
         "571",
         0
@@ -1607,9 +1590,65 @@
       "title": "CLIP Text Encode (Prompt)"
     }
   },
-  "867:853": {
+  "1204:1190": {
     "inputs": {
-      "seed": 1016565493625437,
+      "mask": [
+        "1204:1199",
+        3
+      ]
+    },
+    "class_type": "InvertMask",
+    "_meta": {
+      "title": "Invert Mask"
+    }
+  },
+  "1204:1191": {
+    "inputs": {
+      "conditioning": [
+        "1204:1192",
+        0
+      ]
+    },
+    "class_type": "ConditioningZeroOut",
+    "_meta": {
+      "title": "Conditioning Zero Out"
+    }
+  },
+  "1204:1201": {
+    "inputs": {
+      "samples": [
+        "1204:1202",
+        0
+      ],
+      "mask": [
+        "1204:1190",
+        0
+      ]
+    },
+    "class_type": "SetLatentNoiseMask",
+    "_meta": {
+      "title": "Set Latent Noise Mask"
+    }
+  },
+  "1204:1202": {
+    "inputs": {
+      "pixels": [
+        "409",
+        0
+      ],
+      "vae": [
+        "581",
+        0
+      ]
+    },
+    "class_type": "VAEEncode",
+    "_meta": {
+      "title": "VAE Encode"
+    }
+  },
+  "1204:1193": {
+    "inputs": {
+      "seed": 16036060771958,
       "steps": 8,
       "cfg": 1,
       "sampler_name": "euler",
@@ -1620,15 +1659,15 @@
         0
       ],
       "positive": [
-        "867:852",
+        "1204:1192",
         0
       ],
       "negative": [
-        "867:851",
+        "1204:1191",
         0
       ],
       "latent_image": [
-        "867:861",
+        "1204:1201",
         0
       ]
     },
@@ -1637,16 +1676,32 @@
       "title": "KSampler"
     }
   },
-  "867:859": {
+  "1204:1200": {
+    "inputs": {
+      "samples": [
+        "1204:1193",
+        0
+      ],
+      "vae": [
+        "581",
+        0
+      ]
+    },
+    "class_type": "VAEDecode",
+    "_meta": {
+      "title": "VAE Decode"
+    }
+  },
+  "1204:1199": {
     "inputs": {
       "guide_size": 384,
       "guide_size_for": true,
       "max_size": 2000,
       "seed": 59845637,
-      "steps": 6,
+      "steps": 8,
       "cfg": 1,
       "sampler_name": "euler",
-      "scheduler": "simple",
+      "scheduler": "beta",
       "denoise": 0.12,
       "feather": 10,
       "noise_mask": true,
@@ -1684,11 +1739,11 @@
         0
       ],
       "positive": [
-        "867:852",
+        "1204:1192",
         0
       ],
       "negative": [
-        "867:851",
+        "1204:1191",
         0
       ],
       "bbox_detector": [
@@ -1701,58 +1756,10 @@
       "title": "FaceDetailer"
     }
   },
-  "867:860": {
-    "inputs": {
-      "samples": [
-        "867:853",
-        0
-      ],
-      "vae": [
-        "581",
-        0
-      ]
-    },
-    "class_type": "VAEDecode",
-    "_meta": {
-      "title": "VAE Decode"
-    }
-  },
-  "867:861": {
-    "inputs": {
-      "samples": [
-        "867:862",
-        0
-      ],
-      "mask": [
-        "867:850",
-        0
-      ]
-    },
-    "class_type": "SetLatentNoiseMask",
-    "_meta": {
-      "title": "Set Latent Noise Mask"
-    }
-  },
-  "867:862": {
-    "inputs": {
-      "pixels": [
-        "409",
-        0
-      ],
-      "vae": [
-        "581",
-        0
-      ]
-    },
-    "class_type": "VAEEncode",
-    "_meta": {
-      "title": "VAE Encode"
-    }
-  },
-  "831:816": {
+  "1189:1174": {
     "inputs": {
       "conditioning": [
-        "831:817",
+        "1189:1175",
         0
       ]
     },
@@ -1761,7 +1768,7 @@
       "title": "Conditioning Zero Out"
     }
   },
-  "831:817": {
+  "1189:1175": {
     "inputs": {
       "text": [
         "749",
@@ -1777,10 +1784,10 @@
       "title": "CLIP Text Encode (Prompt)"
     }
   },
-  "831:821": {
+  "1189:1179": {
     "inputs": {
       "samples": [
-        "831:826",
+        "1189:1184",
         0
       ],
       "vae": [
@@ -1793,21 +1800,21 @@
       "title": "VAE Decode"
     }
   },
-  "831:822": {
+  "1189:1180": {
     "inputs": {
       "x": 0,
       "y": 0,
       "resize_source": false,
       "destination": [
-        "831:821",
+        "1189:1179",
         0
       ],
       "source": [
-        "831:829",
+        "1189:1187",
         0
       ],
       "mask": [
-        "831:829",
+        "1189:1187",
         3
       ]
     },
@@ -1816,10 +1823,10 @@
       "title": "Image Composite Masked"
     }
   },
-  "831:824": {
+  "1189:1182": {
     "inputs": {
       "mask": [
-        "831:829",
+        "1189:1187",
         3
       ]
     },
@@ -1828,12 +1835,12 @@
       "title": "Invert Mask"
     }
   },
-  "831:826": {
+  "1189:1184": {
     "inputs": {
-      "seed": 926608675520502,
+      "seed": 665874657307941,
       "steps": 8,
       "cfg": 1,
-      "sampler_name": "euler",
+      "sampler_name": "res_multistep",
       "scheduler": "beta",
       "denoise": 0.2,
       "model": [
@@ -1841,15 +1848,15 @@
         0
       ],
       "positive": [
-        "831:817",
+        "1189:1175",
         0
       ],
       "negative": [
-        "831:816",
+        "1189:1174",
         0
       ],
       "latent_image": [
-        "831:827",
+        "1189:1185",
         0
       ]
     },
@@ -1858,14 +1865,14 @@
       "title": "KSampler"
     }
   },
-  "831:827": {
+  "1189:1185": {
     "inputs": {
       "samples": [
-        "831:828",
+        "1189:1186",
         0
       ],
       "mask": [
-        "831:824",
+        "1189:1182",
         0
       ]
     },
@@ -1874,7 +1881,7 @@
       "title": "Set Latent Noise Mask"
     }
   },
-  "831:828": {
+  "1189:1186": {
     "inputs": {
       "pixels": [
         "508",
@@ -1890,7 +1897,7 @@
       "title": "VAE Encode"
     }
   },
-  "831:829": {
+  "1189:1187": {
     "inputs": {
       "guide_size": 384,
       "guide_size_for": true,
@@ -1937,11 +1944,11 @@
         0
       ],
       "positive": [
-        "831:817",
+        "1189:1175",
         0
       ],
       "negative": [
-        "831:816",
+        "1189:1174",
         0
       ],
       "bbox_detector": [
@@ -1954,7 +1961,23 @@
       "title": "FaceDetailer"
     }
   },
-  "815:720": {
+  "1092:1080": {
+    "inputs": {
+      "text": [
+        "749",
+        0
+      ],
+      "clip": [
+        "571",
+        0
+      ]
+    },
+    "class_type": "CLIPTextEncode",
+    "_meta": {
+      "title": "CLIP Text Encode (Prompt)"
+    }
+  },
+  "1092:1075": {
     "inputs": {
       "pixels": [
         "544",
@@ -1970,12 +1993,12 @@
       "title": "VAE Encode"
     }
   },
-  "815:801": {
+  "1092:1076": {
     "inputs": {
       "guide_size": 384,
       "guide_size_for": true,
       "max_size": 2000,
-      "seed": 59845637,
+      "seed": 59845044,
       "steps": 6,
       "cfg": 1,
       "sampler_name": "euler",
@@ -2017,11 +2040,11 @@
         0
       ],
       "positive": [
-        "815:805",
+        "1092:1080",
         0
       ],
       "negative": [
-        "815:804",
+        "1092:1079",
         0
       ],
       "bbox_detector": [
@@ -2034,10 +2057,10 @@
       "title": "FaceDetailer"
     }
   },
-  "815:802": {
+  "1092:1077": {
     "inputs": {
       "mask": [
-        "815:801",
+        "1092:1076",
         3
       ]
     },
@@ -2046,14 +2069,14 @@
       "title": "Invert Mask"
     }
   },
-  "815:803": {
+  "1092:1078": {
     "inputs": {
       "samples": [
-        "815:720",
+        "1092:1075",
         0
       ],
       "mask": [
-        "815:802",
+        "1092:1077",
         0
       ]
     },
@@ -2062,10 +2085,10 @@
       "title": "Set Latent Noise Mask"
     }
   },
-  "815:804": {
+  "1092:1079": {
     "inputs": {
       "conditioning": [
-        "815:805",
+        "1092:1080",
         0
       ]
     },
@@ -2074,28 +2097,12 @@
       "title": "Conditioning Zero Out"
     }
   },
-  "815:805": {
+  "1092:1081": {
     "inputs": {
-      "text": [
-        "749",
-        0
-      ],
-      "clip": [
-        "571",
-        0
-      ]
-    },
-    "class_type": "CLIPTextEncode",
-    "_meta": {
-      "title": "CLIP Text Encode (Prompt)"
-    }
-  },
-  "815:806": {
-    "inputs": {
-      "seed": 94212498832350,
+      "seed": 763401054685845,
       "steps": 8,
       "cfg": 1,
-      "sampler_name": "euler",
+      "sampler_name": "res_multistep",
       "scheduler": "beta",
       "denoise": 0.2,
       "model": [
@@ -2103,15 +2110,15 @@
         0
       ],
       "positive": [
-        "815:805",
+        "1092:1080",
         0
       ],
       "negative": [
-        "815:804",
+        "1092:1079",
         0
       ],
       "latent_image": [
-        "815:803",
+        "1092:1078",
         0
       ]
     },
@@ -2120,10 +2127,10 @@
       "title": "KSampler"
     }
   },
-  "815:812": {
+  "1092:1087": {
     "inputs": {
       "samples": [
-        "815:806",
+        "1092:1081",
         0
       ],
       "vae": [
@@ -2136,21 +2143,21 @@
       "title": "VAE Decode"
     }
   },
-  "815:813": {
+  "1092:1088": {
     "inputs": {
       "x": 0,
       "y": 0,
       "resize_source": false,
       "destination": [
-        "815:812",
+        "1092:1087",
         0
       ],
       "source": [
-        "815:801",
+        "1092:1076",
         0
       ],
       "mask": [
-        "815:801",
+        "1092:1076",
         3
       ]
     },
@@ -2159,7 +2166,7 @@
       "title": "Image Composite Masked"
     }
   },
-  "800:705": {
+  "1140:1125": {
     "inputs": {
       "pixels": [
         "531",
@@ -2175,10 +2182,10 @@
       "title": "VAE Encode"
     }
   },
-  "800:787": {
+  "1140:1126": {
     "inputs": {
       "mask": [
-        "800:786",
+        "1140:1138",
         3
       ]
     },
@@ -2187,14 +2194,14 @@
       "title": "Invert Mask"
     }
   },
-  "800:788": {
+  "1140:1127": {
     "inputs": {
       "samples": [
-        "800:705",
+        "1140:1125",
         0
       ],
       "mask": [
-        "800:787",
+        "1140:1126",
         0
       ]
     },
@@ -2203,10 +2210,10 @@
       "title": "Set Latent Noise Mask"
     }
   },
-  "800:789": {
+  "1140:1128": {
     "inputs": {
       "conditioning": [
-        "800:790",
+        "1140:1129",
         0
       ]
     },
@@ -2215,7 +2222,7 @@
       "title": "Conditioning Zero Out"
     }
   },
-  "800:790": {
+  "1140:1129": {
     "inputs": {
       "text": [
         "749",
@@ -2231,12 +2238,12 @@
       "title": "CLIP Text Encode (Prompt)"
     }
   },
-  "800:791": {
+  "1140:1130": {
     "inputs": {
-      "seed": 172447661569975,
+      "seed": 890074503946470,
       "steps": 8,
       "cfg": 1,
-      "sampler_name": "euler",
+      "sampler_name": "res_multistep",
       "scheduler": "beta",
       "denoise": 0.2,
       "model": [
@@ -2244,15 +2251,15 @@
         0
       ],
       "positive": [
-        "800:790",
+        "1140:1129",
         0
       ],
       "negative": [
-        "800:789",
+        "1140:1128",
         0
       ],
       "latent_image": [
-        "800:788",
+        "1140:1127",
         0
       ]
     },
@@ -2261,10 +2268,10 @@
       "title": "KSampler"
     }
   },
-  "800:797": {
+  "1140:1136": {
     "inputs": {
       "samples": [
-        "800:791",
+        "1140:1130",
         0
       ],
       "vae": [
@@ -2277,21 +2284,21 @@
       "title": "VAE Decode"
     }
   },
-  "800:798": {
+  "1140:1137": {
     "inputs": {
       "x": 0,
       "y": 0,
       "resize_source": false,
       "destination": [
-        "800:797",
+        "1140:1136",
         0
       ],
       "source": [
-        "800:786",
+        "1140:1138",
         0
       ],
       "mask": [
-        "800:786",
+        "1140:1138",
         3
       ]
     },
@@ -2300,7 +2307,7 @@
       "title": "Image Composite Masked"
     }
   },
-  "800:786": {
+  "1140:1138": {
     "inputs": {
       "guide_size": 384,
       "guide_size_for": true,
@@ -2347,11 +2354,11 @@
         0
       ],
       "positive": [
-        "800:790",
+        "1140:1129",
         0
       ],
       "negative": [
-        "800:789",
+        "1140:1128",
         0
       ],
       "bbox_detector": [
@@ -2364,10 +2371,10 @@
       "title": "FaceDetailer"
     }
   },
-  "785:769": {
+  "1156:1141": {
     "inputs": {
       "mask": [
-        "785:768",
+        "1156:1154",
         3
       ]
     },
@@ -2376,14 +2383,14 @@
       "title": "Invert Mask"
     }
   },
-  "785:770": {
+  "1156:1142": {
     "inputs": {
       "samples": [
-        "785:781",
+        "1156:1153",
         0
       ],
       "mask": [
-        "785:769",
+        "1156:1141",
         0
       ]
     },
@@ -2392,10 +2399,10 @@
       "title": "Set Latent Noise Mask"
     }
   },
-  "785:771": {
+  "1156:1143": {
     "inputs": {
       "conditioning": [
-        "785:772",
+        "1156:1144",
         0
       ]
     },
@@ -2404,7 +2411,7 @@
       "title": "Conditioning Zero Out"
     }
   },
-  "785:772": {
+  "1156:1144": {
     "inputs": {
       "text": [
         "749",
@@ -2420,12 +2427,12 @@
       "title": "CLIP Text Encode (Prompt)"
     }
   },
-  "785:773": {
+  "1156:1145": {
     "inputs": {
-      "seed": 844163240344170,
+      "seed": 802651806803043,
       "steps": 8,
       "cfg": 1,
-      "sampler_name": "euler",
+      "sampler_name": "res_multistep",
       "scheduler": "beta",
       "denoise": 0.2,
       "model": [
@@ -2433,15 +2440,15 @@
         0
       ],
       "positive": [
-        "785:772",
+        "1156:1144",
         0
       ],
       "negative": [
-        "785:771",
+        "1156:1143",
         0
       ],
       "latent_image": [
-        "785:770",
+        "1156:1142",
         0
       ]
     },
@@ -2450,10 +2457,10 @@
       "title": "KSampler"
     }
   },
-  "785:779": {
+  "1156:1151": {
     "inputs": {
       "samples": [
-        "785:773",
+        "1156:1145",
         0
       ],
       "vae": [
@@ -2466,21 +2473,21 @@
       "title": "VAE Decode"
     }
   },
-  "785:780": {
+  "1156:1152": {
     "inputs": {
       "x": 0,
       "y": 0,
       "resize_source": false,
       "destination": [
-        "785:779",
+        "1156:1151",
         0
       ],
       "source": [
-        "785:768",
+        "1156:1154",
         0
       ],
       "mask": [
-        "785:768",
+        "1156:1154",
         3
       ]
     },
@@ -2489,7 +2496,7 @@
       "title": "Image Composite Masked"
     }
   },
-  "785:781": {
+  "1156:1153": {
     "inputs": {
       "pixels": [
         "518",
@@ -2505,7 +2512,7 @@
       "title": "VAE Encode"
     }
   },
-  "785:768": {
+  "1156:1154": {
     "inputs": {
       "guide_size": 384,
       "guide_size_for": true,
@@ -2552,11 +2559,11 @@
         0
       ],
       "positive": [
-        "785:772",
+        "1156:1144",
         0
       ],
       "negative": [
-        "785:771",
+        "1156:1143",
         0
       ],
       "bbox_detector": [
@@ -2569,10 +2576,10 @@
       "title": "FaceDetailer"
     }
   },
-  "928:901": {
+  "1220:1205": {
     "inputs": {
       "mask": [
-        "928:914",
+        "1220:1218",
         3
       ]
     },
@@ -2581,14 +2588,14 @@
       "title": "Invert Mask"
     }
   },
-  "928:902": {
+  "1220:1206": {
     "inputs": {
       "samples": [
-        "928:913",
+        "1220:1217",
         0
       ],
       "mask": [
-        "928:901",
+        "1220:1205",
         0
       ]
     },
@@ -2597,10 +2604,10 @@
       "title": "Set Latent Noise Mask"
     }
   },
-  "928:903": {
+  "1220:1207": {
     "inputs": {
       "conditioning": [
-        "928:904",
+        "1220:1208",
         0
       ]
     },
@@ -2609,7 +2616,7 @@
       "title": "Conditioning Zero Out"
     }
   },
-  "928:904": {
+  "1220:1208": {
     "inputs": {
       "text": [
         "749",
@@ -2625,9 +2632,9 @@
       "title": "CLIP Text Encode (Prompt)"
     }
   },
-  "928:905": {
+  "1220:1209": {
     "inputs": {
-      "seed": 1067310408116389,
+      "seed": 1010972097085305,
       "steps": 8,
       "cfg": 1,
       "sampler_name": "euler",
@@ -2638,15 +2645,15 @@
         0
       ],
       "positive": [
-        "928:904",
+        "1220:1208",
         0
       ],
       "negative": [
-        "928:903",
+        "1220:1207",
         0
       ],
       "latent_image": [
-        "928:902",
+        "1220:1206",
         0
       ]
     },
@@ -2655,10 +2662,10 @@
       "title": "KSampler"
     }
   },
-  "928:911": {
+  "1220:1215": {
     "inputs": {
       "samples": [
-        "928:905",
+        "1220:1209",
         0
       ],
       "vae": [
@@ -2671,21 +2678,21 @@
       "title": "VAE Decode"
     }
   },
-  "928:912": {
+  "1220:1216": {
     "inputs": {
       "x": 0,
       "y": 0,
       "resize_source": false,
       "destination": [
-        "928:911",
+        "1220:1215",
         0
       ],
       "source": [
-        "928:914",
+        "1220:1218",
         0
       ],
       "mask": [
-        "928:914",
+        "1220:1218",
         3
       ]
     },
@@ -2694,7 +2701,7 @@
       "title": "Image Composite Masked"
     }
   },
-  "928:913": {
+  "1220:1217": {
     "inputs": {
       "pixels": [
         "921",
@@ -2710,7 +2717,7 @@
       "title": "VAE Encode"
     }
   },
-  "928:914": {
+  "1220:1218": {
     "inputs": {
       "guide_size": 384,
       "guide_size_for": true,
@@ -2757,11 +2764,11 @@
         0
       ],
       "positive": [
-        "928:904",
+        "1220:1208",
         0
       ],
       "negative": [
-        "928:903",
+        "1220:1207",
         0
       ],
       "bbox_detector": [

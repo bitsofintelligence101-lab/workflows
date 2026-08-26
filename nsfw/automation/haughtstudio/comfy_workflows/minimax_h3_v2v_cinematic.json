@@ -1,0 +1,826 @@
+{
+  "2": {
+    "inputs": {
+      "unet_name": "h3\\minimax_h3_fl2va_int8_convrot.safetensors",
+      "weight_dtype": "default"
+    },
+    "class_type": "UNETLoader",
+    "_meta": {
+      "title": "H3 REF2VA MODEL"
+    }
+  },
+  "3": {
+    "inputs": {
+      "clip_name": "h3\\qwen3vl_32b_h3_ultra_uncensored_heretic_int8_convrot.safetensors",
+      "type": "minimax",
+      "device": "default"
+    },
+    "class_type": "CLIPLoader",
+    "_meta": {
+      "title": "H3 TEXT ENCODER"
+    }
+  },
+  "4": {
+    "inputs": {
+      "vae_name": "h3\\minimax_h3_video_vae_fp16.safetensors"
+    },
+    "class_type": "VAELoader",
+    "_meta": {
+      "title": "H3 Video VAE"
+    }
+  },
+  "5": {
+    "inputs": {
+      "vae_name": "h3\\minimax_h3_audio_vae_fp32.safetensors"
+    },
+    "class_type": "VAELoader",
+    "_meta": {
+      "title": "H3 Audio VAE"
+    }
+  },
+  "7": {
+    "inputs": {
+      "lora_name": "H3\\minimax_h3_fl2v_turbo_8step_v1.0_comfyui_bf16.safetensors",
+      "strength_model": 1,
+      "model": [
+        "98",
+        0
+      ]
+    },
+    "class_type": "LoraLoaderModelOnly",
+    "_meta": {
+      "title": "H3 TURBO 8-STEP LORA"
+    }
+  },
+  "8": {
+    "inputs": {
+      "shift_video": 12,
+      "shift_audio": 8,
+      "model": [
+        "7",
+        0
+      ]
+    },
+    "class_type": "MiniMaxH3SigmaShift",
+    "_meta": {
+      "title": "ModelSamplingMiniMaxH3"
+    }
+  },
+  "12": {
+    "inputs": {
+      "mode": "Start from existing video"
+    },
+    "class_type": "MiniMaxH3ExtensionStartMode",
+    "_meta": {
+      "title": "GLOBAL START MODE"
+    }
+  },
+  "13": {
+    "inputs": {
+      "value": 83
+    },
+    "class_type": "PrimitiveInt",
+    "_meta": {
+      "title": "GLOBAL CONTEXT FRAMES"
+    }
+  },
+  "19": {
+    "inputs": {
+      "image": "apt_living2bedroom_2.png"
+    },
+    "class_type": "LoadImage",
+    "_meta": {
+      "title": "REFERENCE IMAGE 1 — identity / face"
+    }
+  },
+  "20": {
+    "inputs": {
+      "image": "action_pose_variation_1_20260527_013143.png"
+    },
+    "class_type": "LoadImage",
+    "_meta": {
+      "title": "REFERENCE IMAGE 2 — wardrobe / full body"
+    }
+  },
+  "23": {
+    "inputs": {
+      "prompt": [
+        "80",
+        0
+      ],
+      "width": [
+        "65",
+        0
+      ],
+      "height": [
+        "65",
+        1
+      ],
+      "length": [
+        "64",
+        1
+      ],
+      "ref_image_size": "match",
+      "clip": [
+        "3",
+        0
+      ],
+      "vae": [
+        "4",
+        0
+      ],
+      "audio_vae": [
+        "5",
+        0
+      ],
+      "ref_images.ref_image_0": [
+        "19",
+        0
+      ],
+      "ref_images.ref_image_1": [
+        "20",
+        0
+      ],
+      "ref_images.ref_image_2": [
+        "62",
+        0
+      ],
+      "ref_images.ref_image_3": [
+        "76",
+        0
+      ],
+      "ref_images.ref_image_4": [
+        "94",
+        0
+      ],
+      "ref_images.ref_image_5": [
+        "95",
+        0
+      ]
+    },
+    "class_type": "MiniMaxH3ReferenceToVideo",
+    "_meta": {
+      "title": "EXTENSION 1 — MiniMax H3 Reference to Video"
+    }
+  },
+  "24": {
+    "inputs": {
+      "context_length": [
+        "13",
+        0
+      ],
+      "resume_from_extension": 0,
+      "starter_checkpoint_path": "h3_extension_checkpoints/starter",
+      "source_fps": 24,
+      "crop": "disabled",
+      "latent": [
+        "23",
+        1
+      ],
+      "vae": [
+        "4",
+        0
+      ],
+      "audio_vae": [
+        "5",
+        0
+      ],
+      "start_mode": [
+        "12",
+        0
+      ],
+      "source_frames": [
+        "136",
+        0
+      ],
+      "source_audio": [
+        "88",
+        2
+      ]
+    },
+    "class_type": "MiniMaxH3StartMaskedContext",
+    "_meta": {
+      "title": "EXTENSION 1 — SOURCE VIDEO AV PREFIX (39 protected frames)"
+    }
+  },
+  "25": {
+    "inputs": {
+      "noise_seed": 123456789
+    },
+    "class_type": "RandomNoise",
+    "_meta": {
+      "title": "RandomNoise"
+    }
+  },
+  "26": {
+    "inputs": {
+      "model": [
+        "99",
+        0
+      ],
+      "conditioning": [
+        "23",
+        0
+      ]
+    },
+    "class_type": "BasicGuider",
+    "_meta": {
+      "title": "Basic Guider"
+    }
+  },
+  "27": {
+    "inputs": {
+      "scheduler": "beta",
+      "steps": 8,
+      "denoise": 1,
+      "model": [
+        "99",
+        0
+      ]
+    },
+    "class_type": "BasicScheduler",
+    "_meta": {
+      "title": "BasicScheduler"
+    }
+  },
+  "28": {
+    "inputs": {
+      "noise": [
+        "25",
+        0
+      ],
+      "guider": [
+        "26",
+        0
+      ],
+      "sampler": [
+        "68",
+        0
+      ],
+      "sigmas": [
+        "27",
+        0
+      ],
+      "latent_image": [
+        "24",
+        0
+      ]
+    },
+    "class_type": "SamplerCustomAdvanced",
+    "_meta": {
+      "title": "Extension 1 Sampler"
+    }
+  },
+  "29": {
+    "inputs": {
+      "filename_prefix": "h3_extension_checkpoints/clip",
+      "clip_index": 1,
+      "latent": [
+        "28",
+        0
+      ]
+    },
+    "class_type": "MiniMaxH3CheckpointSavePath",
+    "_meta": {
+      "title": "CHECKPOINT — Extension 1"
+    }
+  },
+  "40": {
+    "inputs": {
+      "checkpoint_path": [
+        "29",
+        0
+      ]
+    },
+    "class_type": "MiniMaxH3CheckpointLoadPath",
+    "_meta": {
+      "title": "LOAD SAVED CHECKPOINT"
+    }
+  },
+  "41": {
+    "inputs": {
+      "samples": [
+        "40",
+        0
+      ],
+      "vae": [
+        "4",
+        0
+      ]
+    },
+    "class_type": "VAEDecode",
+    "_meta": {
+      "title": "PREVIEW — EXTENSION 1 — VIDEO DECODE"
+    }
+  },
+  "42": {
+    "inputs": {
+      "samples": [
+        "40",
+        0
+      ],
+      "vae": [
+        "5",
+        0
+      ]
+    },
+    "class_type": "VAEDecodeAudio",
+    "_meta": {
+      "title": "PREVIEW — EXTENSION 1 — AUDIO DECODE"
+    }
+  },
+  "43": {
+    "inputs": {
+      "frame_rate": 24,
+      "loop_count": 0,
+      "filename_prefix": "H3/new_clip",
+      "format": "video/h264-mp4",
+      "pix_fmt": "yuv420p",
+      "crf": 19,
+      "save_metadata": false,
+      "trim_to_audio": false,
+      "pingpong": false,
+      "save_output": true,
+      "images": [
+        "92",
+        0
+      ],
+      "audio": [
+        "81",
+        0
+      ]
+    },
+    "class_type": "VHS_VideoCombine",
+    "_meta": {
+      "title": "Save — NEW CLIP"
+    }
+  },
+  "62": {
+    "inputs": {
+      "image": "img_FaceSharp_00029_.png"
+    },
+    "class_type": "LoadImage",
+    "_meta": {
+      "title": "REFERENCE IMAGE 3  - Location"
+    }
+  },
+  "63": {
+    "inputs": {
+      "value": 12
+    },
+    "class_type": "PrimitiveFloat",
+    "_meta": {
+      "title": "New Clip Duration (seconds)"
+    }
+  },
+  "64": {
+    "inputs": {
+      "expression": "max(5, round(a * 24)) + (5 - (max(5, round(a * 24)) % 17)) % 17",
+      "values.a": [
+        "63",
+        0
+      ]
+    },
+    "class_type": "ComfyMathExpression",
+    "_meta": {
+      "title": "Math Expression"
+    }
+  },
+  "65": {
+    "inputs": {
+      "aspect_ratio": "16:9 (Widescreen)",
+      "megapixels": 0.6,
+      "multiple": 32
+    },
+    "class_type": "ResolutionSelector",
+    "_meta": {
+      "title": "Resolution Selector (Size)"
+    }
+  },
+  "68": {
+    "inputs": {
+      "sampler_name": "euler"
+    },
+    "class_type": "KSamplerSelect",
+    "_meta": {
+      "title": "KSamplerSelect"
+    }
+  },
+  "74": {
+    "inputs": {
+      "width": [
+        "65",
+        0
+      ],
+      "height": [
+        "65",
+        1
+      ],
+      "upscale_method": "nearest-exact",
+      "keep_proportion": "crop",
+      "pad_color": "0, 0, 0",
+      "crop_position": "center",
+      "divisible_by": 32,
+      "device": "cpu",
+      "image": [
+        "88",
+        0
+      ]
+    },
+    "class_type": "ImageResizeKJv2",
+    "_meta": {
+      "title": "Resize Image v2"
+    }
+  },
+  "76": {
+    "inputs": {
+      "image": "img_FaceSharp_00029_.png"
+    },
+    "class_type": "LoadImage",
+    "_meta": {
+      "title": "REFERENCE IMAGE 4  - Flex Ref"
+    }
+  },
+  "80": {
+    "inputs": {
+      "value": "subject_definitions:\n<Subject 1> is the man, Elias, with wavy blondish-brown hair, freckles across his nose and cheeks, and a weary, serious expression. <Picture 1> supplies his facial details and skin texture, while <Picture 2> supplies his full-body identity, including his off-white linen button-down shirt with dark buttons and black trousers. His identity follows these reference assets; his position and lighting are those of the target room rather than the reference backdrop.\n<Subject 2> is the rustic wooden cabin in <Picture 3>, featuring heavy timber beams, a stone floor, a large wooden table with a weathered map, a wooden tub, and a hanging lantern. The room follows this layout, materials, and light; camera position and framing follow the action and are not constrained to the reference viewpoint.\n<Subject 3> is the ship deck in <Picture 4>, featuring weathered wooden planks and rigging. The room follows this layout, materials, and light; camera position and framing follow the action and are not constrained to the reference viewpoint.\n\nsummary:\n[reference generation] Elias reacts in shock to the map, stands up abruptly, and paces through the cabin in a state of deep thought.\n\nretention_analysis:\n<Subject 1> (appears in [Shot 1]): fully_preserved - the blondish-brown hair, freckles, off-white linen shirt, and weary expression are retained.\n<Subject 2> (appears in [Shot 1]): fully_preserved - the wooden beams, stone floor, table, and lantern are retained.\n<Subject 3> (appears in [Shot 1]): fully_preserved - the weathered wooden planks and rigging are retained.\n\ndetailed_description:\nThe target video is in a live-action cinematic style with warm, flickering orange light from a lantern.\n[Shot 1] <Subject 1> is hunched over the table in <Subject 2>, his eyes suddenly widening as his brows knit together in a mask of stunned disbelief. His jaw clenches and his nostrils flare as he processes what he sees on the map. He pushes back from the table with a sudden, heavy weight shift, his forearms slamming against the wood and his chair scraping harshly against the stone floor. He stands up abruptly, his body jolting as his muscles tense with internal turmoil. The camera moves into a mid-range Tracking Shot, keeping <Subject 1> centered as he turns and begins to pace. He walks with heavy, uneven strides through the shadows of the cabin, his hands reaching up to grip his hair as he thinks. His face alternates between deep shadow and the orange glow of the lantern, his shoulders hunching and his chest heaving with each breath. He paces a small circuit, his feet thumping heavily on the stone. He passes a doorway that looks out onto the ship deck in <Subject 3>, but he does not stop. He slows his pace to a crawl and then stops mid-stride, his head bowing as his shoulders drop in a slump of total exhaustion. The camera continues to track his slow movement before holding steady as he settles into a static, slumped pose of contemplation. His blondish-brown hair, off-white linen shirt, black trousers, the lantern light, and the rustic cabin interior remain unchanged throughout.\n\noverall_soundscape:\nThe low wind whistle continues from outside. The heavy scrape of a chair on stone is followed by the rhythmic, heavy thud of footsteps on the floor. The lantern continues its metallic crackle, and the sound of fabric rubbing against itself is audible as he paces.\n\nnon_diegetic_music:\nN/A"
+    },
+    "class_type": "PrimitiveStringMultiline",
+    "_meta": {
+      "title": "Input Text (Prompt)"
+    }
+  },
+  "81": {
+    "inputs": {
+      "start_index": 1.63,
+      "duration": 60,
+      "audio": [
+        "42",
+        0
+      ]
+    },
+    "class_type": "TrimAudioDuration",
+    "_meta": {
+      "title": "Trim Audio Duration"
+    }
+  },
+  "84": {
+    "inputs": {
+      "batch_index": 39,
+      "length": [
+        "64",
+        1
+      ],
+      "image": [
+        "41",
+        0
+      ]
+    },
+    "class_type": "ImageFromBatch",
+    "_meta": {
+      "title": "Get Image from Batch"
+    }
+  },
+  "85": {
+    "inputs": {
+      "frame_rate": 24,
+      "loop_count": 0,
+      "filename_prefix": "H3/full_video",
+      "format": "video/h264-mp4",
+      "pix_fmt": "yuv420p",
+      "crf": 19,
+      "save_metadata": false,
+      "trim_to_audio": false,
+      "pingpong": false,
+      "save_output": true,
+      "images": [
+        "86",
+        0
+      ],
+      "audio": [
+        "87",
+        0
+      ]
+    },
+    "class_type": "VHS_VideoCombine",
+    "_meta": {
+      "title": "Save —FULL EXTENDED"
+    }
+  },
+  "86": {
+    "inputs": {
+      "merge_strategy": "match A",
+      "scale_method": "nearest-exact",
+      "crop": "disabled",
+      "images_A": [
+        "88",
+        0
+      ],
+      "images_B": [
+        "84",
+        0
+      ]
+    },
+    "class_type": "VHS_MergeImages",
+    "_meta": {
+      "title": "Merge Original + New Frames"
+    }
+  },
+  "87": {
+    "inputs": {
+      "direction": "after",
+      "audio1": [
+        "88",
+        2
+      ],
+      "audio2": [
+        "81",
+        0
+      ]
+    },
+    "class_type": "AudioConcat",
+    "_meta": {
+      "title": "Concatenate Audio"
+    }
+  },
+  "88": {
+    "inputs": {
+      "video": "scene_06_bj_pos_clip01.mp4",
+      "force_rate": 24,
+      "custom_width": 0,
+      "custom_height": 0,
+      "frame_load_cap": 0,
+      "start_time": 0,
+      "format": "AnimateDiff"
+    },
+    "class_type": "VHS_LoadVideoFFmpeg",
+    "_meta": {
+      "title": "Load Video FFmpeg (Upload)"
+    }
+  },
+  "89": {
+    "inputs": {
+      "batch_index": -1,
+      "length": 1,
+      "image": [
+        "84",
+        0
+      ]
+    },
+    "class_type": "ImageFromBatch",
+    "_meta": {
+      "title": "Get Image from Batch"
+    }
+  },
+  "90": {
+    "inputs": {
+      "filename_prefix": "h3/final_frame",
+      "images": [
+        "89",
+        0
+      ]
+    },
+    "class_type": "SaveImage",
+    "_meta": {
+      "title": "Save Image"
+    }
+  },
+  "92": {
+    "inputs": {
+      "resize_type": "scale by multiplier",
+      "resize_type.scale": 2,
+      "quality": "ULTRA",
+      "images": [
+        "84",
+        0
+      ]
+    },
+    "class_type": "RTXVideoSuperResolution",
+    "_meta": {
+      "title": "RTX Video Super Resolution"
+    }
+  },
+  "93": {
+    "inputs": {
+      "filename_prefix": "H3/audio",
+      "format": "flac",
+      "audio": [
+        "81",
+        0
+      ]
+    },
+    "class_type": "SaveAudioAdvanced",
+    "_meta": {
+      "title": "Save Audio (Advanced)"
+    }
+  },
+  "94": {
+    "inputs": {
+      "image": "image_enhanced_1472x1104_00004_ (1).png"
+    },
+    "class_type": "LoadImage",
+    "_meta": {
+      "title": "Load Image - 5"
+    }
+  },
+  "95": {
+    "inputs": {
+      "image": "image_enhanced_1472x1104_00004_ (1).png"
+    },
+    "class_type": "LoadImage",
+    "_meta": {
+      "title": "Load Image - 6"
+    }
+  },
+  "98": {
+    "inputs": {
+      "lora_name": "H3\\MysticXXX_MMH3-V3.safetensors",
+      "strength_model": 0,
+      "model": [
+        "2",
+        0
+      ]
+    },
+    "class_type": "LoraLoaderModelOnly",
+    "_meta": {
+      "title": "NSFW LoRA"
+    }
+  },
+  "99": {
+    "inputs": {
+      "switch": true,
+      "on_false": [
+        "7",
+        0
+      ],
+      "on_true": [
+        "8",
+        0
+      ]
+    },
+    "class_type": "ComfySwitchNode",
+    "_meta": {
+      "title": "If/Else Switch"
+    }
+  },
+  "102": {
+    "inputs": {
+      "clip_name": "ZIT\\qwen_3_4b_fp8_mixed.safetensors",
+      "type": "lumina2",
+      "device": "default"
+    },
+    "class_type": "CLIPLoader",
+    "_meta": {
+      "title": "Load CLIP"
+    }
+  },
+  "103": {
+    "inputs": {
+      "unet_name": "ZIT\\z_image_turbo_bf16.safetensors",
+      "weight_dtype": "default"
+    },
+    "class_type": "UNETLoader",
+    "_meta": {
+      "title": "Load Diffusion Model"
+    }
+  },
+  "104": {
+    "inputs": {
+      "shift": 7,
+      "model": [
+        "103",
+        0
+      ]
+    },
+    "class_type": "ModelSamplingAuraFlow",
+    "_meta": {
+      "title": "ModelSamplingAuraFlow"
+    }
+  },
+  "105": {
+    "inputs": {
+      "shift": 7,
+      "model": [
+        "106",
+        0
+      ]
+    },
+    "class_type": "ModelSamplingAuraFlow",
+    "_meta": {
+      "title": "ModelSamplingAuraFlow"
+    }
+  },
+  "106": {
+    "inputs": {
+      "lora_name": "ZIT\\NSFW_master_ZIT_000017532.safetensors",
+      "strength_model": 0.4,
+      "model": [
+        "103",
+        0
+      ]
+    },
+    "class_type": "LoraLoaderModelOnly",
+    "_meta": {
+      "title": "Load LoRA"
+    }
+  },
+  "108": {
+    "inputs": {
+      "vae_name": "ZIT\\ae.safetensors"
+    },
+    "class_type": "VAELoader",
+    "_meta": {
+      "title": "Load VAE"
+    }
+  },
+  "112": {
+    "inputs": {
+      "model_name": "bbox/face_yolov8m.pt"
+    },
+    "class_type": "UltralyticsDetectorProvider",
+    "_meta": {
+      "title": "UltralyticsDetectorProvider (Face YOLO)"
+    }
+  },
+  "134": {
+    "inputs": {
+      "value": "Shot on a 50mm lens, Kodak Portra 400 with warm color grading"
+    },
+    "class_type": "PrimitiveStringMultiline",
+    "_meta": {
+      "title": "Text (Multiline)"
+    }
+  },
+  "136": {
+    "inputs": {
+      "batch_index": [
+        "138",
+        1
+      ],
+      "length": 39,
+      "image": [
+        "74",
+        0
+      ]
+    },
+    "class_type": "ImageFromBatch",
+    "_meta": {
+      "title": "Get Image from Batch"
+    }
+  },
+  "137": {
+    "inputs": {
+      "batch": [
+        "74",
+        0
+      ]
+    },
+    "class_type": "BatchCount+",
+    "_meta": {
+      "title": "🔧 Batch Count"
+    }
+  },
+  "138": {
+    "inputs": {
+      "expression": "a - 39",
+      "values.a": [
+        "137",
+        0
+      ]
+    },
+    "class_type": "ComfyMathExpression",
+    "_meta": {
+      "title": "Math Expression"
+    }
+  },
+  "209": {
+    "inputs": {
+      "expression": "a - 5",
+      "values.a": [
+        "64",
+        1
+      ]
+    },
+    "class_type": "ComfyMathExpression",
+    "_meta": {
+      "title": "Math Expression"
+    }
+  },
+  "263": {
+    "inputs": {
+      "batch_index": [
+        "209",
+        1
+      ],
+      "length": 5,
+      "image": [
+        "84",
+        0
+      ]
+    },
+    "class_type": "ImageFromBatch",
+    "_meta": {
+      "title": "Get Image from Batch"
+    }
+  }
+}

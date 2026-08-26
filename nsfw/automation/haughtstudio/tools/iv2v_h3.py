@@ -9,7 +9,7 @@ def iv2v(prompt, image_path_list, iv2v_workflow_path, save_directory, video_path
 
     Args:
         prompt: Text prompt describing the desired video.
-        image_path_list: List of up to 4 reference image file paths (character sheets, close-ups, etc.).
+        image_path_list: List of up to 6 reference image file paths (character sheets, close-ups, etc.).
         iv2v_workflow_path: Path to the MiniMax H3 workflow JSON.
         save_directory: Directory where the output video/audio should be saved.
         video_path: Optional path to a previous video clip used as a motion/continuation reference.
@@ -31,8 +31,8 @@ def iv2v(prompt, image_path_list, iv2v_workflow_path, save_directory, video_path
     if not isinstance(image_path_list, list):
         return {'error': 'imagePathList must be a list of image file paths'}
 
-    if len(image_path_list) > 4:
-        return {'error': 'A maximum of 4 reference images are supported'}
+    if len(image_path_list) > 6:
+        return {'error': 'A maximum of 6 reference images are supported'}
 
     with open(iv2v_workflow_path, "r") as f:
         workflow = json.load(f)
@@ -50,17 +50,19 @@ def iv2v(prompt, image_path_list, iv2v_workflow_path, save_directory, video_path
     save_video_node = "176"        # SaveVideo - final video output
     save_audio_node = "192"        # SaveAudioAdvanced - final audio output
     save_image_node = "210"        # SaveImage - final frame output
-    
-    bool_turbo_lora_node = "204"  #  - turboLora flag
+    sampler_node = "140"          # MiniMaxH3TurboSampler - sample 'euler' on turbo and 'res_multistep' on non-turbo
+    scheduler_node = "141"         # MiniMaxH3 Scheduler - scheduler
+    switch_shift_node = "224"             # MiniMaxH3Shift - shift for audio/video alignment
+    nsfw_lora_node = "223"          # NSFW lora 
     turboLora_node = "198"  #  - turboLora node
     step_count_node = "141"
     model_node = "160"
     # The workflow ships with four LoadImage nodes already wired to
-    # ref_image_0..3 (178, 170, 187, 203). Do NOT invent new IDs here:
+    # ref_image_0..5 (178, 170, 187, 203, 220, 221). Do NOT invent new IDs here:
     # node 202 is the MiniMaxH3TurboSampler, so creating a LoadImage at
     # "202" overwrites the sampler and SamplerCustomAdvanced (142) then
     # fails validation with IMAGE -> SAMPLER type mismatch.
-    image_input_nodes = ["178", "170", "187", "203"]
+    image_input_nodes = ["178", "170", "187", "203", "220", "221"]  # LoadImage nodes for ref_image_0..5
     video_input_node = "195"       # VHS_LoadVideoFFmpeg - optional reference clip
 
     # ------------------------------------------------------------------
@@ -84,13 +86,36 @@ def iv2v(prompt, image_path_list, iv2v_workflow_path, save_directory, video_path
         workflow[resolution_node]["inputs"]["megapixels"] = megapixels
 
     # TurboLora flag (only touch if node exists in this workflow)
-    if bool_turbo_lora_node in workflow:
-        workflow[bool_turbo_lora_node]["inputs"]["switch"] = turboLora
-        if not turboLora:
-            #increase to 25 steps if not using speed lora
-            workflow[step_count_node]["inputs"]["steps"] = 25
-            #set lora strength to 0
-            workflow[turboLora_node]["inputs"]["strength_model"] = 0
+    if turboLora_node in workflow:
+            if not turboLora:
+                #steps
+                workflow[step_count_node]["inputs"]["steps"] = 30
+                #set lora strength to 0
+                workflow[turboLora_node]["inputs"]["strength_model"] = 0
+                #sampler
+                workflow[sampler_node]["inputs"]["sampler_name"] = "res_multistep"
+                #scheduler
+                workflow[scheduler_node]["inputs"]["scheduler"] = "simple"
+                #adjust  shift
+                workflow[switch_shift_node]["inputs"]["switch"] = False
+                
+            else:
+                #steps
+                workflow[step_count_node]["inputs"]["steps"] = 8
+                #set lora strength to 1
+                workflow[turboLora_node]["inputs"]["strength_model"] = 1
+                #sampler
+                workflow[sampler_node]["inputs"]["sampler_name"] = "euler"
+                #scheduler
+                workflow[scheduler_node]["inputs"]["scheduler"] = "beta"
+                #adjust audio shift
+                workflow[switch_shift_node]["inputs"]["switch"] = True
+                
+
+    if 'nsfw' in prompt.lower():
+        workflow[nsfw_lora_node]["inputs"]["strength_model"] = 0.7
+    else:
+        workflow[nsfw_lora_node]["inputs"]["strength_model"] = 0
 
     #if ref quality
     if ref_quality not in ["match", "max"]:
@@ -99,13 +124,13 @@ def iv2v(prompt, image_path_list, iv2v_workflow_path, save_directory, video_path
     workflow[r2v_node]["inputs"]["ref_image_size"] = ref_quality
     
     # ------------------------------------------------------------------
-    # Reference images (up to 4). The workflow ships with four LoadImage
-    # nodes pre-wired to ref_image_0..3; any unused slot is pointed back at
+    # Reference images (up to 6). The workflow ships with four LoadImage
+    # nodes pre-wired to ref_image_0..5; any unused slot is pointed back at
     # image 1 so every node stays valid.
     # ------------------------------------------------------------------
     input_files = {}
 
-    num_images = min(len(image_path_list), 4)
+    num_images = min(len(image_path_list), 6)
     for i in range(num_images):
         placeholder = f"{{{{INPUT_IMAGE{i+1}_PLACEHOLDER}}}}"
         input_files[placeholder] = image_path_list[i]
@@ -114,8 +139,8 @@ def iv2v(prompt, image_path_list, iv2v_workflow_path, save_directory, video_path
             load_node = image_input_nodes[i]
             workflow[load_node]["inputs"]["image"] = placeholder
         else:
-            # Unreachable: num_images is capped at 4 and the workflow ships
-            # with four LoadImage nodes. Kept as a safety net — IDs start at
+            # Unreachable: num_images is capped at 6 and the workflow ships
+            # with six LoadImage nodes. Kept as a safety net — IDs start at
             # 300 to stay clear of every existing node (202 is the sampler).
             load_node = str(300 + i)
             workflow[load_node] = {
@@ -173,6 +198,7 @@ def iv2v(prompt, image_path_list, iv2v_workflow_path, save_directory, video_path
         'file_prefix': {save_video_node: clip_id, save_audio_node: sound_id, save_image_node: frame_id},
         'save_path': save_directory,
         'node_id': save_video_node,
+        'audio_node_id': save_audio_node,
         'image_node_id': save_image_node,
         'service_type': 'iv2v_h3',
         'prompt_final': prompt
