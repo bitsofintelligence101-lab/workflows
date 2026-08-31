@@ -81,15 +81,35 @@ def iv2v(prompt, image_path_list, iv2v_workflow_path, save_directory, video_path
     workflow[duration_node]["inputs"]["value"] = duration
 
     # Resolution selector (only touch if node exists in this workflow)
-    if resolution_node in workflow:
-        workflow[resolution_node]["inputs"]["aspect_ratio"] = aspect_ratio
-        workflow[resolution_node]["inputs"]["megapixels"] = megapixels
+    if megapixels <= 0.2:
+        width, height = 608, 352
+    elif megapixels <= 0.3:
+        width, height = 736, 416
+    elif megapixels <= 0.4:
+        width, height = 864, 480
+    elif megapixels <= 0.5:
+        width, height = 960, 544
+    elif megapixels <= 0.6:
+        width, height = 1056, 608
+    elif megapixels <= 0.7:
+        width, height = 1152, 640
+    elif megapixels <= 0.8:
+        width, height = 1216, 672
+    elif megapixels <= 0.9:
+        width, height = 1280, 736
+    else:
+        width, height = 1344, 768  # 0.98+ max resolution H3 trained on
+
+    if r2v_node in workflow:
+        workflow[r2v_node]["inputs"]["width"] = width
+        workflow[r2v_node]["inputs"]["height"] = height
+
 
     # TurboLora flag (only touch if node exists in this workflow)
     if turboLora_node in workflow:
             if not turboLora:
                 #steps
-                workflow[step_count_node]["inputs"]["steps"] = 30
+                workflow[step_count_node]["inputs"]["steps"] = 40
                 #set lora strength to 0
                 workflow[turboLora_node]["inputs"]["strength_model"] = 0
                 #sampler
@@ -110,6 +130,11 @@ def iv2v(prompt, image_path_list, iv2v_workflow_path, save_directory, video_path
                 workflow[scheduler_node]["inputs"]["scheduler"] = "beta"
                 #adjust audio shift
                 workflow[switch_shift_node]["inputs"]["switch"] = True
+                #Adjust which LoRA based on megapixels
+                if megapixels <= 0.6:
+                    workflow[turboLora_node]["inputs"]["lora_name"] = "H3\\minimax_h3_fl2v_turbo_8step_v1.0_comfyui_bf16.safetensors"
+                else:
+                    workflow[turboLora_node]["inputs"]["lora_name"] = "H3\\minimax_h3_fl2v_turbo_8step_v1.0_768p_comfyui_bf16.safetensors"
                 
 
     if 'nsfw' in prompt.lower():

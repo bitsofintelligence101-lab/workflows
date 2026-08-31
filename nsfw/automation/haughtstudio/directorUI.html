@@ -84,6 +84,57 @@
   }
   .scene-card:hover { border-color: var(--border-hover); }
   .scene-card.dragging { opacity: .45; }
+
+  /* ---------- act cards (group of scenes) ---------- */
+  .act-card {
+    border: 1px solid var(--border-hover);
+    border-radius: var(--radius);
+    background: var(--bg);
+  }
+  .act-card.dragging { opacity: .45; }
+  .act-card.excluded { opacity: .55; }
+  .act-head {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 14px;
+    background: var(--bg-3);
+    border-bottom: 1px solid var(--border);
+    cursor: pointer; user-select: none;
+    border-radius: var(--radius) var(--radius) 0 0;
+  }
+  .act-card.collapsed .act-head { border-bottom: none; border-radius: var(--radius); }
+  .act-head .drag { color: var(--text-dim); cursor: grab; font-size: 15px; }
+  .act-head input[type="checkbox"] { accent-color: var(--green); width: 16px; height: 16px; cursor: pointer; }
+  .act-head .act-name {
+    background: transparent; border: 1px solid transparent; border-radius: 6px;
+    color: var(--text); font-weight: 700; font-size: 14px;
+    padding: 3px 8px; width: 180px;
+  }
+  .act-head .act-name:hover { border-color: var(--border); }
+  .act-head .act-name:focus { border-color: #79b8ff; outline: none; background: var(--bg-2); }
+  .act-card.collapsed .act-body { display: none; }
+  .act-body { padding: 12px 14px 14px; display: flex; flex-direction: column; gap: 12px; }
+  .addSceneInAct {
+    border: 1.5px dashed var(--border-hover);
+    background: transparent;
+    color: var(--text-dim);
+    justify-content: center;
+    padding: 10px;
+    font-size: 13px;
+    border-radius: var(--radius);
+    width: 100%;
+  }
+  .addSceneInAct:hover { color: var(--accent); border-color: var(--accent); background: rgba(79,142,247,.06); }
+  #addActBtn {
+    border: 1.5px dashed var(--border-hover);
+    background: transparent;
+    color: var(--text-dim);
+    justify-content: center;
+    padding: 12px;
+    font-size: 14px;
+    border-radius: var(--radius);
+    width: 100%;
+  }
+  #addActBtn:hover { color: var(--green); border-color: var(--green); background: rgba(63,185,80,.06); }
   .scene-head {
     display: flex; align-items: center; gap: 10px;
     padding: 10px 14px;
@@ -353,16 +404,16 @@
       </div>
     </section>
 
-    <!-- Scenes -->
+    <!-- Scenes (grouped into acts) -->
     <section class="panel">
       <div class="panel-head">
-        🎞 Scenes <span id="sceneCount" style="text-transform:none">(0)</span>
+        🎞 Acts &amp; Scenes <span id="sceneCount" style="text-transform:none">(0)</span>
         <span class="spacer"></span>
-        <span class="hint" style="text-transform:none">scene ids auto-number (scene_01, scene_02…) — drag ⠿ to reorder</span>
+        <span class="hint" style="text-transform:none">▶ Run executes the checked acts in order — scene ids auto-number (scene_01, scene_02…) across all acts</span>
       </div>
       <div class="panel-body">
-        <div id="sceneList" style="display:flex;flex-direction:column;gap:12px"></div>
-        <button id="addSceneBtn" class="btn">＋ Add scene</button>
+        <div id="actList" style="display:flex;flex-direction:column;gap:14px"></div>
+        <button id="addActBtn" class="btn">🎬 ＋ Add act</button>
       </div>
     </section>
 
@@ -414,8 +465,9 @@
 /* =====================================================================
    State
 ===================================================================== */
-let scenes = [];           // [{uid, slug, summary, clips, duration, videoFrom, videoFilePath, videoDesc, images:[{path,description}]}]
-let sceneSeq = 0;          // monotonic uid counter (never reused)
+let acts = [];             // [{uid, name, included, scenes:[scene], _collapsed}]
+let actSeq = 0;            // monotonic act uid counter (never reused)
+let sceneSeq = 0;          // monotonic scene uid counter (never reused)
 let serverOutputDir = null;
 let serverManifest = null;
 let serverState = "idle";
@@ -434,29 +486,157 @@ const el = (tag, cls, text) => {
 };
 
 /* =====================================================================
-   Scene ids: auto-numbered, recomputed on every add / delete / reorder.
-   scene_01, scene_02, ... with an optional slug suffix.
+   Acts + scene ids.
+   allScenes() flattens every act's scenes in act order; scene ids
+   auto-number across that flat list (scene_01, scene_02, ...) with an
+   optional slug suffix, recomputed on every add / delete / reorder.
 ===================================================================== */
+function allScenes() { return acts.flatMap(a => a.scenes); }
+function actOf(scene) { return acts.find(a => a.scenes.includes(scene)); }
+
 function sceneId(s) {
-  const idx = scenes.indexOf(s);
+  const idx = allScenes().indexOf(s);
   const base = "scene_" + String(idx + 1).padStart(2, "0");
   return s.slug ? `${base}_${s.slug}` : base;
 }
 
 function renumber() {
-  const valid = new Set(scenes.map(s => s.uid));
-  scenes.forEach(s => {
-    // clear dangling continue-from references (target deleted / itself)
+  const valid = new Set(allScenes().map(s => s.uid));
+  acts.forEach(a => a.scenes.forEach(s => {
+    // clear dangling continue-from references (target deleted / itself /
+    // moved to a different act — continue-from only works within an act)
     if (s.videoFrom && s.videoFrom !== "chain" && s.videoFrom !== "__file__" && !valid.has(s.videoFrom)) {
       s.videoFrom = "";
     }
-  });
+  }));
 }
 
 /* =====================================================================
-   Scene cards
+   Act cards
 ===================================================================== */
-function addScene(data) {
+function addAct(data, atIndex) {
+  actSeq += 1;
+  const act = Object.assign({
+    uid: "a" + actSeq,
+    name: "",
+    included: true,
+    scenes: [],
+    _collapsed: false,
+  }, data || {});
+  if (atIndex == null || atIndex < 0 || atIndex > acts.length) acts.push(act);
+  else acts.splice(atIndex, 0, act);
+  return act;
+}
+
+function removeAct(uid) {
+  acts = acts.filter(a => a.uid !== uid);
+  renumber();
+  renderActs();
+  refreshScript();
+}
+
+function moveAct(uid, dir) {
+  const i = acts.findIndex(a => a.uid === uid);
+  const j = i + dir;
+  if (i < 0 || j < 0 || j >= acts.length) return;
+  [acts[i], acts[j]] = [acts[j], acts[i]];
+  renumber();
+  renderActs();
+  refreshScript();
+}
+
+function actDisplayName(a) { return (a.name || "").trim() || `Act ${acts.indexOf(a) + 1}`; }
+
+function actFileSlug(a) {
+  return ((a.name || "").trim().toLowerCase().replace(/\s+/g, "_").replace(/[^a-z0-9_\-]/g, ""))
+    || `act_${acts.indexOf(a) + 1}`;
+}
+
+function sceneCountTotal() { return acts.reduce((n, a) => n + a.scenes.length, 0); }
+
+function renderActs() {
+  const host = $("#actList");
+  host.innerHTML = "";
+  $("#sceneCount").textContent = `(${acts.length} act${acts.length === 1 ? "" : "s"}, ${sceneCountTotal()} scenes)`;
+
+  acts.forEach((a, aIdx) => {
+    const card = el("div", "act-card" + (a._collapsed ? " collapsed" : "") + (a.included ? "" : " excluded"));
+    card.dataset.uid = a.uid;
+
+    /* ---- header ---- */
+    const head = el("div", "act-head");
+    const drag = el("span", "drag", "⠿"); drag.title = "Drag to reorder acts";
+    drag.draggable = true;
+    drag.addEventListener("dragstart", e => { _draggingAct = true; e.dataTransfer.setData("text/plain", "act:" + a.uid); card.classList.add("dragging"); });
+    drag.addEventListener("dragend", () => { _draggingAct = false; card.classList.remove("dragging"); });
+    card.addEventListener("dragover", e => { if (draggingAct()) e.preventDefault(); });
+    card.addEventListener("drop", e => {
+      const data = e.dataTransfer.getData("text/plain");
+      if (!data.startsWith("act:")) return;   // scene drops are handled by scene cards
+      e.preventDefault();
+      const fromUid = data.slice(4);
+      const from = acts.findIndex(x => x.uid === fromUid);
+      const to = acts.findIndex(x => x.uid === a.uid);
+      if (from >= 0 && to >= 0 && from !== to) {
+        const [moved] = acts.splice(from, 1);
+        acts.splice(to, 0, moved);
+        renumber();
+        renderActs(); refreshScript();
+      }
+    });
+
+    const inc = el("input"); inc.type = "checkbox"; inc.checked = a.included;
+    inc.title = "Include this act in the next ▶ Run";
+    inc.addEventListener("click", e => e.stopPropagation());
+    inc.addEventListener("change", () => { a.included = inc.checked; card.classList.toggle("excluded", !a.included); refreshScript(); renderStatus(); });
+
+    const badge = el("span", "badge", "A" + (aIdx + 1));
+    const nameInput = el("input", "act-name"); nameInput.type = "text";
+    nameInput.value = a.name; nameInput.placeholder = `Act ${aIdx + 1}`;
+    nameInput.title = "Act name (used as the export file name)";
+    nameInput.addEventListener("click", e => e.stopPropagation());
+    nameInput.addEventListener("input", () => { a.name = nameInput.value; });
+
+    const count = el("span", "hint", `${a.scenes.length} scene${a.scenes.length === 1 ? "" : "s"}`);
+    const spacer = el("span", "spacer"); spacer.style.flex = "1";
+    const up = el("button", "btn small icon", "↑"); up.title = "Move act up";
+    up.addEventListener("click", e => { e.stopPropagation(); moveAct(a.uid, -1); });
+    const dn = el("button", "btn small icon", "↓"); dn.title = "Move act down";
+    dn.addEventListener("click", e => { e.stopPropagation(); moveAct(a.uid, +1); });
+    const del = el("button", "btn small icon danger", "✕"); del.title = "Delete act (and its scenes)";
+    del.addEventListener("click", e => {
+      e.stopPropagation();
+      if (a.scenes.length && !confirm(`Delete ${actDisplayName(a)} and its ${a.scenes.length} scene(s)?`)) return;
+      removeAct(a.uid);
+    });
+    const chev = el("span", "chev", "▾");
+    head.append(drag, inc, badge, nameInput, count, spacer, up, dn, del, chev);
+    head.addEventListener("click", () => { a._collapsed = !a._collapsed; card.classList.toggle("collapsed"); });
+    card.appendChild(head);
+
+    /* ---- body: this act's scenes + its own add-scene button ---- */
+    const body = el("div", "act-body");
+    const list = el("div"); list.style.cssText = "display:flex;flex-direction:column;gap:12px";
+    a.scenes.forEach(s => list.appendChild(renderSceneCard(s)));
+    body.appendChild(list);
+    const addBtn = el("button", "btn addSceneInAct", "＋ Add scene");
+    addBtn.addEventListener("click", () => { addScene(a); logLocal(`scene added to ${actDisplayName(a)}`); });
+    body.appendChild(addBtn);
+    card.appendChild(body);
+    host.appendChild(card);
+  });
+
+  if (!acts.length) host.appendChild(el("div", "hint", "No acts yet — add one with the button below."));
+  renderStatus();
+}
+
+let _draggingAct = false;
+function draggingAct() { return _draggingAct; }
+
+/* =====================================================================
+   Scene cards (each scene lives inside exactly one act)
+===================================================================== */
+function addScene(act, data) {
   sceneSeq += 1;
   const scene = Object.assign({
     uid: "s" + sceneSeq,
@@ -464,62 +644,66 @@ function addScene(data) {
     summary: "",
     clips: "",            // "" -> use global default
     duration: "",
-    videoFrom: "",        // "" | "chain" | "__file__" | other scene's uid
+    videoFrom: "",        // "" | "chain" | "__file__" | other scene's uid (same act only)
     videoFilePath: "",
     videoDesc: "",
     images: [{ path: "", description: "" }],
     _collapsed: false,
   }, data || {});
-  scenes.push(scene);
+  act.scenes.push(scene);
   renumber();
-  renderScenes();
+  renderActs();
   refreshScript();
   return scene;
 }
 
 function removeScene(uid) {
-  scenes = scenes.filter(s => s.uid !== uid);
+  const owner = acts.find(a => a.scenes.some(s => s.uid === uid));
+  if (!owner) return;
+  owner.scenes = owner.scenes.filter(s => s.uid !== uid);
   renumber();            // ids shift: scene_03 becomes scene_02, etc.
-  renderScenes();
+  renderActs();
   refreshScript();
 }
 
 function moveScene(uid, dir) {
-  const i = scenes.findIndex(s => s.uid === uid);
+  const owner = acts.find(a => a.scenes.some(s => s.uid === uid));
+  if (!owner) return;
+  const i = owner.scenes.findIndex(s => s.uid === uid);
   const j = i + dir;
-  if (i < 0 || j < 0 || j >= scenes.length) return;
-  [scenes[i], scenes[j]] = [scenes[j], scenes[i]];
+  if (i < 0 || j < 0 || j >= owner.scenes.length) return;
+  [owner.scenes[i], owner.scenes[j]] = [owner.scenes[j], owner.scenes[i]];
   renumber();
-  renderScenes();
+  renderActs();
   refreshScript();
 }
 
-function renderScenes() {
-  const list = $("#sceneList");
-  list.innerHTML = "";
-  $("#sceneCount").textContent = `(${scenes.length})`;
-
-  scenes.forEach((s, idx) => {
+function renderSceneCard(s) {
+  const ownerAct = actOf(s);
+  const idx = allScenes().indexOf(s);
+  {
     const card = el("div", "scene-card" + (s._collapsed ? " collapsed" : ""));
     card.dataset.uid = s.uid;
 
     /* ---- header ---- */
     const head = el("div", "scene-head");
-    const drag = el("span", "drag", "⠿"); drag.title = "Drag to reorder";
+    const drag = el("span", "drag", "⠿"); drag.title = "Drag to reorder (within this act)";
     drag.draggable = true;
-    drag.addEventListener("dragstart", e => { e.dataTransfer.setData("text/plain", s.uid); card.classList.add("dragging"); });
+    drag.addEventListener("dragstart", e => { e.dataTransfer.setData("text/plain", "scene:" + s.uid); card.classList.add("dragging"); });
     drag.addEventListener("dragend", () => card.classList.remove("dragging"));
     card.addEventListener("dragover", e => e.preventDefault());
     card.addEventListener("drop", e => {
       e.preventDefault();
-      const fromUid = e.dataTransfer.getData("text/plain");
-      const from = scenes.findIndex(x => x.uid === fromUid);
-      const to = scenes.findIndex(x => x.uid === s.uid);
+      const data = e.dataTransfer.getData("text/plain");
+      if (!data.startsWith("scene:")) return;   // act drops are handled by the act card
+      const fromUid = data.slice(6);
+      const from = ownerAct.scenes.findIndex(x => x.uid === fromUid);
+      const to = ownerAct.scenes.findIndex(x => x.uid === s.uid);
       if (from >= 0 && to >= 0 && from !== to) {
-        const [moved] = scenes.splice(from, 1);
-        scenes.splice(to, 0, moved);
+        const [moved] = ownerAct.scenes.splice(from, 1);
+        ownerAct.scenes.splice(to, 0, moved);
         renumber();
-        renderScenes(); refreshScript();
+        renderActs(); refreshScript();
       }
     });
 
@@ -582,9 +766,9 @@ function renderScenes() {
       const optChain = el("option", null, "⛓ chain_scenes (previous scene's last clip)"); optChain.value = "chain";
       sel.appendChild(optChain);
     }
-    scenes.forEach((other, oIdx) => {
+    ownerAct.scenes.forEach(other => {
       if (other.uid === s.uid) return;
-      const o = el("option", null, `${oIdx + 1}. ${sceneId(other)}  (clip_1)`);
+      const o = el("option", null, `${allScenes().indexOf(other) + 1}. ${sceneId(other)}  (clip_1)`);
       o.value = other.uid;
       sel.appendChild(o);
     });
@@ -626,7 +810,7 @@ function renderScenes() {
       s.images.push(copiedImage ? { path: copiedImage.path, description: copiedImage.description }
                                 : { path: "", description: "" });
       copiedImage = null;   // one-shot: reset after use
-      renderScenes(); refreshScript();
+      renderActs(); refreshScript();
     });
     imgHead.appendChild(addImg);
     body.appendChild(imgHead);
@@ -643,7 +827,7 @@ function renderScenes() {
       slot.appendChild(cp);
       if (s.images.length > 1) {
         const rm = el("button", "slot-remove", "✕"); rm.title = "Remove image";
-        rm.addEventListener("click", () => { s.images.splice(i, 1); renderScenes(); refreshScript(); });
+        rm.addEventListener("click", () => { s.images.splice(i, 1); renderActs(); refreshScript(); });
         slot.appendChild(rm);
       }
       const prev = el("img", "preview");
@@ -673,10 +857,8 @@ function renderScenes() {
     body.appendChild(slots);
 
     card.appendChild(body);
-    list.appendChild(card);
-  });
-
-  renderStatus();
+    return card;
+  }
 }
 
 /* =====================================================================
@@ -690,7 +872,7 @@ function stripQuotes(v) {
     ? t.slice(1, -1) : t;
 }
 
-function buildConfig() {
+function globalSettings() {
   return {
     base_dir: $("#g_baseDir").value.trim(),
     output_dir: $("#g_outputDir").value.trim(),
@@ -703,19 +885,50 @@ function buildConfig() {
     ai_timeout: +$("#g_aiTimeout").value || 900,
     turbo_lora: $("#g_turboLora").checked,
     chain_scenes: $("#g_chainScenes").checked,
-    scenes: scenes.map(s => ({
-      id: sceneId(s),
-      summary: s.summary,
-      clips: s.clips === "" ? null : +s.clips,
-      duration: s.duration === "" ? null : +s.duration,
-      videoFrom: s.videoFrom === "" || s.videoFrom === "chain" || s.videoFrom === "__file__"
-        ? s.videoFrom
-        : (() => { const t = scenes.find(x => x.uid === s.videoFrom); return t ? sceneId(t) : ""; })(),
-      videoFilePath: s.videoFilePath || "",
-      videoDesc: s.videoDesc,
-      images: s.images.filter(im => im.path.trim()),
-    })),
   };
+}
+
+// Old-format scene payload (what the server / director understand). The
+// `flat` list is the same act-order flattened scene list the ids were
+// numbered from, so continue-from refs resolve to the right scene id.
+function scenePayload(s, flat) {
+  return {
+    id: sceneId(s),
+    summary: s.summary,
+    clips: s.clips === "" ? null : +s.clips,
+    duration: s.duration === "" ? null : +s.duration,
+    videoFrom: s.videoFrom === "" || s.videoFrom === "chain" || s.videoFrom === "__file__"
+      ? s.videoFrom
+      : (() => { const t = flat.find(x => x.uid === s.videoFrom); return t ? sceneId(t) : ""; })(),
+    videoFilePath: s.videoFilePath || "",
+    videoDesc: s.videoDesc,
+    images: s.images.filter(im => im.path.trim()),
+  };
+}
+
+// Run config: old flat format the server already understands — only scenes
+// from the checked acts, in act order. `acts_meta` piggybacks the full act
+// structure (including unchecked acts) so a page reload restores everything;
+// the server saves/returns it untouched.
+function buildConfig() {
+  const flat = allScenes();
+  return Object.assign(globalSettings(), {
+    scenes: acts.filter(a => a.included).flatMap(a => a.scenes).map(s => scenePayload(s, flat)),
+    acts_meta: acts.map(a => ({
+      name: a.name,
+      included: a.included,
+      scenes: a.scenes.map(s => scenePayload(s, flat)),
+    })),
+  });
+}
+
+// Single-act config for per-act export: same old flat format, one file per
+// act, valid standalone (each can be re-imported on its own).
+function buildActConfig(a) {
+  const flat = allScenes();
+  return Object.assign(globalSettings(), {
+    scenes: a.scenes.map(s => scenePayload(s, flat)),
+  });
 }
 
 function buildScript(cfg) {
@@ -786,6 +999,9 @@ function clipExpectedCount(s) {
   return s.clips === "" || s.clips == null ? (+$("#g_clipsPerScene").value || 1) : +s.clips;
 }
 
+// Scenes in run order: checked acts only (what the server will execute).
+function runScenes() { return acts.filter(a => a.included).flatMap(a => a.scenes); }
+
 function logLocal(msg, cls) {
   const box = $("#logBox");
   const line = el("div");
@@ -819,13 +1035,14 @@ function renderStatus() {
 
   // The active scene is the first one still short of its expected clip count
   // (scene 1 until the manifest file appears).
+  const runList = runScenes();
   let activeIdx = -1;
   if (running) {
-    activeIdx = scenes.findIndex(s2 =>
+    activeIdx = runList.findIndex(s2 =>
       !serverManifest || ((((serverManifest.scenes || {})[sceneId(s2)]) || []).length < clipExpectedCount(s2)));
   }
 
-  scenes.forEach((s, idx) => {
+  runList.forEach((s, idx) => {
     const id = sceneId(s);
     const row = el("div", "run-row");
     const chip = el("span", "status-chip st-pending");
@@ -877,7 +1094,7 @@ function renderStatus() {
     host.appendChild(row);
   });
 
-  if (!scenes.length) host.appendChild(el("div", "hint", "No scenes yet — add one with the ＋ button."));
+  if (!runList.length) host.appendChild(el("div", "hint", "No scenes in the checked acts — tick an act and add scenes to run."));
 }
 
 function renderRunBanner() {
@@ -936,7 +1153,7 @@ async function pollStatus() {
 
 $("#runBtn").addEventListener("click", async () => {
   const cfg = buildConfig();
-  if (!cfg.scenes.length) { alert("Add at least one scene first."); return; }
+  if (!cfg.scenes.length) { alert("Nothing to run — tick at least one act that has scenes."); return; }
   $("#runBtn").disabled = true;
   try {
     const r = await fetch("/api/run", {
@@ -978,30 +1195,39 @@ $("#openOutBtn").addEventListener("click", () => {
 /* =====================================================================
    Toolbar: import / export / copy
 ===================================================================== */
+// Export: one old-format JSON file per act (each file is a valid standalone
+// config with the global settings + that act's scenes).
 $("#exportBtn").addEventListener("click", () => {
-  const blob = new Blob([JSON.stringify(buildConfig(), null, 2)], { type: "application/json" });
-  const a = el("a");
-  a.href = URL.createObjectURL(blob);
-  a.download = "director_ui_config.json";
-  a.click();
-  URL.revokeObjectURL(a.href);
-  logLocal("config exported", "ok");
+  const withScenes = acts.filter(a => a.scenes.length);
+  if (!withScenes.length) { logLocal("nothing to export — no scenes in any act", "warn"); return; }
+  withScenes.forEach(a => {
+    const blob = new Blob([JSON.stringify(buildActConfig(a), null, 2)], { type: "application/json" });
+    const link = el("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = `director_act_${actFileSlug(a)}.json`;
+    link.click();
+    URL.revokeObjectURL(link.href);
+  });
+  logLocal(`exported ${withScenes.length} act file${withScenes.length === 1 ? "" : "s"}`, "ok");
 });
 
+// Import (backwards compatible): accepts the normal flat config JSON. The
+// file becomes ONE new act — the first import fills the blank starting act,
+// later imports append additional acts.
 $("#importBtn").addEventListener("click", () => $("#importFile").click());
 $("#importFile").addEventListener("change", async (e) => {
   const f = e.target.files[0];
   if (!f) return;
   try {
-    applyConfig(JSON.parse(await f.text()));
-    logLocal("config imported: " + f.name, "ok");
+    importActConfig(JSON.parse(await f.text()));
+    logLocal("config imported as new act: " + f.name, "ok");
   } catch (err) {
     logLocal("import failed: " + err.message, "err");
   }
   e.target.value = "";
 });
 
-function applyConfig(cfg) {
+function applyGlobalSettings(cfg) {
   $("#g_baseDir").value = cfg.base_dir || "";
   $("#g_outputDir").value = cfg.output_dir || "";
   $("#g_clipsPerScene").value = cfg.clips_per_scene ?? 1;
@@ -1013,34 +1239,68 @@ function applyConfig(cfg) {
   $("#g_aiTimeout").value = cfg.ai_timeout ?? 900;
   $("#g_turboLora").checked = !!cfg.turbo_lora;
   $("#g_chainScenes").checked = !!cfg.chain_scenes;
-  scenes = []; sceneSeq = 0;
-  // map saved scene ids -> new uids so continue-from refs survive an import
+}
+
+// Build a scene object from a saved scene payload (no rendering; used by import).
+function sceneFromSaved(s) {
+  sceneSeq += 1;
+  return {
+    uid: "s" + sceneSeq,
+    slug: (s.id || "").replace(/^scene_\d+_?/, ""),
+    summary: s.summary || "",
+    clips: s.clips == null ? "" : s.clips,
+    duration: s.duration == null ? "" : s.duration,
+    videoFrom: "",               // fixed up by the caller
+    videoFilePath: s.videoFilePath || "",
+    videoDesc: s.videoDesc || "",
+    images: (s.images && s.images.length ? s.images : [{ path: "", description: "" }]),
+    _collapsed: false,
+    _importVideoFrom: s.videoFrom,
+  };
+}
+
+function resolveImportedVideoRefs(actList) {
   const idToUid = {};
-  (cfg.scenes || []).forEach(s => {
-    const slug = (s.id || "").replace(/^scene_\d+_?/, "");
-    const sc = addScene({
-      slug,
-      summary: s.summary || "",
-      clips: s.clips == null ? "" : s.clips,
-      duration: s.duration == null ? "" : s.duration,
-      videoFrom: "",          // fixed up below
-      videoFilePath: s.videoFilePath || "",
-      videoDesc: s.videoDesc || "",
-      images: (s.images && s.images.length ? s.images : [{ path: "", description: "" }]),
-    });
-    idToUid[s.id] = sc.uid;
-    sc._importVideoFrom = s.videoFrom;
-  });
-  scenes.forEach(sc => {
+  actList.forEach(a => a.scenes.forEach(sc => { if (sc._savedId) idToUid[sc._savedId] = sc.uid; }));
+  actList.forEach(a => a.scenes.forEach(sc => {
     const v = sc._importVideoFrom;
-    delete sc._importVideoFrom;
+    delete sc._importVideoFrom; delete sc._savedId;
     if (!v) return;
     if (v === "chain" || v === "__file__") sc.videoFrom = v;
     else if (idToUid[v]) sc.videoFrom = idToUid[v];   // referenced scene id -> new uid
-  });
+  }));
+}
+
+// Import one old flat config file as a single new act.
+function importActConfig(cfg) {
+  applyGlobalSettings(cfg);
+  const incoming = (cfg.scenes || []).map(s => { const sc = sceneFromSaved(s); sc._savedId = s.id; return sc; });
+  const onlyBlank = acts.length === 1 && !acts[0].scenes.length && !(acts[0].name || "").trim();
+  const act = onlyBlank ? acts[0] : addAct();
+  act.scenes.push(...incoming);
+  resolveImportedVideoRefs([act]);
   renumber();
-  renderScenes();
+  renderActs();
   refreshScript();
+}
+
+// Full restore (server /api/config on boot): new format with acts_meta.
+// Falls back to the old flat format by treating the whole file as act 1.
+function applyConfig(cfg) {
+  if (cfg && Array.isArray(cfg.acts_meta) && cfg.acts_meta.length) {
+    applyGlobalSettings(cfg);
+    acts = []; actSeq = 0; sceneSeq = 0;
+    cfg.acts_meta.forEach(am => {
+      const act = addAct({ name: am.name || "", included: am.included !== false });
+      act.scenes = (am.scenes || []).map(s => { const sc = sceneFromSaved(s); sc._savedId = s.id; return sc; });
+    });
+    resolveImportedVideoRefs(acts);
+    renumber();
+    renderActs();
+    refreshScript();
+    return;
+  }
+  importActConfig(cfg || {});
 }
 
 $("#copyScriptBtn").addEventListener("click", async () => {
@@ -1051,8 +1311,8 @@ $("#copyScriptBtn").addEventListener("click", async () => {
 /* =====================================================================
    Wiring
 ===================================================================== */
-$("#addSceneBtn").addEventListener("click", () => { addScene(); logLocal("scene added"); });
-$("#g_chainScenes").addEventListener("change", () => { renderScenes(); refreshScript(); });
+$("#addActBtn").addEventListener("click", () => { const a = addAct(); addScene(a); logLocal("act added"); });
+$("#g_chainScenes").addEventListener("change", () => { renderActs(); refreshScript(); });
 ["g_outputDir","g_baseDir","g_clipsPerScene","g_clipDuration","g_megapixels",
  "g_aspectRatio","g_quant","g_refQuality","g_aiTimeout","g_turboLora"].forEach(id => {
   document.getElementById(id).addEventListener("input", () => { refreshScript(); renderStatus(); });
@@ -1068,8 +1328,8 @@ $("#g_chainScenes").addEventListener("change", () => { renderScenes(); refreshSc
       if (cfg && Object.keys(cfg).length) { applyConfig(cfg); loaded = true; }
     }
   } catch (e) { /* server not running */ }
-  if (!loaded) addScene();
-  logLocal(loaded ? "loaded last run's config from the server" : "ready — build scenes on the left, then press ▶ Run", "ok");
+  if (!loaded) { const a = addAct(); addScene(a); }
+  logLocal(loaded ? "loaded last run's config from the server" : "ready — build acts & scenes on the left, tick the acts to run, then press ▶ Run", "ok");
   pollStatus();
   setInterval(pollStatus, 3000);
 })();

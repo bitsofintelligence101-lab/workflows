@@ -174,17 +174,6 @@
       "title": "Math Expression"
     }
   },
-  "157": {
-    "inputs": {
-      "aspect_ratio": "16:9 (Widescreen)",
-      "megapixels": 0.4,
-      "multiple": 32
-    },
-    "class_type": "ResolutionSelector",
-    "_meta": {
-      "title": "Resolution Selector (Size)"
-    }
-  },
   "158": {
     "inputs": {
       "value": 10
@@ -206,7 +195,7 @@
   },
   "161": {
     "inputs": {
-      "noise_seed": 101
+      "noise_seed": 121
     },
     "class_type": "RandomNoise",
     "_meta": {
@@ -219,14 +208,8 @@
         "182",
         0
       ],
-      "width": [
-        "157",
-        0
-      ],
-      "height": [
-        "157",
-        1
-      ],
+      "width": 1344,
+      "height": 768,
       "length": [
         "156",
         1
@@ -280,7 +263,7 @@
   },
   "170": {
     "inputs": {
-      "image": "cleanbackground_2 (1).png"
+      "image": "psychic_char_sheet_outfit_2.png"
     },
     "class_type": "LoadImage",
     "_meta": {
@@ -305,7 +288,7 @@
   },
   "178": {
     "inputs": {
-      "image": "cleanbackground_1.png"
+      "image": "cleanbackground_1 (2).png"
     },
     "class_type": "LoadImage",
     "_meta": {
@@ -314,7 +297,7 @@
   },
   "182": {
     "inputs": {
-      "value": "How the reference pictures align with the target video — there is no starting frame; the 0.00-second mark is composed by combining the references, placing <Subject 1> as defined by <Picture 1> inside the room established by <Subject 3>, rounding a heavy, rusted iron pillar. Target duration 15.00 seconds.\n\nsummary:\n[reference generation] The three-headed dog <Subject 1> rounds a corner in the industrial <Subject 3> and faces the camera. There are multiple cuts between <Subject 1> and <Subject 2>, who shows fear and speaks a line as the dog approaches her.\n\nsubject_definitions:\n<Subject 1> is the three-headed dog in <Picture 1>, with thick, matted brown fur, three heads, and visible sharp teeth and pale blue eyes; its body is large and muscular. Identity follows these reference assets; position and lighting are those of the target room.\n<Subject 2> is the blonde woman in <Picture 2> close up and <Picture 3> 3-panel reference, with blonde hair pulled back, a thin gold necklace, an orange silk button-down shirt, and a short black skirt; <Picture 2> supplies her side profile and <Picture 3> supplies her full outfit. Her identity follows these reference assets; her position and lighting are those of the target room.\n<Subject 3> is the industrial factory in <Picture 4>, featuring massive rusted pipes, heavy grey machinery, high ceilings with steam/smoke, and a gritty, metallic texture. The room follows this layout, materials, and light; camera position and framing follow the action and are not constrained to the reference viewpoint.\n\nintegrated_multimodal_description: The target video is in a live-action cinematic style with cold, moody industrial lighting and heavy steam.\n[Shot 1] The three-headed dog <Subject 1> rounds a heavy, rusted iron pillar in <Subject 3>, its heads turning simultaneously toward the camera. The matted brown fur ripples with its movement, and its jaws part to reveal sharp teeth and pale blue eyes. The camera performs a Push In with small amplitude at slow speed as the dog stares, its massive weight causing the floor to vibrate slightly.\n[Shot 2] At 02.50. The camera cuts to a tight close-up of <Subject 2> in the industrial area. Her brow furrows deeply, her eyes widen to show the whites, and her lip quivers in a micro-gesture of extreme fear. Her chest heaves rapidly with panicked breaths, and a bead of sweat glistens on her temple. The camera is a Static Shot.\n[Shot 3] At 05.00. The camera cuts back to <Subject 1>. It lets out a deep, guttural growl that vibrates through its massive chest. The left dog mouth licks its lips, the center dog head snaps its teeth, and the right dog head points its snout into the air and howls. Its neck muscles tense and ripple as it takes heavy, very slow lumbering steps forward, its paws striking the wet floor with a heavy thud. The camera performs a Tracking Shot with small amplitude at slow speed with slight camera jitter.\n[Shot 4] At 08.00. The camera cuts to <Subject 2> she is backing up moving away from camera. Her orange silk shirt rustles and pulls tight across her shoulders as she hunches backward. <Subject 2> (S1) says in a shaky, high-pitched voice, <d>[English] What.. the.. actual fuck!</d> She pauses for a moment, her facial expression changing to a sarcastic smile as she tilts her head slightly, then continues, <d>[English] Maybe your one of those vegetarian dogs?</d> her pupils dilated and her hands trembling at her sides.\n[Shot 5] At 12.00. The camera cuts to <Subject 2> her back to the camera, camera is looking over her shoulder toward <Subject 1> approximately 10 yards away. <Subject 2> starts walking backwards quickly away from the dog. The dog growls its weight shifting forward as it maintains its steady advance. She says, <d>[English] Nope!</d> her head bowed and her body tensed, her shoulders rising and falling. The camera continues a slow Pull Out over her shoulder, tracking <Subject 2> walking backward with the camera focused on <Subject 1> as it continues its steady, rhythmic forward motion. <Subject 2> turns quickly to run away. The orange silk shirt, gold necklace, blonde hair, matted brown fur, and the industrial pipes, steam, and grey machinery remain unchanged throughout.\n\noverall_soundscape:\nA heavy industrial hum and the constant hiss of steam fill the space. Low, guttural growls from the dog echo off the metal walls, accompanied by the wet thud of heavy paws and the shuffling of <Subject 2>'s shoes on the concrete.\n\nnon_diegetic_music:\nN/A"
+      "value": "subject_definitions:\n<Subject 1> is the elderly man in <Picture 1>, with a deeply lined face, gray stubble beard, a weathered brown coat, and fingerless gloves.\n\nsummary:\n[reference generation] The target video shows <Subject 1> standing on a city sidewalk, begging for change from passersby as cars and pedestrians move past in the background.\n\nretention_analysis:\n<Subject 1> (appears in [Shot 1]): fully_preserved - his identity, weathered face, gray stubble, and coat are retained.\n\ndetailed_description:\nThe target video is in a gritty, naturalistic documentary style with overcast daylight and muted street tones.\n[Shot 1] A medium shot frames <Subject 1>, the elderly man, standing at the edge of a city sidewalk, his weight shifted slightly forward as he holds both hands out, palms up, toward the stream of people passing him. Behind him, cars move steadily along the street and pedestrians walk by on the sidewalk, several glancing at him briefly before looking away. <Subject 1> (S1) is an elderly man with a raspy, weathered voice, on-screen, speaking at a slow, effortful pace. He says, <d>[English] Can you spare change?</d> His outstretched hands remain open as passersby continue past without stopping. After a brief pause, he lowers his hands slightly and adds, <d>[English] Can you help me?</d> His expression stays fixed on the crowd, hopeful but unanswered, as the camera holds steady with only a slight handheld sway.\n\noverall_soundscape:\nSteady traffic hum and passing car engines mix with overlapping footsteps and faint murmurs of pedestrian conversation on the sidewalk.\n\nnon_diegetic_music:\nN/A"
     },
     "class_type": "PrimitiveStringMultiline",
     "_meta": {
@@ -323,7 +306,7 @@
   },
   "187": {
     "inputs": {
-      "image": "una_char_sheet_outfit_2.png"
+      "image": "overpass2_base.png"
     },
     "class_type": "LoadImage",
     "_meta": {
@@ -361,7 +344,7 @@
   },
   "198": {
     "inputs": {
-      "lora_name": "H3\\minimax_h3_fl2v_turbo_8step_v1.0_comfyui_bf16.safetensors",
+      "lora_name": "H3\\minimax_h3_fl2v_turbo_8step_v1.0_768p_comfyui_bf16.safetensors",
       "strength_model": 1,
       "model": [
         "223",
@@ -375,7 +358,7 @@
   },
   "203": {
     "inputs": {
-      "image": "underworld_base.png"
+      "image": "psychic_char_sheet_outfit_2.png"
     },
     "class_type": "LoadImage",
     "_meta": {
@@ -425,7 +408,7 @@
   },
   "220": {
     "inputs": {
-      "image": "underworld_base.png"
+      "image": "overpass2_base.png"
     },
     "class_type": "LoadImage",
     "_meta": {

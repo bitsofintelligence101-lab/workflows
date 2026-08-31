@@ -53,8 +53,8 @@ def v2v(prompt, image_path_list, video_path, v2v_workflow_path, save_directory,
     prompt_node = "80"             # PrimitiveStringMultiline - text prompt
     noise_node = "25"              # RandomNoise - noise_seed
     duration_node = "63"           # PrimitiveFloat - new clip length in seconds
-    resolution_node = "65"         # ResolutionSelector - aspect_ratio / megapixels
     r2v_node = "23"                # MiniMaxH3ReferenceToVideo - main node (refs + prompt)
+    resolution_node = "74"         # load - width/height settings for resolution
     save_video_node = "43"         # VHS_VideoCombine - extension video output
     assemble_node = "85"           # MiniMaxH3AssembleExtensionCheckpoints - source + extension output
     save_image_node = "90"        # SaveImage - final frame output
@@ -88,9 +88,28 @@ def v2v(prompt, image_path_list, video_path, v2v_workflow_path, save_directory,
     workflow[duration_node]["inputs"]["value"] = duration
 
     # Resolution selector (only touch if node exists in this workflow)
+    if megapixels <= 0.2:
+        width, height = 608, 352
+    elif megapixels <= 0.3:
+        width, height = 736, 416
+    elif megapixels <= 0.4:
+        width, height = 864, 480
+    elif megapixels <= 0.5:
+        width, height = 960, 544
+    elif megapixels <= 0.6:
+        width, height = 1056, 608
+    elif megapixels <= 0.7:
+        width, height = 1152, 640
+    elif megapixels <= 0.8:
+        width, height = 1216, 672
+    elif megapixels <= 0.9:
+        width, height = 1280, 736
+    else:
+        width, height = 1344, 768  # 0.98+ max resolution H3 trained on
+
     if resolution_node in workflow:
-        workflow[resolution_node]["inputs"]["aspect_ratio"] = aspect_ratio
-        workflow[resolution_node]["inputs"]["megapixels"] = megapixels
+        workflow[resolution_node]["inputs"]["width"] = width
+        workflow[resolution_node]["inputs"]["height"] = height
 
     # Protected source frames used as the AV prefix (only touch if requested)
     if context_frames is not None and context_frames_node in workflow:
@@ -102,7 +121,7 @@ def v2v(prompt, image_path_list, video_path, v2v_workflow_path, save_directory,
     if turboLora_node in workflow:
         if not turboLora:
             #steps
-            workflow[step_count_node]["inputs"]["steps"] = 30
+            workflow[step_count_node]["inputs"]["steps"] = 40
             #set lora strength to 0
             workflow[turboLora_node]["inputs"]["strength_model"] = 0
             #sampler
@@ -123,6 +142,11 @@ def v2v(prompt, image_path_list, video_path, v2v_workflow_path, save_directory,
             workflow[scheduler_node]["inputs"]["scheduler"] = "beta"
             #adjust  shift
             workflow[switch_shift_node]["inputs"]["switch"] = True
+            #Adjust which LoRA based on megapixels
+            if megapixels <= 0.6:
+                workflow[turboLora_node]["inputs"]["lora_name"] = "H3\\minimax_h3_fl2v_turbo_8step_v1.0_comfyui_bf16.safetensors"
+            else:
+                workflow[turboLora_node]["inputs"]["lora_name"] = "H3\\minimax_h3_fl2v_turbo_8step_v1.0_768p_comfyui_bf16.safetensors"
             
 
     if 'nsfw' in prompt.lower():

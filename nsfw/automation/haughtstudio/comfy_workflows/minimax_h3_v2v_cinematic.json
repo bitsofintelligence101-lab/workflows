@@ -109,12 +109,12 @@
         0
       ],
       "width": [
-        "65",
-        0
+        "74",
+        1
       ],
       "height": [
-        "65",
-        1
+        "74",
+        2
       ],
       "length": [
         "64",
@@ -408,14 +408,8 @@
   },
   "74": {
     "inputs": {
-      "width": [
-        "65",
-        0
-      ],
-      "height": [
-        "65",
-        1
-      ],
+      "width": 1344,
+      "height": 768,
       "upscale_method": "nearest-exact",
       "keep_proportion": "crop",
       "pad_color": "0, 0, 0",

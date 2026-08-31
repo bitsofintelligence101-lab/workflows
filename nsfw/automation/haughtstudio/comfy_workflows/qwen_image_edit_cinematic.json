@@ -1,0 +1,656 @@
+{
+  "284": {
+    "inputs": {
+      "shift": 7,
+      "model": [
+        "290",
+        0
+      ]
+    },
+    "class_type": "ModelSamplingAuraFlow",
+    "_meta": {
+      "title": "ModelSamplingAuraFlow"
+    }
+  },
+  "285": {
+    "inputs": {
+      "model_name": "bbox/face_yolov8m.pt"
+    },
+    "class_type": "UltralyticsDetectorProvider",
+    "_meta": {
+      "title": "UltralyticsDetectorProvider (Face YOLO)"
+    }
+  },
+  "286": {
+    "inputs": {
+      "vae_name": "ZIT\\ae.safetensors"
+    },
+    "class_type": "VAELoader",
+    "_meta": {
+      "title": "Load VAE"
+    }
+  },
+  "290": {
+    "inputs": {
+      "unet_name": "ZIT\\z_image_turbo_bf16.safetensors",
+      "weight_dtype": "default"
+    },
+    "class_type": "UNETLoader",
+    "_meta": {
+      "title": "Load Diffusion Model"
+    }
+  },
+  "291": {
+    "inputs": {
+      "shift": 7,
+      "model": [
+        "293",
+        0
+      ]
+    },
+    "class_type": "ModelSamplingAuraFlow",
+    "_meta": {
+      "title": "ModelSamplingAuraFlow"
+    }
+  },
+  "293": {
+    "inputs": {
+      "lora_name": "ZIT\\NSFW_master_ZIT_000017532.safetensors",
+      "strength_model": 0,
+      "model": [
+        "290",
+        0
+      ]
+    },
+    "class_type": "LoraLoaderModelOnly",
+    "_meta": {
+      "title": "Load LoRA"
+    }
+  },
+  "294": {
+    "inputs": {
+      "clip_name": "ZIT\\qwen_3_4b_fp8_mixed.safetensors",
+      "type": "lumina2",
+      "device": "default"
+    },
+    "class_type": "CLIPLoader",
+    "_meta": {
+      "title": "Load CLIP"
+    }
+  },
+  "872": {
+    "inputs": {
+      "prompt": "CGI, 3d render, cartoon, illustration, painting, drawing, lowres, bad anatomy, bad hands, distorted, oversaturated, watermark, signature, plastic look, plastic skin, low resolution, distortion, warped text, duplicate faces, out of focus, soft image, birthmark, acne\n",
+      "clip": [
+        "916",
+        1
+      ],
+      "vae": [
+        "924",
+        0
+      ],
+      "image1": [
+        "933",
+        0
+      ]
+    },
+    "class_type": "TextEncodeQwenImageEditPlus",
+    "_meta": {
+      "title": "TextEncodeQwenImageEditPlus"
+    }
+  },
+  "874": {
+    "inputs": {
+      "reference_latents_method": "index_timestep_zero",
+      "conditioning": [
+        "876",
+        0
+      ]
+    },
+    "class_type": "FluxKontextMultiReferenceLatentMethod",
+    "_meta": {
+      "title": "Edit Model Reference Method"
+    }
+  },
+  "876": {
+    "inputs": {
+      "prompt": "use the reference sheet of subject in Image 1, standing on the deck of the ship shown in Image 2. their back to the camera medium angle shot waist up.",
+      "clip": [
+        "916",
+        1
+      ],
+      "vae": [
+        "924",
+        0
+      ],
+      "image1": [
+        "933",
+        0
+      ],
+      "image2": [
+        "940",
+        0
+      ]
+    },
+    "class_type": "TextEncodeQwenImageEditPlus",
+    "_meta": {
+      "title": "TextEncodeQwenImageEditPlus (Positive)"
+    }
+  },
+  "879": {
+    "inputs": {
+      "samples": [
+        "880",
+        0
+      ],
+      "vae": [
+        "924",
+        0
+      ]
+    },
+    "class_type": "VAEDecode",
+    "_meta": {
+      "title": "VAE Decode"
+    }
+  },
+  "880": {
+    "inputs": {
+      "seed": [
+        "921",
+        0
+      ],
+      "steps": 8,
+      "cfg": 1.5,
+      "sampler_name": "dpmpp_2m_sde_gpu",
+      "scheduler": "simple",
+      "denoise": 1,
+      "model": [
+        "917",
+        0
+      ],
+      "positive": [
+        "874",
+        0
+      ],
+      "negative": [
+        "883",
+        0
+      ],
+      "latent_image": [
+        "884",
+        0
+      ]
+    },
+    "class_type": "KSampler",
+    "_meta": {
+      "title": "KSampler"
+    }
+  },
+  "883": {
+    "inputs": {
+      "reference_latents_method": "index_timestep_zero",
+      "conditioning": [
+        "872",
+        0
+      ]
+    },
+    "class_type": "FluxKontextMultiReferenceLatentMethod",
+    "_meta": {
+      "title": "Edit Model Reference Method"
+    }
+  },
+  "884": {
+    "inputs": {
+      "pixels": [
+        "933",
+        0
+      ],
+      "vae": [
+        "924",
+        0
+      ]
+    },
+    "class_type": "VAEEncode",
+    "_meta": {
+      "title": "VAE Encode"
+    }
+  },
+  "886": {
+    "inputs": {
+      "filename_prefix": "qwen_edit/image_enhanced_1472x1104",
+      "images": [
+        "893",
+        0
+      ]
+    },
+    "class_type": "SaveImage",
+    "_meta": {
+      "title": "Save Image"
+    }
+  },
+  "887": {
+    "inputs": {
+      "conditioning": [
+        "888",
+        0
+      ]
+    },
+    "class_type": "ConditioningZeroOut",
+    "_meta": {
+      "title": "ConditioningZeroOut"
+    }
+  },
+  "888": {
+    "inputs": {
+      "text": [
+        "926",
+        0
+      ],
+      "clip": [
+        "294",
+        0
+      ]
+    },
+    "class_type": "CLIPTextEncode",
+    "_meta": {
+      "title": "CLIP Text Encode (Prompt)"
+    }
+  },
+  "892": {
+    "inputs": {
+      "samples": [
+        "897",
+        0
+      ],
+      "vae": [
+        "286",
+        0
+      ]
+    },
+    "class_type": "VAEDecode",
+    "_meta": {
+      "title": "VAE Decode"
+    }
+  },
+  "893": {
+    "inputs": {
+      "x": 0,
+      "y": 0,
+      "resize_source": false,
+      "destination": [
+        "892",
+        0
+      ],
+      "source": [
+        "900",
+        0
+      ],
+      "mask": [
+        "900",
+        3
+      ]
+    },
+    "class_type": "ImageCompositeMasked",
+    "_meta": {
+      "title": "Image Composite Masked"
+    }
+  },
+  "895": {
+    "inputs": {
+      "mask": [
+        "900",
+        3
+      ]
+    },
+    "class_type": "InvertMask",
+    "_meta": {
+      "title": "Invert Mask"
+    }
+  },
+  "897": {
+    "inputs": {
+      "seed": 238928389657781,
+      "steps": 8,
+      "cfg": 1,
+      "sampler_name": "euler",
+      "scheduler": "beta",
+      "denoise": 0.2,
+      "model": [
+        "291",
+        0
+      ],
+      "positive": [
+        "888",
+        0
+      ],
+      "negative": [
+        "887",
+        0
+      ],
+      "latent_image": [
+        "898",
+        0
+      ]
+    },
+    "class_type": "KSampler",
+    "_meta": {
+      "title": "KSampler"
+    }
+  },
+  "898": {
+    "inputs": {
+      "samples": [
+        "899",
+        0
+      ],
+      "mask": [
+        "895",
+        0
+      ]
+    },
+    "class_type": "SetLatentNoiseMask",
+    "_meta": {
+      "title": "Set Latent Noise Mask"
+    }
+  },
+  "899": {
+    "inputs": {
+      "pixels": [
+        "879",
+        0
+      ],
+      "vae": [
+        "286",
+        0
+      ]
+    },
+    "class_type": "VAEEncode",
+    "_meta": {
+      "title": "VAE Encode"
+    }
+  },
+  "900": {
+    "inputs": {
+      "guide_size": 384,
+      "guide_size_for": true,
+      "max_size": 2000,
+      "seed": 59845637,
+      "steps": 6,
+      "cfg": 1,
+      "sampler_name": "euler",
+      "scheduler": "simple",
+      "denoise": 0.12,
+      "feather": 10,
+      "noise_mask": true,
+      "force_inpaint": true,
+      "bbox_threshold": 0.5,
+      "bbox_dilation": 0,
+      "bbox_crop_factor": 1.3,
+      "sam_detection_hint": "center-1",
+      "sam_dilation": 0,
+      "sam_threshold": 0.9,
+      "sam_bbox_expansion": 0,
+      "sam_mask_hint_threshold": 0.7,
+      "sam_mask_hint_use_negative": "False",
+      "drop_size": 10,
+      "wildcard": "",
+      "cycle": 1,
+      "inpaint_model": false,
+      "noise_mask_feather": 20,
+      "tiled_encode": false,
+      "tiled_decode": false,
+      "image": [
+        "879",
+        0
+      ],
+      "model": [
+        "284",
+        0
+      ],
+      "clip": [
+        "294",
+        0
+      ],
+      "vae": [
+        "286",
+        0
+      ],
+      "positive": [
+        "888",
+        0
+      ],
+      "negative": [
+        "887",
+        0
+      ],
+      "bbox_detector": [
+        "285",
+        0
+      ]
+    },
+    "class_type": "FaceDetailer",
+    "_meta": {
+      "title": "FaceDetailer"
+    }
+  },
+  "905": {
+    "inputs": {
+      "image": "charSheet_x3_1472x1104_00004_.png"
+    },
+    "class_type": "LoadImage",
+    "_meta": {
+      "title": "Load Image 1"
+    }
+  },
+  "907": {
+    "inputs": {
+      "image": "background.png"
+    },
+    "class_type": "LoadImage",
+    "_meta": {
+      "title": "Load Image 2"
+    }
+  },
+  "914": {
+    "inputs": {
+      "shift": 3.1,
+      "model": [
+        "915",
+        0
+      ]
+    },
+    "class_type": "ModelSamplingAuraFlow",
+    "_meta": {
+      "title": "ModelSamplingAuraFlow"
+    }
+  },
+  "915": {
+    "inputs": {
+      "lora_name": "QwenEdit\\Qwen-Image-Lightning-8steps-V2.0-bf16.safetensors",
+      "strength_model": 1,
+      "model": [
+        "916",
+        0
+      ]
+    },
+    "class_type": "LoraLoaderModelOnly",
+    "_meta": {
+      "title": "Load LoRA"
+    }
+  },
+  "916": {
+    "inputs": {
+      "lora_name": "QwenEdit\\qwen-image-edit-2511-multiple-angles-lora.safetensors",
+      "strength_model": 1,
+      "strength_clip": 1,
+      "model": [
+        "920",
+        0
+      ],
+      "clip": [
+        "922",
+        0
+      ]
+    },
+    "class_type": "LoraLoader",
+    "_meta": {
+      "title": "Load LoRA (Model and CLIP)"
+    }
+  },
+  "917": {
+    "inputs": {
+      "strength": 1,
+      "pre_cfg": false,
+      "model": [
+        "914",
+        0
+      ]
+    },
+    "class_type": "CFGNorm",
+    "_meta": {
+      "title": "CFGNorm"
+    }
+  },
+  "920": {
+    "inputs": {
+      "unet_name": "qwen_image_edit_2511_bf16.safetensors",
+      "weight_dtype": "default"
+    },
+    "class_type": "UNETLoader",
+    "_meta": {
+      "title": "Load Diffusion Model"
+    }
+  },
+  "921": {
+    "inputs": {
+      "value": 578
+    },
+    "class_type": "PrimitiveInt",
+    "_meta": {
+      "title": "Int"
+    }
+  },
+  "922": {
+    "inputs": {
+      "clip_name": "qwen_2.5_vl_7b_fp8_scaled.safetensors",
+      "type": "qwen_image",
+      "device": "default"
+    },
+    "class_type": "CLIPLoader",
+    "_meta": {
+      "title": "Load CLIP"
+    }
+  },
+  "924": {
+    "inputs": {
+      "vae_name": "qwen_image_vae.safetensors"
+    },
+    "class_type": "VAELoader",
+    "_meta": {
+      "title": "Load VAE"
+    }
+  },
+  "926": {
+    "inputs": {
+      "value": "Shot on Kodak Portra 400 with warm color grading"
+    },
+    "class_type": "PrimitiveStringMultiline",
+    "_meta": {
+      "title": "Text String (Multiline)"
+    }
+  },
+  "933": {
+    "inputs": {
+      "width": [
+        "934",
+        0
+      ],
+      "height": [
+        "937",
+        0
+      ],
+      "upscale_method": "nearest-exact",
+      "keep_proportion": "crop",
+      "pad_color": "0, 0, 0",
+      "crop_position": "center",
+      "divisible_by": 2,
+      "device": "cpu",
+      "image": [
+        "905",
+        0
+      ]
+    },
+    "class_type": "ImageResizeKJv2",
+    "_meta": {
+      "title": "Resize Image v2"
+    }
+  },
+  "934": {
+    "inputs": {
+      "value": 1472
+    },
+    "class_type": "PrimitiveInt",
+    "_meta": {
+      "title": "Int"
+    }
+  },
+  "937": {
+    "inputs": {
+      "value": 1104
+    },
+    "class_type": "PrimitiveInt",
+    "_meta": {
+      "title": "Int"
+    }
+  },
+  "940": {
+    "inputs": {
+      "width": [
+        "934",
+        0
+      ],
+      "height": [
+        "937",
+        0
+      ],
+      "upscale_method": "nearest-exact",
+      "keep_proportion": "crop",
+      "pad_color": "0, 0, 0",
+      "crop_position": "center",
+      "divisible_by": 2,
+      "device": "cpu",
+      "image": [
+        "907",
+        0
+      ]
+    },
+    "class_type": "ImageResizeKJv2",
+    "_meta": {
+      "title": "Resize Image v2"
+    }
+  },
+  "942": {
+    "inputs": {
+      "images": [
+        "933",
+        0
+      ]
+    },
+    "class_type": "PreviewImage",
+    "_meta": {
+      "title": "Preview Image"
+    }
+  },
+  "943": {
+    "inputs": {
+      "images": [
+        "940",
+        0
+      ]
+    },
+    "class_type": "PreviewImage",
+    "_meta": {
+      "title": "Preview Image"
+    }
+  }
+}
